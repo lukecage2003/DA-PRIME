@@ -18,7 +18,7 @@ metrics = {}
 for key, (fn, fam, wt, st) in FONTS.items():
     out = W / fn.replace('.ttf', '.woff2')
     opt = subset.Options(); opt.flavor = 'woff2'; opt.layout_features = ['kern', 'liga']; opt.name_IDs = ['*']; opt.notdef_outline = True
-    f = TTFont(F / fn); s = subset.Subsetter(opt); s.populate(unicodes=UNI); s.subset(f); f.flavor = 'woff2'; f.save(out)
+    f = TTFont(F / fn, recalcTimestamp=False); s = subset.Subsetter(opt); s.populate(unicodes=UNI); s.subset(f); f.flavor = 'woff2'; f.save(out)
     t = TTFont(out); cmap = t.getBestCmap(); hm = t['hmtx']; upm = t['head'].unitsPerEm; os2 = t['OS/2']
     adv = {str(cp): hm[g][0] for cp, g in cmap.items()}
     metrics[key] = dict(family=fam, weight=wt, style=st, file=out.name, upm=upm, cap=os2.sCapHeight, asc=t['hhea'].ascent, desc=t['hhea'].descent,

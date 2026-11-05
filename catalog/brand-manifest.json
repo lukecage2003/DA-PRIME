@@ -1968,8 +1968,8 @@
         {
           "path": "brand/03_fonts/web/Anton-Regular.woff2",
           "format": "woff2",
-          "bytes": 14812,
-          "sha256": "afc05970def1a2fef27e74a8a2e18cdf863b95647e44ea7cf97c55c76d320e88"
+          "bytes": 14776,
+          "sha256": "59b207328501c9e5af882e020e672ef1c1fa205adcf9e7369fdfcb0168e3fa36"
         }
       ]
     },
@@ -2038,14 +2038,14 @@
         {
           "path": "brand/03_fonts/web/Archivo-Bold.woff2",
           "format": "woff2",
-          "bytes": 10916,
-          "sha256": "3e451840ed82bf578ec551fa202c08642ce7c08b528d204476e84aec083b9f9b"
+          "bytes": 10912,
+          "sha256": "8e11b0ac487360a16700324193e65699da65a83f956a264a39a9437b25cbf00d"
         },
         {
           "path": "brand/03_fonts/web/Archivo-Medium.woff2",
           "format": "woff2",
-          "bytes": 10912,
-          "sha256": "dccdf6dd092be9fcb4e43ed77072c1b681c759d40079e2c81d5d0295a84020bc"
+          "bytes": 10928,
+          "sha256": "d470a3f9e7081aa83336e0a3aa26814307d54dcba861be05942bb4aded0ffad7"
         }
       ]
     },
@@ -2084,8 +2084,8 @@
         {
           "path": "brand/03_fonts/web/InstrumentSerif-Italic.woff2",
           "format": "woff2",
-          "bytes": 20684,
-          "sha256": "85b20aa60c23ef02b9b8da0db2d38104b03105efc2359a278077914eb02bfa78"
+          "bytes": 20648,
+          "sha256": "65cdaddef67339654c7f42a6db6425ee75561c3c7ec24d1729e6268e828b6e9e"
         }
       ]
     },
@@ -2125,7 +2125,7 @@
           "path": "brand/03_fonts/web/JetBrainsMono-Bold.woff2",
           "format": "woff2",
           "bytes": 8072,
-          "sha256": "5cf660c8ac4b1b04d9df1fafbe2319883d95648c3e9ed5b00e08ed048917bbae"
+          "sha256": "9775a8e4a2fa0ed832c5439acccdd5aee778d386fb4170aee219cf0b7064f3c3"
         }
       ]
     },
