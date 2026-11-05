@@ -1,5 +1,27 @@
 # Journal des versions
 
+## 0.6.0 · 2026-11-05 · lot 5 : Motion Studio, studio de composition et de motion design
+
+- Éditeur de composition libre : page blanche ou modèle ; éléments texte, illustration, forme, effet, groupe ; manipulation directe sur la scène (déplacer, redimensionner, pivoter, pincer), sélection multiple et lasso, grouper, verrouiller, masquer, ordre, alignement et répartition, copier-coller, annuler et rétablir (120 étapes), règles, guides, grille, magnétisme, zones sûres, zoom.
+- Typographie : hiérarchie par système, polices de la marque et polices locales importées, ajustement automatique ou taille fixe, contours, ombre, lueur, extrusion, dégradé, bandeau, déformations (arc, onde, inclinaison, impact, perspective).
+- Illustrations : import multiple sans altération de l'original, recadrage sur la scène, 9 masques, contour, ombre, traitements non destructifs (fond uni retiré, noir et blanc, bichromie, contraste, luminosité, trame en points), remplacement en conservant les réglages.
+- Bibliothèque graphique : 18 formes, bulles et cadres ; 18 effets (trames, papier, grain, motifs, vitesse, mouvement, explosion, impact, éclairs, énergie, rayons, lumière, dégradé, vignettage, particules, étoiles, nébuleuse, crépitement) ; 18 composants ; 6 systèmes graphiques et 16 palettes à jetons de couleur.
+- Animation par calque : 13 entrées (dont lettre à lettre, mot à mot, machine à écrire, masques animés), 8 boucles, 8 sorties, 9 courbes et Bézier personnalisée, 12 préréglages et préréglages personnels, échelonnement, caméra et parallaxe, séquenceur.
+- Formats : 12 formats (vidéo, réseaux, impression 300 dpi) et personnalisé jusqu'à 8192 px, adaptation de la composition et déclinaisons.
+- Exports : PNG ×1 à ×4 et transparent, JPG, SVG autonome à calques, GIF (transparent possible), WebM image par image (WebCodecs, multiplexeur intégré), MP4 ou WebM en temps réel.
+- Bibliothèque de travail : créations par dossiers et recherche, modèles intégrés (les 8 familles du MVP, entièrement éditables) et personnels, composants personnels, ressources, versions (manuelles et automatiques), sauvegarde automatique, stockage persistant demandé, projets `.motion.json` complets, export et import de toute la bibliothèque, conversion automatique des créations du MVP.
+- Aucune dépendance ajoutée ; évaluation des bibliothèques de référence dans `docs/MOTION_STUDIO.md`.
+- Tests : 93 tests Motion Studio (32 dans Node, 61 dans Chromium) ; 15 tests du moteur et 54 de l'Atelier inchangés.
+
+## 0.5.0 · 2026-11-05 · lot 4 : Motion Studio
+
+- Motion Studio dans l'Atelier (`atelier/motion/`, bouton dans l'en-tête de l'Atelier) : 8 familles de créations (annonce de série, couverture, personnage, équipe, crossover, dossier, hiérarchie cosmique, chronologie), 6 directions visuelles éditoriales et cinématographiques, 4 formats (16:9, 1:1, 4:5, 9:16).
+- Textes, illustrations (import, recadrage, zoom), couleurs, effets réglables (trame, encrage, vitesse, lumière, particules, cosmique, grain), calques (sélection, masquage, ordre, position, échelle, opacité).
+- 8 presets d'animation, durée, vitesse, titres lettre à lettre, volets de fin ; lecture, curseur, boucle.
+- Sauvegarde automatique sur l'appareil, liste des créations, fichier `.motion.json` ; exports PNG, JPG, SVG, MP4 ou WebM selon le navigateur, GIF.
+- Moteur sans dépendance (liste d'affichage, rendus canvas et SVG), encodeur GIF intégré ; évaluation des dépôts de référence dans `docs/MOTION_STUDIO.md`.
+- Tests : 51 tests Motion Studio (`npm run test:motion`) ; 15 tests du moteur et 54 de l'Atelier inchangés et réussis.
+
 ## 0.4.0 · 2026-11-05 · lot 3 : Kiosque dans l'Atelier, infographies JSON
 
 - Architecture commune des supports : registre unique (`templates/_systeme/registre.js`), format 16:9 1920 × 1080 ajouté, briques éditoriales partagées (`editorial.js`).

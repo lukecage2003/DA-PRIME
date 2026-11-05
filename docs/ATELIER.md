@@ -1,5 +1,7 @@
 # Atelier · prototype
 
+> **Motion Studio** (studio de composition et de motion design, lots 4 et 5) s'ouvre depuis le bouton *Motion Studio →* de l'en-tête : voir `docs/MOTION_STUDIO.md`.
+
 Interface web légère pour remplir les gabarits des trois supports (Miniatures YouTube, Kiosque, Infographies) : choisir un support, un gabarit et une variante, saisir les textes, importer et recadrer les images, contrôler, exporter. **Aucun compte, aucun serveur distant, aucune synchronisation** : tout reste sur l'appareil.
 
 ## Tester sur le Galaxy S25
@@ -40,6 +42,6 @@ Sur téléphone, familles et variantes défilent horizontalement sur une ligne, 
 
 ## Vérifié et non vérifié
 
-`npm test` exécute les tests du moteur (15, dans Node) puis ceux de l'Atelier (54, dans Chromium) : rendu des 19 variantes, alertes, import (PNG transparent, image 4000 × 3000 réduite), glisser et molette à la souris, glisser et pincer au doigt (événements tactiles réels de Chromium), exports PNG, JPG et SVG (dimensions, poids, aucune ressource externe), édition des 8 diapositives Kiosque, débordement d'un texte long, export 1080 × 1350, données JSON (mal formées, mauvaise structure, mauvais type, import et export de fichier, export 1920 × 1080), retour aux miniatures, sauvegarde et récupération du brouillon après rechargement, photo avec orientation EXIF importée sur S25 émulé, résumé des contrôles visible sans défiler, rechargement hors ligne, absence de défilement horizontal et cibles tactiles de 44 px aux tailles Galaxy S25, iPad M2 (portrait et paysage) et Windows (1366 et 1920 px).
+`npm test` exécute les tests du moteur (15, dans Node), ceux de l'Atelier (54, dans Chromium) puis ceux de Motion Studio (93, voir `docs/MOTION_STUDIO.md`). Tests de l'Atelier : rendu des 19 variantes, alertes, import (PNG transparent, image 4000 × 3000 réduite), glisser et molette à la souris, glisser et pincer au doigt (événements tactiles réels de Chromium), exports PNG, JPG et SVG (dimensions, poids, aucune ressource externe), édition des 8 diapositives Kiosque, débordement d'un texte long, export 1080 × 1350, données JSON (mal formées, mauvaise structure, mauvais type, import et export de fichier, export 1920 × 1080), retour aux miniatures, sauvegarde et récupération du brouillon après rechargement, photo avec orientation EXIF importée sur S25 émulé, résumé des contrôles visible sans défiler, rechargement hors ligne, absence de défilement horizontal et cibles tactiles de 44 px aux tailles Galaxy S25, iPad M2 (portrait et paysage) et Windows (1366 et 1920 px).
 
 **Non vérifié** : aucun appareil physique, aucun navigateur Safari ni Samsung Internet (seul Chromium est disponible ici). Points à confirmer sur iPad : export PNG/JPG (rendu des polices intégrées dans Safari) et téléchargement vers l'app Fichiers.

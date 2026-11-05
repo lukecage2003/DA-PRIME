@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Motion Studio · Atelier Primestone</title>
+<meta name="theme-color" content="#111111">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png">
+<link rel="stylesheet" href="../polices.css">
+<link rel="stylesheet" href="studio.css">
+</head>
+<body>
+<header class="entete">
+  <a class="retour" href="../">← Atelier</a>
+  <strong class="marque">Motion Studio</strong>
+  <input type="text" id="nom" class="nom" aria-label="Nom de la création" autocomplete="off">
+  <div class="groupe-boutons">
+    <button type="button" id="annuler" title="Annuler (Ctrl+Z)" aria-label="Annuler">↶</button>
+    <button type="button" id="retablir" title="Rétablir (Ctrl+Maj+Z)" aria-label="Rétablir">↷</button>
+  </div>
+  <button type="button" id="ouvrir-bibliotheque" class="principal">Bibliothèque</button>
+  <button type="button" id="ouvrir-export" class="principal accent">Exporter</button>
+  <span id="sauvegarde" class="etat-sauvegarde" aria-live="polite"></span>
+</header>
+<main class="studio">
+  <nav class="outils" aria-label="Outils">
+    <button type="button" data-outil="selection" aria-pressed="true" title="Sélection (V)"><span>↖</span>Sélection</button>
+    <button type="button" data-ajout="texte" title="Texte (T)"><span>T</span>Texte</button>
+    <button type="button" data-ajout="forme" title="Forme (R)"><span>■</span>Forme</button>
+    <button type="button" data-ajout="image" title="Illustration (I)"><span>▣</span>Image</button>
+    <button type="button" data-ajout="effet" title="Effet (E)"><span>✺</span>Effet</button>
+    <button type="button" data-ajout="composant" title="Composants (C)"><span>❖</span>Composant</button>
+    <input type="file" id="fichier-image" accept="image/*" multiple hidden>
+  </nav>
+  <section class="centre" aria-label="Scène">
+    <div class="barre-scene">
+      <button type="button" id="lecture" aria-pressed="false">▶ Lecture</button>
+      <button type="button" id="rejouer" aria-label="Rejouer depuis le début">↺</button>
+      <input type="range" id="temps" min="0" max="6" step="0.01" value="0" aria-label="Position dans l'animation">
+      <output id="temps-lu" for="temps">0,0 s</output>
+      <select id="zoom" aria-label="Zoom de la scène"><option value="ajuste">Ajuster</option><option value="0.25">25 %</option><option value="0.5">50 %</option><option value="1">100 %</option><option value="2">200 %</option></select>
+      <details class="affichage"><summary>Affichage</summary>
+        <label class="bascule"><input type="checkbox" id="voir-grille"> Grille</label>
+        <label class="bascule"><input type="checkbox" id="voir-regles" checked> Règles et guides</label>
+        <label class="bascule"><input type="checkbox" id="voir-zones"> Zones sûres</label>
+        <label class="bascule"><input type="checkbox" id="aimant" checked> Magnétisme</label>
+      </details>
+    </div>
+    <div class="cadre-scene" id="cadre-scene">
+      <canvas id="regle-h" class="regle h" aria-hidden="true"></canvas><canvas id="regle-v" class="regle v" aria-hidden="true"></canvas>
+      <div class="defile" id="defile">
+        <div class="plateau" id="plateau">
+          <canvas id="apercu" aria-label="Scène de composition"></canvas>
+          <svg id="surcouche" class="surcouche" aria-label="Scène : toucher un élément pour le sélectionner, glisser pour le déplacer, poignées pour redimensionner et pivoter."></svg>
+        </div>
+      </div>
+    </div>
+    <div class="sous-scene"><a href="#onglet-controles" id="resume" class="resume" data-niveau="ok">Contrôles</a><span id="aide" class="aide"></span></div>
+    <details class="sequenceur" id="sequenceur" open><summary>Séquenceur</summary><div id="pistes" class="pistes"></div></details>
+  </section>
+  <aside class="panneau" aria-label="Propriétés">
+    <div class="onglets" role="tablist">
+      <button type="button" role="tab" data-onglet="proprietes" aria-selected="true">Propriétés</button>
+      <button type="button" role="tab" data-onglet="animation" aria-selected="false">Animation</button>
+      <button type="button" role="tab" data-onglet="calques" aria-selected="false">Calques</button>
+      <button type="button" role="tab" data-onglet="document" aria-selected="false">Document</button>
+    </div>
+    <section id="onglet-proprietes" class="onglet" role="tabpanel"></section>
+    <section id="onglet-animation" class="onglet" role="tabpanel" hidden></section>
+    <section id="onglet-calques" class="onglet" role="tabpanel" hidden><div class="rangee" id="actions-calques"></div><ul id="arbre" class="arbre"></ul></section>
+    <section id="onglet-document" class="onglet" role="tabpanel" hidden></section>
+    <section id="onglet-controles" class="controles"><h2>Contrôles</h2><ul id="alertes" class="alertes" aria-live="polite"></ul></section>
+  </aside>
+</main>
+<dialog id="bibliotheque" class="tiroir" aria-label="Bibliothèque"><div class="tete-tiroir"><h2>Bibliothèque</h2><div class="onglets" id="onglets-biblio" role="tablist"></div><button type="button" class="fermer" data-fermer>Fermer</button></div><div id="contenu-biblio" class="contenu-tiroir"></div></dialog>
+<dialog id="export" class="tiroir petit" aria-label="Exporter"><div class="tete-tiroir"><h2>Exporter</h2><button type="button" class="fermer" data-fermer>Fermer</button></div><div id="contenu-export" class="contenu-tiroir"></div></dialog>
+<script type="module" src="app.js"></script>
+</body>
+</html>

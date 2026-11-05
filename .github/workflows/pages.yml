@@ -1,0 +1,60 @@
+# Primestone · publication de l'Atelier et de Motion Studio sur GitHub Pages.
+# Déclenchement MANUEL uniquement (onglet Actions > « Publier sur GitHub Pages » > Run workflow) :
+# rien n'est publié automatiquement. Pour publier à chaque push sur la branche par défaut, décommenter le bloc push ci-dessous.
+# Le site ne contient que les fichiers listés dans atelier/precache.json (voir tools/build-pages.mjs) ;
+# les créations, illustrations et projets restent dans le navigateur de chaque utilisateur et ne sont jamais envoyés.
+name: Publier sur GitHub Pages
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [ccr-1edc037c-4ye7hs]   # branche par défaut actuelle du dépôt
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  verifier-et-construire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - name: Dépendances
+        run: |
+          pip install -r requirements.txt
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Contrôles du dépôt
+        run: npm run check
+      - name: Tests (moteur, Atelier, Motion Studio)
+        run: npm test
+      - name: Site statique (_site)
+        run: npm run build:pages
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  publier:
+    needs: verifier-et-construire
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - id: deploiement
+        uses: actions/deploy-pages@v4

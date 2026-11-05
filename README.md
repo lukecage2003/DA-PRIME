@@ -4,7 +4,7 @@ Dépôt de l'identité visuelle de **Primestone Media** : système graphique, de
 
 Direction artistique de référence : **Signal** (YouTube, accroches, communication) + **Kiosque** (éditorial, dossiers, carrousels, infographies, bibliothèque). Direction sombre et cinématographique en usage secondaire.
 
-## État : lot 3 (Kiosque dans l'Atelier, infographies JSON) · version 0.4.0 provisoire
+## État : lot 5 (Motion Studio, studio de composition et de motion design) · version 0.6.0 provisoire
 
 | Élément | Emplacement | Statut |
 |---|---|---|
@@ -18,6 +18,7 @@ Direction artistique de référence : **Signal** (YouTube, accroches, communicat
 | Gabarits SVG Kiosque 4:5 : 6 diapositives de carrousel, fiche personnage (8 variantes) | `templates/kiosque/` | provisoire (logo non officiel) |
 | Infographies 16:9 pilotées par JSON : chronologie, barres ; validation et schéma | `templates/infographies/`, `data/infographies/`, `schemas/` | provisoire |
 | Atelier : 3 supports, saisie, recadrage, données JSON, contrôles, exports PNG/JPG/SVG, partage, sauvegarde automatique | `atelier/` | prototype |
+| Motion Studio : composition libre (texte, image, forme, effet, groupe), typographie avancée, 18 effets comics, 6 systèmes graphiques, animation par calque, séquenceur, caméra, 12 formats et personnalisé, exports PNG/JPG/SVG/GIF/WebM/MP4, bibliothèque, versions, projets et polices locales | `atelier/motion/`, `templates/_systeme/studio*.js`, `templates/_systeme/motion*.js` | version stable, provisoire |
 | Catalogue `brand-manifest.json` + schéma | `catalog/`, `schemas/` | généré |
 | Schéma Supabase | `supabase/` | **brouillon non appliqué** |
 | Présentations des missions 01 et 02 | `presentations/` | archive |
@@ -43,7 +44,7 @@ catalog/             catalog.config.json (règles) · brand-manifest.json (gén�
 schemas/             brand-manifest.schema.json · infographie.schema.json (généré)
 supabase/            migrations/ (brouillon)
 tools/               générateurs et contrôles
-docs/                architecture, conventions, logo, couleur jaune, gabarits, infographies, Atelier
+docs/                architecture, conventions, logo, couleur jaune, gabarits, infographies, Atelier, Motion Studio
 presentations/       planches des missions 01 et 02
 ```
 
@@ -55,7 +56,8 @@ Prérequis : Node 20+ (`npm ci` installe Playwright pour les rendus PNG), Python
 npm run build          # tokens -> éléments -> gabarits et exemples -> manifeste
 npm run atelier        # Atelier sur http://localhost:4173/atelier/
 npm run atelier:reseau # Atelier accessible depuis le téléphone (même Wi-Fi)
-npm test               # tests du moteur + tests de bout en bout (Chromium, appareils émulés)
+npm test               # tests du moteur, de l'Atelier et de Motion Studio (Chromium, appareils émulés)
+npm run test:motion    # Motion Studio seul (moteur dans Node, puis interface dans Chromium)
 npm run build:webfonts # polices web et métriques (si les polices changent)
 npm run build:logo     # re-vectorise le logo et refait la comparaison (≈ 1 min)
 npm run build:yellow   # recalcule la comparaison des jaunes
@@ -73,3 +75,11 @@ npm run check          # contrôles obligatoires avant chaque commit
 - Rien n'est déployé, acheté ou rendu public sans accord.
 
 Voir `docs/` pour le détail et `CHANGELOG.md` pour l'historique.
+
+## Publication sur GitHub Pages (préparée, non activée)
+
+- `npm run build:pages` construit `_site/` (non versionné) : uniquement les fichiers chargés par l'Atelier et Motion Studio, d'après `atelier/precache.json` (application, moteur, polices web, sceau P non officiel, images PLACEHOLDER), plus une page d'accueil qui redirige vers `atelier/`. Ni originaux de marque, ni Supabase, ni outils, ni données ; le script refuse tout fichier hors de cette liste et tout motif de secret.
+- `.github/workflows/pages.yml` vérifie le dépôt (`npm run check`, `npm test`), construit `_site/` et le publie. Déclenchement **manuel uniquement** (Actions > « Publier sur GitHub Pages » > Run workflow).
+- Le site est entièrement statique, en chemins relatifs : il fonctionne à la racine d'un domaine comme sous `https://<compte>.github.io/<dépôt>/`, avec le mode hors ligne (HTTPS fourni par Pages).
+- Les créations, illustrations importées, polices et projets restent dans le navigateur de chaque visiteur (IndexedDB) ou dans les fichiers qu'il télécharge : l'application n'envoie aucune donnée et ne fait aucune requête externe.
+- Activation (par le propriétaire du dépôt, après accord) : 1) fusionner ce travail dans la branche par défaut du dépôt (`ccr-1edc037c-4ye7hs` à ce jour ; l'environnement `github-pages` n'accepte par défaut que celle-ci, et le workflow n'apparaît dans l'onglet Actions qu'une fois présent sur cette branche) ; 2) Settings > Pages > Build and deployment > Source : **GitHub Actions** ; 3) Actions > « Publier sur GitHub Pages » > Run workflow. Adresse attendue : `https://lukecage2003.github.io/da-prime/`.
