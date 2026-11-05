@@ -1,0 +1,26 @@
+{
+  "PS_LOGO_logotype": {
+    "x1": {
+      "ecart_moyen_alpha": 0.649,
+      "iou": 0.99962,
+      "pixels_divergents_pct": 0.0295
+    },
+    "x4": {
+      "ecart_moyen_alpha": 3.248,
+      "iou": 0.99804,
+      "pixels_divergents_pct": 0.1541
+    }
+  },
+  "PS_LOGO_icone-P": {
+    "x1": {
+      "ecart_moyen_alpha": 0.512,
+      "iou": 0.9998,
+      "pixels_divergents_pct": 0.0135
+    },
+    "x4": {
+      "ecart_moyen_alpha": 2.557,
+      "iou": 0.99847,
+      "pixels_divergents_pct": 0.1023
+    }
+  }
+}

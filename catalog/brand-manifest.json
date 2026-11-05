@@ -1,0 +1,1547 @@
+{
+  "$schema": "../schemas/brand-manifest.schema.json",
+  "schemaVersion": 1,
+  "name": "primestone-brand",
+  "release": {
+    "version": "0.1.0",
+    "date": "2026-11-05",
+    "channel": "provisoire"
+  },
+  "tokens": {
+    "path": "brand/02_tokens/tokens.json",
+    "format": "json",
+    "bytes": 13775,
+    "sha256": "6472e26cd7ef6dc13795b45df784fdd0d855442eb5572b1726ba63fad60c331f"
+  },
+  "assets": [
+    {
+      "id": "el-case-cadre-2x3",
+      "title": "Case cadre 2x3",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "case",
+        "cadre",
+        "2x3"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_case-cadre_2x3.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_case-cadre_2x3.png",
+          "format": "png",
+          "bytes": 4169,
+          "sha256": "3b1e69acadb2bd4cea0fcb825f14189841c7e1d2a467721543a0b9dd043a360d",
+          "width": 600,
+          "height": 900
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_case-cadre_2x3@2x.png",
+          "format": "png",
+          "bytes": 12776,
+          "sha256": "4b81d730574dff118640a9172347cb52d73cedffd345476581db496992b0855c",
+          "width": 1200,
+          "height": 1800,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_case-cadre_2x3.svg",
+          "format": "svg",
+          "bytes": 319,
+          "sha256": "a73020ba31f8e411c50b8b0ff51312e45094c8a5c1fbdbbbb677cf8afccabe09",
+          "width": 600,
+          "height": 900
+        }
+      ]
+    },
+    {
+      "id": "el-filet-incision-jaune",
+      "title": "Filet incision jaune",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "filet",
+        "incision",
+        "jaune"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_filet-incision_jaune.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_filet-incision_jaune.png",
+          "format": "png",
+          "bytes": 237,
+          "sha256": "8e6db36ddf901d4c26d65cdb733f779b0381236e80b79b96754ddbb94a176e45",
+          "width": 258,
+          "height": 14
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_filet-incision_jaune@2x.png",
+          "format": "png",
+          "bytes": 429,
+          "sha256": "ca42ba0e11afde439c0ef010df3aebaa9e665002bc2f7d7ae87c870eb544ee84",
+          "width": 516,
+          "height": 28,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_filet-incision_jaune.svg",
+          "format": "svg",
+          "bytes": 284,
+          "sha256": "83f614644b71aac25c1d9f0202723038ae933980394c2c53f9605d9a20125387",
+          "width": 257.97,
+          "height": 14
+        }
+      ]
+    },
+    {
+      "id": "el-filet-incision-noir",
+      "title": "Filet incision noir",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "filet",
+        "incision",
+        "noir"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_filet-incision_noir.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_filet-incision_noir.png",
+          "format": "png",
+          "bytes": 235,
+          "sha256": "235594dd8c8a442c875a6efab18832b5abe793cd984e255b21c3e28ee794b074",
+          "width": 258,
+          "height": 14
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_filet-incision_noir@2x.png",
+          "format": "png",
+          "bytes": 430,
+          "sha256": "7718e2b5400f802a9edb0d98d937fa3d83aa948b228f91df614646accadec26b",
+          "width": 516,
+          "height": 28,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_filet-incision_noir.svg",
+          "format": "svg",
+          "bytes": 284,
+          "sha256": "4e463fd33fb8767ceeca4e8a4d3a5ea4db241355f611b26780f6b5b79e075c24",
+          "width": 257.97,
+          "height": 14
+        }
+      ]
+    },
+    {
+      "id": "el-incision-jaune",
+      "title": "Incision jaune",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "incision",
+        "jaune"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_incision_jaune.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_incision_jaune.png",
+          "format": "png",
+          "bytes": 3081,
+          "sha256": "a07fe33db2d9eb01708227102437a61e6597b68084976ceafd0d519c6c2d5c36",
+          "width": 85,
+          "height": 400
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_incision_jaune@2x.png",
+          "format": "png",
+          "bytes": 7390,
+          "sha256": "4e2abcb82d2ceea7823bb5fbbe3c9cff8055bcf3d5c7624fab1375939d834c45",
+          "width": 170,
+          "height": 800,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_incision_jaune.svg",
+          "format": "svg",
+          "bytes": 260,
+          "sha256": "9ae4fccbb56d6a3f171ce54d4b4e664027ebcdd9a22d9ec44348feefec165062",
+          "width": 84.22,
+          "height": 400
+        }
+      ]
+    },
+    {
+      "id": "el-incision-noir",
+      "title": "Incision noir",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "incision",
+        "noir"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_incision_noir.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_incision_noir.png",
+          "format": "png",
+          "bytes": 3022,
+          "sha256": "2fe2d90067756a56d39276b43c97730a1285f0ab91ee622ab4ad935fc5ca8bf3",
+          "width": 85,
+          "height": 400
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_incision_noir@2x.png",
+          "format": "png",
+          "bytes": 7408,
+          "sha256": "0357fe029235bcc44684959aa1967ce3a684855fbf2e959f2a6c017f0971da39",
+          "width": 170,
+          "height": 800,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_incision_noir.svg",
+          "format": "svg",
+          "bytes": 260,
+          "sha256": "5eb428a088c44228d76d227469d90a098a24684358db50336e32238e75af89c6",
+          "width": 84.22,
+          "height": 400
+        }
+      ]
+    },
+    {
+      "id": "el-rubrique-actu",
+      "title": "Rubrique actu",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "rubrique",
+        "actu"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_rubrique-actu.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-actu.png",
+          "format": "png",
+          "bytes": 1203,
+          "sha256": "13643752c36eeea190d61abb6356b6ef45cd395931c7c31cd7f1cd22796a2fb9",
+          "width": 117,
+          "height": 57
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-actu@2x.png",
+          "format": "png",
+          "bytes": 2205,
+          "sha256": "934ed5e78d844f0117df4decec68fed3194d2ae360ecdddf878dec582091dc82",
+          "width": 234,
+          "height": 114,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_rubrique-actu.svg",
+          "format": "svg",
+          "bytes": 418,
+          "sha256": "c1bd2e9d765ed3c804b0aafbea51255b13693d9ec2d2f43f983d09a9e303b856",
+          "width": 117,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "id": "el-rubrique-analyse-comic",
+      "title": "Rubrique analyse comic",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "rubrique",
+        "analyse",
+        "comic"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_rubrique-analyse-comic.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-analyse-comic.png",
+          "format": "png",
+          "bytes": 3427,
+          "sha256": "064e454efd6a6dc1b402cdf8ce38ef7824c34f2aa316b6d54bd021b6eebefbf1",
+          "width": 337,
+          "height": 57
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-analyse-comic@2x.png",
+          "format": "png",
+          "bytes": 6613,
+          "sha256": "f39c7dd2e5409f504df7f3d9b941ee87ee9e3f3300df571a27fbd48625741947",
+          "width": 674,
+          "height": 114,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_rubrique-analyse-comic.svg",
+          "format": "svg",
+          "bytes": 442,
+          "sha256": "424efce2fe8d1b3b1b84448702fe66a5f8a64f2743861969c5996d996cbada77",
+          "width": 337,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "id": "el-rubrique-analyse-personnage",
+      "title": "Rubrique analyse personnage",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "rubrique",
+        "analyse",
+        "personnage"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_rubrique-analyse-personnage.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-analyse-personnage.png",
+          "format": "png",
+          "bytes": 3876,
+          "sha256": "96b80e90afff509725ce5e7b284bb3839e33318f0de3b3cdddb00b5b031536e1",
+          "width": 437,
+          "height": 57
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-analyse-personnage@2x.png",
+          "format": "png",
+          "bytes": 7498,
+          "sha256": "2ebcb0fc83b6ff9d992eed09aa26053fe1247ba5c7452af9765189525c8c3d4c",
+          "width": 874,
+          "height": 114,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_rubrique-analyse-personnage.svg",
+          "format": "svg",
+          "bytes": 452,
+          "sha256": "c1341ac655cb55f2a9c6113aa25404395e1e1c156508c1a6c1424cf55bda48e1",
+          "width": 437,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "id": "el-rubrique-cosmique",
+      "title": "Rubrique cosmique",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "rubrique",
+        "cosmique"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_rubrique-cosmique.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-cosmique.png",
+          "format": "png",
+          "bytes": 3563,
+          "sha256": "155f03e35f645babeafc5a52fb31b53279cdff38a126ae00ac441286f87f8ea4",
+          "width": 357,
+          "height": 57
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-cosmique@2x.png",
+          "format": "png",
+          "bytes": 6639,
+          "sha256": "d8b5aaca507e7f835930c6a4af4025c5061c84f2429dd57f21abd621eb8bfa2c",
+          "width": 714,
+          "height": 114,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_rubrique-cosmique.svg",
+          "format": "svg",
+          "bytes": 442,
+          "sha256": "83d6aa92c39aa0e396a7016b85b282e6b464fc2872acadbf6505bed773ab89a1",
+          "width": 357,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "id": "el-rubrique-evenement",
+      "title": "Rubrique evenement",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "rubrique",
+        "evenement"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_rubrique-evenement.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-evenement.png",
+          "format": "png",
+          "bytes": 1783,
+          "sha256": "f4ba14cc7ded0755fd30759c6d9cef4bf58f522dc15cc7985fbef013606f1b90",
+          "width": 217,
+          "height": 57
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-evenement@2x.png",
+          "format": "png",
+          "bytes": 3249,
+          "sha256": "086578da5d21856ac8d5bd41d9ea718f25f6c016b8def1f68b75024026d252de",
+          "width": 434,
+          "height": 114,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_rubrique-evenement.svg",
+          "format": "svg",
+          "bytes": 432,
+          "sha256": "eb67c6ec00c30a7b851d27c87e611408e975f942b3ccfae9e2825f4425fe1bbc",
+          "width": 217,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "id": "el-rubrique-guide",
+      "title": "Rubrique guide",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "rubrique",
+        "guide"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_rubrique-guide.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-guide.png",
+          "format": "png",
+          "bytes": 2430,
+          "sha256": "e1ef9a0b6eb4cdbcb8e0f56b9186ea67aa1200e6cc35b6bad82a6a7ce5355c9f",
+          "width": 357,
+          "height": 57
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-guide@2x.png",
+          "format": "png",
+          "bytes": 4255,
+          "sha256": "16e984e58e5390f04b8cb878ef00a9812968fd8fb098aeb303c8b904abade33a",
+          "width": 714,
+          "height": 114,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_rubrique-guide.svg",
+          "format": "svg",
+          "bytes": 442,
+          "sha256": "be1e1c8f372e378f05356299e34af984d7c856ef94af8f9c23a90b3b8f1551a2",
+          "width": 357,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "id": "el-rubrique-histoire",
+      "title": "Rubrique histoire",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "rubrique",
+        "histoire"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_rubrique-histoire.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-histoire.png",
+          "format": "png",
+          "bytes": 1998,
+          "sha256": "15e3c5e3e8529acfb8310c4056cb8e80971a97b5b88652ee31bf1bc673c40348",
+          "width": 197,
+          "height": 57
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-histoire@2x.png",
+          "format": "png",
+          "bytes": 3437,
+          "sha256": "f440f6858412e4f61c1d38c62971f3a5179941d2e09c04abc66ba9261dd17343",
+          "width": 394,
+          "height": 114,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_rubrique-histoire.svg",
+          "format": "svg",
+          "bytes": 426,
+          "sha256": "a85b797a74f4c854f7d127f65d832041721a23990f4be38842fdc4723c5e99de",
+          "width": 197,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "id": "el-rubrique-theorie",
+      "title": "Rubrique theorie",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "rubrique",
+        "theorie"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_rubrique-theorie.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-theorie.png",
+          "format": "png",
+          "bytes": 1507,
+          "sha256": "3c2bff013f53a0ba46f35f2e877cb362b84f6433c613a980affaabd2046fcb2c",
+          "width": 177,
+          "height": 57
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_rubrique-theorie@2x.png",
+          "format": "png",
+          "bytes": 2537,
+          "sha256": "693c02468e55019ec9154de3334d973afca7a76f5ea51947ae25f54ca54e6811",
+          "width": 354,
+          "height": 114,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_rubrique-theorie.svg",
+          "format": "svg",
+          "bytes": 426,
+          "sha256": "3bb4a3309088766d043e777831a0f8291a6cfb05604656b14d8a51602c44ed0c",
+          "width": 177,
+          "height": 57
+        }
+      ]
+    },
+    {
+      "id": "el-sceau-p-jaune-non-officiel",
+      "title": "Sceau P jaune",
+      "category": "elements",
+      "kind": "element",
+      "status": "non-officiel",
+      "version": "0.1.0",
+      "tags": [
+        "sceau",
+        "jaune",
+        "non",
+        "officiel"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_sceau-P_jaune_NON-OFFICIEL.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_sceau-P_jaune_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 11336,
+          "sha256": "b6c00c15ffb1f66a671a8ec4e2e103699e3f1c807a539ae14c411d3fd807eb4e",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_sceau-P_jaune_NON-OFFICIEL@2x.png",
+          "format": "png",
+          "bytes": 24853,
+          "sha256": "c22b20de4d7527fdaa147c2e8dfee038d17f37e6fd1806115f123e4ffb84f9de",
+          "width": 1024,
+          "height": 1024,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_sceau-P_jaune_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 6907,
+          "sha256": "74f9c5d941d0a2b794b55eb1a3426fd22637d9397787bbfc9491dbd04a1fe6be",
+          "width": 512,
+          "height": 512
+        }
+      ]
+    },
+    {
+      "id": "el-sceau-p-noir-non-officiel",
+      "title": "Sceau P noir",
+      "category": "elements",
+      "kind": "element",
+      "status": "non-officiel",
+      "version": "0.1.0",
+      "tags": [
+        "sceau",
+        "noir",
+        "non",
+        "officiel"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 11655,
+          "sha256": "2e43ffdc1f648e341a7dd0b74eb56586a47da280ed59d9a5f7c9120e00b82341",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL@2x.png",
+          "format": "png",
+          "bytes": 25719,
+          "sha256": "91176a5ed9b6a1c31a6e4ff176da64a61a20e4f6a9feb3685c1c1b5927617ae4",
+          "width": 1024,
+          "height": 1024,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_sceau-P_noir_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 6907,
+          "sha256": "c761ba15817aec57335e77be5785ae0396db93b8aefe3aa17e29d8b50f216494",
+          "width": 512,
+          "height": 512
+        }
+      ]
+    },
+    {
+      "id": "el-trame-benday-1280x720",
+      "title": "Trame benday 1280x720",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "trame",
+        "benday",
+        "1280x720"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_trame-benday_1280x720.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_trame-benday_1280x720.png",
+          "format": "png",
+          "bytes": 99459,
+          "sha256": "1f437473959835fbc5a6ba6fbade68c63262a99be24a8a5578248357accf6572",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_trame-benday_1280x720@2x.png",
+          "format": "png",
+          "bytes": 235706,
+          "sha256": "a6e284c51fa7614f67cf0ad0e3cf55e97d86c29ed200efc9d64fba49a5864c61",
+          "width": 2560,
+          "height": 1440,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_trame-benday_1280x720.svg",
+          "format": "svg",
+          "bytes": 434,
+          "sha256": "c04ea1d941d34956a08c79693490273ef20c8b846a266b5e7a7d20d1d3fba68d",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "el-volet-transition-jaune",
+      "title": "Volet transition jaune",
+      "category": "elements",
+      "kind": "element",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "volet",
+        "transition",
+        "jaune"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_EL_volet-transition_jaune.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_EL_volet-transition_jaune.png",
+          "format": "png",
+          "bytes": 21807,
+          "sha256": "8ec6c61f5f907a20e3c8ac17bbc98340063c84b9e592e2db232f2b6135937a9d",
+          "width": 1032,
+          "height": 1080
+        },
+        {
+          "path": "brand/04_elements/png/PS_EL_volet-transition_jaune@2x.png",
+          "format": "png",
+          "bytes": 55820,
+          "sha256": "cffbddb6f5e35f2684c9f7f5746e9ac785a437746661609cd95c9b1f0e94563b",
+          "width": 2064,
+          "height": 2160,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_EL_volet-transition_jaune.svg",
+          "format": "svg",
+          "bytes": 384,
+          "sha256": "35c855893d2891111a87742a10fa21cef110828ab229a982abd14cb59723fb62",
+          "width": 1031.78,
+          "height": 1080
+        }
+      ]
+    },
+    {
+      "id": "grid-carrousel-1080x1350",
+      "title": "Carrousel 1080x1350",
+      "category": "elements",
+      "kind": "grille",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "grid",
+        "carrousel",
+        "1080x1350"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_GRID_carrousel-1080x1350.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_GRID_carrousel-1080x1350.png",
+          "format": "png",
+          "bytes": 13514,
+          "sha256": "81f3520f51050f7a044f5b1dc428b0df84a4c7633221ea46e223ec809b2ab2e4",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "path": "brand/04_elements/png/PS_GRID_carrousel-1080x1350@2x.png",
+          "format": "png",
+          "bytes": 37111,
+          "sha256": "51e6c5b72cbbc2abdd133629afe54701f501bb6d3763f24b917dbd9096d76240",
+          "width": 2160,
+          "height": 2700,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_GRID_carrousel-1080x1350.svg",
+          "format": "svg",
+          "bytes": 578,
+          "sha256": "0baf8cc623409f316c2299ff36c3bbcc506f10a1a4d89e4eea654e1ef3963327",
+          "width": 1080,
+          "height": 1350
+        }
+      ]
+    },
+    {
+      "id": "grid-miniature-1280x720",
+      "title": "Miniature 1280x720",
+      "category": "elements",
+      "kind": "grille",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "grid",
+        "miniature",
+        "1280x720"
+      ],
+      "usage": "Éléments graphiques du langage Primestone.",
+      "preview": "brand/04_elements/png/PS_GRID_miniature-1280x720.png",
+      "files": [
+        {
+          "path": "brand/04_elements/png/PS_GRID_miniature-1280x720.png",
+          "format": "png",
+          "bytes": 13072,
+          "sha256": "f73eee7e8fe27452f2690e1892ab45358c49e7d1db0296562026a687ccbdc296",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "brand/04_elements/png/PS_GRID_miniature-1280x720@2x.png",
+          "format": "png",
+          "bytes": 32833,
+          "sha256": "9c546efe4f6f77584c3302b1eeaafcfbe55b13a103d81f0543bc46a1384d991b",
+          "width": 2560,
+          "height": 1440,
+          "scale": 2
+        },
+        {
+          "path": "brand/04_elements/svg/PS_GRID_miniature-1280x720.svg",
+          "format": "svg",
+          "bytes": 851,
+          "sha256": "2ed69a4bce9cfa6cbd3b3a39b6b75c91afeaed08754b7306c65572096f8fe7eb",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "logo-icone-p-blanc-non-officiel",
+      "title": "Icone P blanc",
+      "category": "logo",
+      "kind": "logo",
+      "status": "non-officiel",
+      "version": "0.1.0",
+      "tags": [
+        "logo",
+        "icone",
+        "blanc",
+        "non",
+        "officiel"
+      ],
+      "usage": "Vectorisation provisoire du logo. En attente de validation.",
+      "preview": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_blanc_128px_NON-OFFICIEL.png",
+      "files": [
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_blanc_128px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 2132,
+          "sha256": "26906799923712539e4be85afe45c7fe84ea6f8b100ce34d33ce906555aebe73",
+          "width": 128,
+          "height": 179
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_blanc_256px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 4574,
+          "sha256": "72e4a8de8f80222a1b16990303c4a695020f77ee7b3b0a0b43c8c43be271a51c",
+          "width": 256,
+          "height": 358
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_blanc_512px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 9424,
+          "sha256": "b0747dc3c410e083539156dd280994b0a3dad7779488dd906d7ea7c478c6a7e9",
+          "width": 512,
+          "height": 715
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_blanc_64px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 1068,
+          "sha256": "f3692df21ef170007ca5c24ba6574e3fd91bd7399f3d69e7660681a32515f635",
+          "width": 64,
+          "height": 89
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/PS_LOGO_icone-P_blanc_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 6847,
+          "sha256": "386c1c0e7df733de507199f910800c567a4564daf9db7989489c46bcfcbb3a11",
+          "width": 126,
+          "height": 176
+        }
+      ]
+    },
+    {
+      "id": "logo-icone-p-jaune-non-officiel",
+      "title": "Icone P jaune",
+      "category": "logo",
+      "kind": "logo",
+      "status": "non-officiel",
+      "version": "0.1.0",
+      "tags": [
+        "logo",
+        "icone",
+        "jaune",
+        "non",
+        "officiel"
+      ],
+      "usage": "Vectorisation provisoire du logo. En attente de validation.",
+      "preview": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_jaune_128px_NON-OFFICIEL.png",
+      "files": [
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_jaune_128px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 2402,
+          "sha256": "98670b783047005c178658586f3598a225dbef99de1a4e15c6fe0b1ab1b96923",
+          "width": 128,
+          "height": 179
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_jaune_256px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 5187,
+          "sha256": "e19bd42ea91ca78d6fc0e3d5800f8ffc31acc54c667e8592f2417e01c954f90d",
+          "width": 256,
+          "height": 358
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_jaune_512px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 10701,
+          "sha256": "692b930e22e0319fd5760fb8c59fc26c0a467c7944d606afc140aa99772138e4",
+          "width": 512,
+          "height": 715
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_jaune_64px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 1203,
+          "sha256": "73bf2ca4e2c03db17ea680adf77b5fdb0277fff64ee25045898a1d290de5a7f6",
+          "width": 64,
+          "height": 89
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/PS_LOGO_icone-P_jaune_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 6847,
+          "sha256": "300b2e39f081ea6f03a50f207d46880d6b9659a5ff78726432ac68b3e4b1a8b0",
+          "width": 126,
+          "height": 176
+        }
+      ]
+    },
+    {
+      "id": "logo-icone-p-noir-non-officiel",
+      "title": "Icone P noir",
+      "category": "logo",
+      "kind": "logo",
+      "status": "non-officiel",
+      "version": "0.1.0",
+      "tags": [
+        "logo",
+        "icone",
+        "noir",
+        "non",
+        "officiel"
+      ],
+      "usage": "Vectorisation provisoire du logo. En attente de validation.",
+      "preview": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_noir_128px_NON-OFFICIEL.png",
+      "files": [
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_noir_128px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 2548,
+          "sha256": "551a1b0f3720cb4ca7e83554b4b01cfb4b3043069f1c523cae0fb30d59f702fb",
+          "width": 128,
+          "height": 179
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_noir_256px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 5616,
+          "sha256": "bf9e5f95d07f71db4cc8cd565edfa3ce380b0d2977ce2f3fc7f9b1238e7bf272",
+          "width": 256,
+          "height": 358
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_noir_512px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 11792,
+          "sha256": "b414a3c08aa172492556efd0cc958a88a413aa985c2bdc3940bcd665a9ff2a72",
+          "width": 512,
+          "height": 715
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_icone-P_noir_64px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 1277,
+          "sha256": "a528a072296991a4b566193dbc36b7a3a1822d6ae2fdeef9baaa913103502312",
+          "width": 64,
+          "height": 89
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/PS_LOGO_icone-P_noir_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 6847,
+          "sha256": "a4dcb1724ac119e727255e5e62fbd4cdad5c65a77d21f94e2a5b14750711302c",
+          "width": 126,
+          "height": 176
+        }
+      ]
+    },
+    {
+      "id": "logo-logotype-blanc-non-officiel",
+      "title": "Logotype blanc",
+      "category": "logo",
+      "kind": "logo",
+      "status": "non-officiel",
+      "version": "0.1.0",
+      "tags": [
+        "logo",
+        "logotype",
+        "blanc",
+        "non",
+        "officiel"
+      ],
+      "usage": "Vectorisation provisoire du logo. En attente de validation.",
+      "preview": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_blanc_480px_NON-OFFICIEL.png",
+      "files": [
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_blanc_1920px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 32739,
+          "sha256": "8a8ccf922a1c39ca7ac934f4664716a7ed53acbf5bba2c821439a7691d698c03",
+          "width": 1920,
+          "height": 279
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_blanc_3840px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 69757,
+          "sha256": "cdf78f294864423bb40a804fed18d6d3705227dbdb2a91ae45101d3dc929530f",
+          "width": 3840,
+          "height": 558
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_blanc_480px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 6159,
+          "sha256": "07ff9ca0a49039683bfe401be7eb311d0571fbff3762dab1fb8dce1ca79f1ec5",
+          "width": 480,
+          "height": 70
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_blanc_960px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 13286,
+          "sha256": "0036f4087e8901ea6472532d49e19c53401def761db13713947e411df345771c",
+          "width": 960,
+          "height": 139
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/PS_LOGO_logotype_blanc_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 53957,
+          "sha256": "b037af3f9e6c2ef3e12a42521cb337fdf569f67f302fc085406e9199c424daff",
+          "width": 1122,
+          "height": 163
+        }
+      ]
+    },
+    {
+      "id": "logo-logotype-jaune-non-officiel",
+      "title": "Logotype jaune",
+      "category": "logo",
+      "kind": "logo",
+      "status": "non-officiel",
+      "version": "0.1.0",
+      "tags": [
+        "logo",
+        "logotype",
+        "jaune",
+        "non",
+        "officiel"
+      ],
+      "usage": "Vectorisation provisoire du logo. En attente de validation.",
+      "preview": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_jaune_480px_NON-OFFICIEL.png",
+      "files": [
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_jaune_1920px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 37151,
+          "sha256": "38cb862296a6635c4855b0d426b650ef0602113a6c880675ea171b25296747fc",
+          "width": 1920,
+          "height": 279
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_jaune_3840px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 78699,
+          "sha256": "6807c680c241698d15108160b7cb4cff912dfe0a138c575eb0c31ccd141371b4",
+          "width": 3840,
+          "height": 558
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_jaune_480px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 7331,
+          "sha256": "4fadbd08cd1280e1789c4fd8065e9fa8ff35a7d7883dd072e824cb8bf6181fe7",
+          "width": 480,
+          "height": 70
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_jaune_960px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 15377,
+          "sha256": "19824551e832e978ae9d74e1d6c0cacd9da475f00cae206952471b4f2785eed0",
+          "width": 960,
+          "height": 139
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/PS_LOGO_logotype_jaune_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 53957,
+          "sha256": "465855847117f6ad92a832541ff3638f2eeab378da55e61cb3582e02f070b763",
+          "width": 1122,
+          "height": 163
+        }
+      ]
+    },
+    {
+      "id": "logo-logotype-noir-non-officiel",
+      "title": "Logotype noir",
+      "category": "logo",
+      "kind": "logo",
+      "status": "non-officiel",
+      "version": "0.1.0",
+      "tags": [
+        "logo",
+        "logotype",
+        "noir",
+        "non",
+        "officiel"
+      ],
+      "usage": "Vectorisation provisoire du logo. En attente de validation.",
+      "preview": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_noir_480px_NON-OFFICIEL.png",
+      "files": [
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_noir_1920px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 41218,
+          "sha256": "983cbf69a88fa16d1f568c71bac18a09a4c406863222bdb50651429962f6ae72",
+          "width": 1920,
+          "height": 279
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_noir_3840px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 89043,
+          "sha256": "367040281a57d6d3ec2060c05abbad021cc827b32bbbdb65077316c72043f444",
+          "width": 3840,
+          "height": 558
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_noir_480px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 7807,
+          "sha256": "e47d0078b1b2921ba0400057196c405abc3573ae8b81c4f1997286b0810fbe3d",
+          "width": 480,
+          "height": 70
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/png/PS_LOGO_logotype_noir_960px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 16738,
+          "sha256": "35509bc669182533480240d9f58b0e67492a329b0def9f2be86e0e2d9b9999e0",
+          "width": 960,
+          "height": 139
+        },
+        {
+          "path": "brand/01_logo/NON-OFFICIEL/PS_LOGO_logotype_noir_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 53957,
+          "sha256": "b0eface030736eeb3539647d0aa611598a17f5665193ab987fc8e0d178eb3ef5",
+          "width": 1122,
+          "height": 163
+        }
+      ]
+    },
+    {
+      "id": "logo-icone-p-original",
+      "title": "Icone P original",
+      "category": "originaux",
+      "kind": "logo",
+      "status": "reference",
+      "version": "0.1.0",
+      "tags": [
+        "logo",
+        "icone",
+        "original"
+      ],
+      "usage": "Fichiers d'origine fournis, conservés intacts.",
+      "preview": "brand/00_originaux/PS_LOGO_icone-P_original.png",
+      "files": [
+        {
+          "path": "brand/00_originaux/PS_LOGO_icone-P_original.png",
+          "format": "png",
+          "bytes": 6216,
+          "sha256": "d53094778146372151104a62fcd3e8da06da11be252de8638a491313a3fd9d11",
+          "width": 320,
+          "height": 320
+        }
+      ]
+    },
+    {
+      "id": "logo-logotype-slogan-original",
+      "title": "Logotype slogan original",
+      "category": "originaux",
+      "kind": "logo",
+      "status": "reference",
+      "version": "0.1.0",
+      "tags": [
+        "logo",
+        "logotype",
+        "slogan",
+        "original"
+      ],
+      "usage": "Fichiers d'origine fournis, conservés intacts.",
+      "preview": "brand/00_originaux/PS_LOGO_logotype-slogan_original.png",
+      "files": [
+        {
+          "path": "brand/00_originaux/PS_LOGO_logotype-slogan_original.png",
+          "format": "png",
+          "bytes": 57431,
+          "sha256": "c0709cb4e8b8c3d301a905c15961992206911135b47cd383b10184b2094a8485",
+          "width": 2560,
+          "height": 1440
+        }
+      ]
+    },
+    {
+      "id": "min-superman-espoir-original",
+      "title": "Superman espoir original",
+      "category": "originaux",
+      "kind": "miniature",
+      "status": "reference",
+      "version": "0.1.0",
+      "tags": [
+        "min",
+        "superman",
+        "espoir",
+        "original"
+      ],
+      "usage": "Fichiers d'origine fournis, conservés intacts.",
+      "preview": "brand/00_originaux/PS_MIN_superman-espoir_original.png",
+      "files": [
+        {
+          "path": "brand/00_originaux/PS_MIN_superman-espoir_original.png",
+          "format": "png",
+          "bytes": 771416,
+          "sha256": "3a2d192a4a0d06ca468877189bc77084b1b00066feb04e14833dfbe383fd55b5",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "police-anton",
+      "title": "Police Anton",
+      "category": "polices",
+      "kind": "police",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "anton",
+        "ofl"
+      ],
+      "usage": "Installer les fichiers statiques sur chaque poste. Licence SIL OFL 1.1.",
+      "preview": null,
+      "files": [
+        {
+          "path": "brand/03_fonts/Anton-OFL.txt",
+          "format": "txt",
+          "bytes": 4484,
+          "sha256": "ee67e6ee22790b7929f1a3769ca2801d565c64b5a9096942c1adf5596de9c9e4"
+        },
+        {
+          "path": "brand/03_fonts/Anton-Regular.ttf",
+          "format": "ttf",
+          "bytes": 170812,
+          "sha256": "a4ba3a92350ebb031da0cb47630ac49eb265082ca1bc0450442f4a83ab947cab"
+        }
+      ]
+    },
+    {
+      "id": "police-archivo",
+      "title": "Police Archivo",
+      "category": "polices",
+      "kind": "police",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "archivo",
+        "bold"
+      ],
+      "usage": "Installer les fichiers statiques sur chaque poste. Licence SIL OFL 1.1.",
+      "preview": null,
+      "files": [
+        {
+          "path": "brand/03_fonts/Archivo-Bold.ttf",
+          "format": "ttf",
+          "bytes": 121372,
+          "sha256": "14a3ee3a4cfc884920a882ac3b720d562328c62de136299f2273ca26441930e7"
+        },
+        {
+          "path": "brand/03_fonts/Archivo-ExtraBold.ttf",
+          "format": "ttf",
+          "bytes": 121364,
+          "sha256": "afa926c7249bd196fef9da1d6bb8f3caf6dc5c30125e9ab3308ea49d6038c5c9"
+        },
+        {
+          "path": "brand/03_fonts/Archivo-Medium.ttf",
+          "format": "ttf",
+          "bytes": 121568,
+          "sha256": "5c493de2e1d54905677e36d0bc4830e461ca700f6002535f9c6c8efa1f2354d6"
+        },
+        {
+          "path": "brand/03_fonts/Archivo-OFL.txt",
+          "format": "txt",
+          "bytes": 4388,
+          "sha256": "108b4e57c9c796d3d38d0428ca7ee39de47ad93187302718d9b2d8864b9b716b"
+        },
+        {
+          "path": "brand/03_fonts/Archivo-Regular.ttf",
+          "format": "ttf",
+          "bytes": 121484,
+          "sha256": "af5b79f32d860bfc2a38f28a9ec35f1633529317537112d98362718d5e0c763d"
+        },
+        {
+          "path": "brand/03_fonts/ArchivoCondensed-Bold.ttf",
+          "format": "ttf",
+          "bytes": 120960,
+          "sha256": "c71728d0582456874b61f7c0cfe6bed3080a84c883f08e2de7feceab00670002"
+        },
+        {
+          "path": "brand/03_fonts/ArchivoCondensed-ExtraBold.ttf",
+          "format": "ttf",
+          "bytes": 120828,
+          "sha256": "14ae859b2175bfc6fa70ef129e44914eb072fd3043f32df5959029551d225a61"
+        },
+        {
+          "path": "brand/03_fonts/ArchivoCondensed-Medium.ttf",
+          "format": "ttf",
+          "bytes": 121040,
+          "sha256": "a8113c2e48e1d9696b549cfb17f254bb2ad939c1ed55b56a99d34d865c0910e3"
+        }
+      ]
+    },
+    {
+      "id": "police-instrument-serif",
+      "title": "Police Instrument Serif",
+      "category": "polices",
+      "kind": "police",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "instrumentserif",
+        "italic"
+      ],
+      "usage": "Installer les fichiers statiques sur chaque poste. Licence SIL OFL 1.1.",
+      "preview": null,
+      "files": [
+        {
+          "path": "brand/03_fonts/InstrumentSerif-Italic.ttf",
+          "format": "ttf",
+          "bytes": 71592,
+          "sha256": "08939b8bdf534afec24ae0ef5e03f948940cd9a8fe08e7fecbad040e62327385"
+        },
+        {
+          "path": "brand/03_fonts/InstrumentSerif-OFL.txt",
+          "format": "txt",
+          "bytes": 4405,
+          "sha256": "129ed7618959716959f2941fdd5b49e0ad6e6c1d78726761786a00253d865521"
+        },
+        {
+          "path": "brand/03_fonts/InstrumentSerif-Regular.ttf",
+          "format": "ttf",
+          "bytes": 70012,
+          "sha256": "498efd461f6ddfcb7a111bf9a565709d2085d48201d501ead960d93e84ffbb88"
+        }
+      ]
+    },
+    {
+      "id": "police-jetbrains-mono",
+      "title": "Police JetBrains Mono",
+      "category": "polices",
+      "kind": "police",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "jetbrainsmono",
+        "bold"
+      ],
+      "usage": "Installer les fichiers statiques sur chaque poste. Licence SIL OFL 1.1.",
+      "preview": null,
+      "files": [
+        {
+          "path": "brand/03_fonts/JetBrainsMono-Bold.ttf",
+          "format": "ttf",
+          "bytes": 115084,
+          "sha256": "e5824d4d5348ba53a5556b8616b85ea290afdc2a49e0cdfc1fee84e9fb18521c"
+        },
+        {
+          "path": "brand/03_fonts/JetBrainsMono-OFL.txt",
+          "format": "txt",
+          "bytes": 4399,
+          "sha256": "b2fe5e8987594e9ffd1d2ca52a2f5d73eb8335243893c5d6254b5ad69269591d"
+        },
+        {
+          "path": "brand/03_fonts/JetBrainsMono-Regular.ttf",
+          "format": "ttf",
+          "bytes": 115164,
+          "sha256": "69c6f6c08493fa06f6dc14e9a49c52cc7c074e4b8cae2f8dce2d1c38d61e8983"
+        }
+      ]
+    },
+    {
+      "id": "ae-diagnostic",
+      "title": "AE diagnostic",
+      "category": "scripts-adobe",
+      "kind": "script",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "diagnostic"
+      ],
+      "usage": "Scripts ExtendScript à lancer dans les applications Adobe.",
+      "preview": null,
+      "files": [
+        {
+          "path": "templates/after-effects/scripts/AE_diagnostic.jsx",
+          "format": "jsx",
+          "bytes": 1673,
+          "sha256": "397d3dca5e7354bf2ee99b753af320637f12ef09fe9c9cfd39f64761c773851a"
+        }
+      ]
+    },
+    {
+      "id": "ai-diagnostic",
+      "title": "AI diagnostic",
+      "category": "scripts-adobe",
+      "kind": "script",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "diagnostic"
+      ],
+      "usage": "Scripts ExtendScript à lancer dans les applications Adobe.",
+      "preview": null,
+      "files": [
+        {
+          "path": "templates/illustrator/scripts/AI_diagnostic.jsx",
+          "format": "jsx",
+          "bytes": 794,
+          "sha256": "d9ee07a7fe4f1edbb4704f34503cbf71ff05270ad53f2d8a72a4ae74c4ffb68e"
+        }
+      ]
+    },
+    {
+      "id": "diagnostic",
+      "title": "PS diagnostic",
+      "category": "scripts-adobe",
+      "kind": "script",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "diagnostic"
+      ],
+      "usage": "Scripts ExtendScript à lancer dans les applications Adobe.",
+      "preview": null,
+      "files": [
+        {
+          "path": "templates/photoshop/scripts/PS_diagnostic.jsx",
+          "format": "jsx",
+          "bytes": 873,
+          "sha256": "18fc7bc374c61785662f0a30db481c1797714fc4af132bdb12fedc7b0a683539"
+        }
+      ]
+    },
+    {
+      "id": "primestone-diagnostic",
+      "title": "Primestone diagnostic",
+      "category": "scripts-adobe",
+      "kind": "script",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "primestone",
+        "diagnostic"
+      ],
+      "usage": "Scripts ExtendScript à lancer dans les applications Adobe.",
+      "preview": null,
+      "files": [
+        {
+          "path": "templates/common/primestone-diagnostic.jsxinc",
+          "format": "jsxinc",
+          "bytes": 1851,
+          "sha256": "e2370434d20c13fc2e92590b12ee74f7c328e41f1b6c702f1780703d857a458d"
+        }
+      ]
+    },
+    {
+      "id": "primestone-tokens",
+      "title": "Primestone tokens",
+      "category": "scripts-adobe",
+      "kind": "script",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "primestone",
+        "tokens"
+      ],
+      "usage": "Scripts ExtendScript à lancer dans les applications Adobe.",
+      "preview": null,
+      "files": [
+        {
+          "path": "templates/common/primestone-tokens.jsxinc",
+          "format": "jsxinc",
+          "bytes": 2198,
+          "sha256": "762411142be37f4243d28dd6674b27513b80305c05b449e18886fab895d872be"
+        }
+      ]
+    },
+    {
+      "id": "tokens",
+      "title": "Design tokens",
+      "category": "tokens",
+      "kind": "tokens",
+      "status": "provisoire",
+      "version": "0.1.0",
+      "tags": [
+        "primestone"
+      ],
+      "usage": "Couleurs, typographies, grilles et mouvement. Nuancier Adobe : Primestone.ase.",
+      "preview": null,
+      "files": [
+        {
+          "path": "brand/02_tokens/build/Primestone.ase",
+          "format": "ase",
+          "bytes": 940,
+          "sha256": "c726367fe50014f2e1b64318d7b651c1b6fe52e41060d274cd9222243e506e8b"
+        },
+        {
+          "path": "brand/02_tokens/build/tokens.css",
+          "format": "css",
+          "bytes": 4577,
+          "sha256": "a5ca2febf719d14a44c6a17ef33ca9ac7d15543cbd2612e4905229cac9be785e"
+        },
+        {
+          "path": "brand/02_tokens/build/tokens.flat.json",
+          "format": "json",
+          "bytes": 12322,
+          "sha256": "50e942e37ed4906bc186448b31910088afbb2e5883331b51c0bcbeeff3dcae50"
+        },
+        {
+          "path": "brand/02_tokens/tokens.json",
+          "format": "json",
+          "bytes": 13775,
+          "sha256": "6472e26cd7ef6dc13795b45df784fdd0d855442eb5572b1726ba63fad60c331f"
+        }
+      ]
+    }
+  ]
+}

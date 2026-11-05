@@ -1,0 +1,19 @@
+node_modules/
+dist/
+.DS_Store
+Thumbs.db
+# Binaires lourds : stockés dans Supabase Storage, jamais dans Git
+*.psd
+*.psb
+*.ai
+*.aep
+*.mogrt
+*.mov
+*.mp4
+*.prproj
+# Illustrations de test fournies par Primestone (droits des éditeurs) : jamais versionnées
+brand/99_tests/client/
+# Secrets
+.env
+.env.*
+supabase/.temp/

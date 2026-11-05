@@ -1,0 +1,36 @@
+{
+  "PS_LOGO_logotype": {
+    "source": "PS_LOGO_logotype-slogan_original.png",
+    "crop_px": [
+      719,
+      552,
+      1122,
+      163
+    ],
+    "upscale": 8,
+    "potrace": {
+      "turdsize": 4,
+      "alphamax": 0.75,
+      "opticurve": true,
+      "opttolerance": 0.15
+    },
+    "path_chars": 53614
+  },
+  "PS_LOGO_icone-P": {
+    "source": "PS_LOGO_icone-P_original.png",
+    "crop_px": [
+      97,
+      82,
+      126,
+      176
+    ],
+    "upscale": 16,
+    "potrace": {
+      "turdsize": 4,
+      "alphamax": 0.75,
+      "opticurve": true,
+      "opttolerance": 0.15
+    },
+    "path_chars": 6515
+  }
+}

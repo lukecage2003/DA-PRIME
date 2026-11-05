@@ -1,0 +1,152 @@
+[
+  {
+    "file": "Anton-Regular.ttf",
+    "family": "Anton",
+    "style": "Regular",
+    "postscriptName": "Anton-Regular",
+    "variable": false,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "Anton-OFL.txt",
+    "sha256": "a4ba3a92350ebb031da0cb47630ac49eb265082ca1bc0450442f4a83ab947cab"
+  },
+  {
+    "file": "Archivo-Bold.ttf",
+    "family": "Archivo",
+    "style": "Bold",
+    "postscriptName": "Archivo-Bold",
+    "variable": false,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "Archivo-OFL.txt",
+    "sha256": "14a3ee3a4cfc884920a882ac3b720d562328c62de136299f2273ca26441930e7"
+  },
+  {
+    "file": "Archivo-ExtraBold.ttf",
+    "family": "Archivo",
+    "style": "ExtraBold",
+    "postscriptName": "Archivo-ExtraBold",
+    "variable": false,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "Archivo-OFL.txt",
+    "sha256": "afa926c7249bd196fef9da1d6bb8f3caf6dc5c30125e9ab3308ea49d6038c5c9"
+  },
+  {
+    "file": "Archivo-Medium.ttf",
+    "family": "Archivo",
+    "style": "Medium",
+    "postscriptName": "Archivo-Medium",
+    "variable": false,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "Archivo-OFL.txt",
+    "sha256": "5c493de2e1d54905677e36d0bc4830e461ca700f6002535f9c6c8efa1f2354d6"
+  },
+  {
+    "file": "Archivo-Regular.ttf",
+    "family": "Archivo",
+    "style": "Regular",
+    "postscriptName": "Archivo-Regular",
+    "variable": false,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "Archivo-OFL.txt",
+    "sha256": "af5b79f32d860bfc2a38f28a9ec35f1633529317537112d98362718d5e0c763d"
+  },
+  {
+    "file": "ArchivoCondensed-Bold.ttf",
+    "family": "Archivo",
+    "style": "Condensed Bold",
+    "postscriptName": "ArchivoCondensed-Bold",
+    "variable": false,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "Archivo-OFL.txt",
+    "sha256": "c71728d0582456874b61f7c0cfe6bed3080a84c883f08e2de7feceab00670002"
+  },
+  {
+    "file": "ArchivoCondensed-ExtraBold.ttf",
+    "family": "Archivo",
+    "style": "Condensed ExtraBold",
+    "postscriptName": "ArchivoCondensed-ExtraBold",
+    "variable": false,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "Archivo-OFL.txt",
+    "sha256": "14ae859b2175bfc6fa70ef129e44914eb072fd3043f32df5959029551d225a61"
+  },
+  {
+    "file": "ArchivoCondensed-Medium.ttf",
+    "family": "Archivo",
+    "style": "Condensed Medium",
+    "postscriptName": "ArchivoCondensed-Medium",
+    "variable": false,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "Archivo-OFL.txt",
+    "sha256": "a8113c2e48e1d9696b549cfb17f254bb2ad939c1ed55b56a99d34d865c0910e3"
+  },
+  {
+    "file": "InstrumentSerif-Italic.ttf",
+    "family": "Instrument Serif",
+    "style": "Italic",
+    "postscriptName": "InstrumentSerif-Italic",
+    "variable": false,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "InstrumentSerif-OFL.txt",
+    "sha256": "08939b8bdf534afec24ae0ef5e03f948940cd9a8fe08e7fecbad040e62327385"
+  },
+  {
+    "file": "InstrumentSerif-Regular.ttf",
+    "family": "Instrument Serif",
+    "style": "Regular",
+    "postscriptName": "InstrumentSerif-Regular",
+    "variable": false,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "InstrumentSerif-OFL.txt",
+    "sha256": "498efd461f6ddfcb7a111bf9a565709d2085d48201d501ead960d93e84ffbb88"
+  },
+  {
+    "file": "JetBrainsMono-Bold.ttf",
+    "family": "JetBrains Mono",
+    "style": "Bold",
+    "postscriptName": "JetBrainsMono-Bold",
+    "variable": false,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "JetBrainsMono-OFL.txt",
+    "sha256": "e5824d4d5348ba53a5556b8616b85ea290afdc2a49e0cdfc1fee84e9fb18521c"
+  },
+  {
+    "file": "JetBrainsMono-Regular.ttf",
+    "family": "JetBrains Mono",
+    "style": "Regular",
+    "postscriptName": "JetBrainsMono-Regular",
+    "variable": false,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "JetBrainsMono-OFL.txt",
+    "sha256": "69c6f6c08493fa06f6dc14e9a49c52cc7c074e4b8cae2f8dce2d1c38d61e8983"
+  },
+  {
+    "file": "_variable/Archivo-Italic[wdth,wght].ttf",
+    "family": "Archivo",
+    "style": "SemiBold Italic",
+    "postscriptName": "Archivo-SemiBoldItalic",
+    "variable": true,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "Archivo-OFL.txt",
+    "sha256": "305d13b4eb80e62f7d517f78d7c045250d977552a420f2dbed906f314e761305"
+  },
+  {
+    "file": "_variable/Archivo[wdth,wght].ttf",
+    "family": "Archivo",
+    "style": "SemiBold",
+    "postscriptName": "Archivo-SemiBold",
+    "variable": true,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "Archivo-OFL.txt",
+    "sha256": "0e094a7d3c7c4c25cf1310c4b30014f1dae9332220b1c2c88f4fa996f0b05053"
+  },
+  {
+    "file": "_variable/JetBrainsMono[wght].ttf",
+    "family": "JetBrains Mono",
+    "style": "Regular",
+    "postscriptName": "JetBrainsMono-Regular",
+    "variable": true,
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "JetBrainsMono-OFL.txt",
+    "sha256": "48715a42ec242c21e9f02692891e147d022299a52e48d5e413e1a942193ffeda"
+  }
+]

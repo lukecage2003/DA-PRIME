@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+<!-- Primestone · grille miniature YouTube 1280×720 (guides) · généré par tools/gen-elements.mjs depuis tokens v0.1.0 -->
+<g fill="none" stroke="#00C2FF" stroke-width="2"><rect x="58" y="58" width="1164" height="604" stroke-dasharray="10 8"/><line x1="640" y1="0" x2="640" y2="720" opacity=".5"/><rect x="58" y="560" width="102" height="102"/><rect x="58" y="58" width="420" height="58"/></g>
+<rect x="1072" y="624" width="192" height="80" fill="#FF3B30" fill-opacity=".35" stroke="#FF3B30" stroke-width="2"/>
+<g font-family="JetBrains Mono" font-size="16" fill="#00C2FF"><text x="64" y="140">RUBRIQUE</text><text x="172" y="654">SCEAU 102 px</text><text x="64" y="44">MARGE 58 px</text><text x="1072" y="614" fill="#FF3B30">ZONE DURÉE</text></g>
+</svg>

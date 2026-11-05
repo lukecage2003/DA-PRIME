@@ -1,0 +1,43 @@
+// Primestone · tokens pour scripts Adobe (Photoshop, Illustrator, After Effects)
+// Version 0.1.0 (provisoire) · GÉNÉRÉ par tools/build-tokens.mjs · ne pas éditer à la main.
+// Inclusion :  #include "../../common/primestone-tokens.jsxinc"
+var PRIMESTONE = {
+  version: "0.1.0",
+  statut: "provisoire",
+  colors: {
+    "brand.yellow": { hex: "#FFE500", rgb: [255, 229, 0] },
+    "brand.black": { hex: "#111111", rgb: [17, 17, 17] },
+    "brand.black-pure": { hex: "#000000", rgb: [0, 0, 0] },
+    "brand.white": { hex: "#FFFFFF", rgb: [255, 255, 255] },
+    "editorial.paper": { hex: "#ECEBE6", rgb: [236, 235, 230] },
+    "editorial.news-red": { hex: "#FF3B30", rgb: [255, 59, 48] },
+    "editorial.warm-1": { hex: "#F5D9A8", rgb: [245, 217, 168] },
+    "editorial.warm-2": { hex: "#E8C08A", rgb: [232, 192, 138] },
+    "editorial.warm-3": { hex: "#D9D7CF", rgb: [217, 215, 207] },
+    "cinematic.night": { hex: "#07080B", rgb: [7, 8, 11] },
+    "cinematic.night-blue": { hex: "#1D2742", rgb: [29, 39, 66] },
+    "cinematic.silver": { hex: "#C9CCD6", rgb: [201, 204, 214] },
+    "data.1": { hex: "#111111", rgb: [17, 17, 17] },
+    "data.2": { hex: "#FFE500", rgb: [255, 229, 0] },
+    "data.3": { hex: "#F5D9A8", rgb: [245, 217, 168] },
+    "data.4": { hex: "#E8C08A", rgb: [232, 192, 138] },
+    "data.5": { hex: "#D9D7CF", rgb: [217, 215, 207] },
+    "legacy.yellow-icon": { hex: "#E0DE06", rgb: [224, 222, 6] },
+    "legacy.yellow-wordmark": { hex: "#FFF503", rgb: [255, 245, 3] }
+  },
+  fonts: {
+    "display": "Anton-Regular",
+    "editorial": "InstrumentSerif-Italic",
+    "editorial-roman": "InstrumentSerif-Regular",
+    "text": "Archivo-Regular",
+    "text-medium": "Archivo-Medium",
+    "text-bold": "Archivo-Bold",
+    "text-condensed": "ArchivoCondensed-Bold",
+    "mono": "JetBrainsMono-Regular",
+    "mono-bold": "JetBrainsMono-Bold"
+  },
+  motif: { incisionAngle: 8, sealRadiusRatio: 0.22, sealGlyphBox: 0.56, inkOutlineRatio: 0.0035 },
+  thumbnail: { width: 1280, height: 720, margin: 58, seal: 102, deadZoneW: 192, deadZoneH: 80 },
+  carousel: { width: 1080, height: 1350, margin: 65 },
+  motion: { fps: 25, fast: 320, base: 480, slow: 600, easing: [0.7, 0, 0.2, 1] }
+};

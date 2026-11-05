@@ -1,0 +1,7 @@
+# LF partout (les empreintes SHA-256 du manifeste restent identiques sous Windows)
+* text=auto eol=lf
+brand/03_fonts/*.txt -text
+*.png binary
+*.jpg binary
+*.ttf binary
+*.ase binary
