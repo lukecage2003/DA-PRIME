@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://primestone.media/schemas/brand-manifest/v1.json",
   "title": "Primestone Brand Manifest",
-  "description": "Catalogue des ressources officielles de Primestone Media, lu par la Brand Library et par les applications clientes (dont Primestone Studio).",
+  "description": "Catalogue des ressources officielles de Primestone Media, lu par la Brand Library.",
   "type": "object",
   "required": [
     "schemaVersion",

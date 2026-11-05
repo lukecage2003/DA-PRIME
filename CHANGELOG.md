@@ -7,6 +7,7 @@
 - Images de test renommées `PLACEHOLDER_*`.
 - Nouveaux contrôles (`tools/validate.py`) : schéma JSON du manifeste, correspondance manifeste/fichiers dans les deux sens, SVG, PNG, polices et licences, marquages, exports de tokens, documentation.
 - Dépendances figées : `requirements.txt`, `package-lock.json`.
+- Documentation recentrée sur ce dépôt : contrat d'intégration externe retiré.
 - Inventaire : 33 ressources, 109 fichiers (voir le bilan de la 0.1.1).
 
 ## 0.1.0 · 2026-11-05 · lot 1 (fondations, provisoire)
@@ -18,4 +19,4 @@
 - Polices OFL : Anton, Instrument Serif, Archivo (dont Condensed), JetBrains Mono ; instances statiques pour les applications de bureau.
 - 19 éléments graphiques SVG et leurs PNG 1x/2x (incision, filet, volet, sceau P non officiel, case-cadre, trame Ben-Day, 8 rubriques, 2 grilles).
 - Catalogue `brand-manifest.json` (schéma v1) et contrôles `npm run check`.
-- Schéma Supabase en brouillon, non appliqué. Contrat de compatibilité Studio proposé.
+- Schéma Supabase en brouillon, non appliqué.

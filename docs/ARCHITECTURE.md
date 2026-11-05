@@ -1,10 +1,10 @@
 # Architecture
 
-## Deux dépôts indépendants
+## Vue d'ensemble
 
 ```mermaid
 flowchart LR
-  subgraph BRAND["Dépôt Primestone Brand (celui-ci)"]
+  subgraph BRAND["Dépôt Primestone Brand"]
     T[tokens.json] --> B[tools/build-*]
     S[sources : logo, polices, éléments, gabarits] --> B
     B --> M[catalog/brand-manifest.json]
@@ -17,7 +17,6 @@ flowchart LR
   M -- publication --> DB
   S -- publication --> ST
   PWA[Brand Library PWA<br/>Galaxy S25 · iPad M2 · PC Windows] -- lecture + liens signés --> SUPA
-  STUDIO[Primestone Studio<br/>dépôt séparé, .exe Windows] -. lecture optionnelle, plus tard .-> SUPA
 ```
 
 - **Git** : code, tokens, SVG et PNG légers (environ 3,5 Mo au total). Aucun fichier lourd ni vidéo.

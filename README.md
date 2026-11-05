@@ -2,8 +2,6 @@
 
 Dépôt de l'identité visuelle de **Primestone Media** : système graphique, design tokens, logos, polices, éléments, Brand Book et bibliothèque numérique centralisée. Formats ouverts uniquement : SVG, PNG, JSON, CSS.
 
-> **Primestone Studio est un dépôt séparé.** Ce dépôt ne contient, ne modifie et ne remplace aucun fichier de Studio. Studio pourra lire les ressources publiées ici via un contrat documenté (`docs/STUDIO_INTEGRATION.md`), sans en dépendre.
-
 Direction artistique de référence : **Signal** (YouTube, accroches, communication) + **Kiosque** (éditorial, dossiers, carrousels, infographies, bibliothèque). Direction sombre et cinématographique en usage secondaire.
 
 ## État : lot 1 (fondations) · version 0.1.0 provisoire
@@ -34,7 +32,7 @@ catalog/             catalog.config.json (règles) · brand-manifest.json (gén�
 schemas/             brand-manifest.schema.json
 supabase/            migrations/ (brouillon)
 tools/               générateurs et contrôles
-docs/                architecture, conventions, logo, couleur jaune, intégration Studio
+docs/                architecture, conventions, logo, couleur jaune
 presentations/       planches des missions 01 et 02
 ```
 
