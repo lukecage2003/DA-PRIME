@@ -1,0 +1,490 @@
+<title>Primestone — Audit DA</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,300..900&family=Big+Shoulders+Display:wght@500;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout : planche de DA sur fond noir maison — colonnes éditoriales, chaque direction = un "cahier" avec ses compositions */
+:root{
+  --ink:#0A0A0A; --ink-2:#151515; --line:#2A2A26; --paper:#F4F3EE; --muted:#9C9A8E;
+  --prime:#FFE500; --prime-wm:#FFF503; --prime-icon:#E0DE06;
+  --news:#ECEBE6; --night:#07080B; --cyan:#7FD3FF;
+  --f-display:"Anton","Impact","Arial Narrow",sans-serif;
+  --f-body:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-serif:"Instrument Serif","Times New Roman",serif;
+  --f-wide:"Big Shoulders Display","Arial Narrow",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+body{background:var(--ink);color:var(--paper);font-family:var(--f-body);font-size:16px;line-height:1.55;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+section{padding-block:64px;border-top:1px solid var(--line)}
+h1,h2,h3{text-wrap:balance;margin:0;font-weight:400}
+h2{font-family:var(--f-display);font-size:clamp(34px,5vw,56px);line-height:1;text-transform:uppercase;letter-spacing:.01em}
+h3{font-family:var(--f-body);font-weight:800;font-size:20px;line-height:1.25;font-stretch:90%}
+p{margin:0;max-width:66ch}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.eyebrow b{color:var(--prime);font-weight:600}
+.stack{display:flex;flex-direction:column;gap:16px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+@media (max-width:860px){.grid2,.grid3{grid-template-columns:minmax(0,1fr)}}
+.muted{color:var(--muted)}
+ul.clean{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+ul.clean li{padding-left:22px;position:relative;max-width:66ch}
+ul.clean li::before{content:"";position:absolute;left:0;top:.62em;width:10px;height:3px;background:var(--prime)}
+ul.clean.warn li::before{background:#FF5A3C}
+.tag{display:inline-block;font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--line);color:var(--muted)}
+.keep{color:var(--prime);border-color:var(--prime)}
+.fix{color:#FF8A70;border-color:#FF8A70}
+
+/* HERO */
+.hero{padding-block:56px 48px}
+.hero .wm{width:min(560px,90%);display:block}
+.hero h1{font-family:var(--f-body);font-weight:300;font-size:clamp(26px,3.4vw,40px);line-height:1.15;font-stretch:85%;margin-top:28px;max-width:24ch}
+.hero h1 em{font-style:normal;font-weight:800;color:var(--prime)}
+.phases{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
+.phases span{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;padding:6px 10px;border:1px solid var(--line);color:var(--muted)}
+.phases span.on{background:var(--prime);color:var(--ink);border-color:var(--prime);font-weight:600}
+
+/* AUDIT LOGO */
+.specimen{background:#000;border:1px solid var(--line);padding:32px;display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;min-height:200px}
+.specimen img{display:block}
+.swatches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.sw{display:flex;flex-direction:column;gap:6px}
+.sw i{display:block;aspect-ratio:1.6;border:1px solid var(--line)}
+.sw code{font-family:var(--f-mono);font-size:12px}
+.sw span{font-size:13px;color:var(--muted);line-height:1.35}
+table.obs{width:100%;border-collapse:collapse;font-size:15px}
+table.obs th,table.obs td{text-align:left;vertical-align:top;padding:12px 12px 12px 0;border-bottom:1px solid var(--line)}
+table.obs th{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:400;width:130px}
+.tbl{overflow-x:auto}
+
+/* ANNOTATED THUMB */
+.annot{position:relative;max-width:100%}
+.annot img{display:block;width:100%;border:1px solid var(--line)}
+.pin{position:absolute;width:26px;height:26px;border-radius:50%;background:#FF5A3C;color:#fff;font:600 13px/26px var(--f-mono);text-align:center;transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(0,0,0,.6)}
+ol.pins{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px;counter-reset:p}
+ol.pins li{counter-increment:p;display:grid;grid-template-columns:26px minmax(0,1fr);gap:12px}
+ol.pins li::before{content:counter(p);width:26px;height:26px;border-radius:50%;background:#FF5A3C;color:#fff;font:600 13px/26px var(--f-mono);text-align:center}
+
+/* DIAGNOSTIC */
+.dna{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.dna div{background:var(--ink);padding:20px;display:flex;flex-direction:column;gap:8px}
+.dna b{font-family:var(--f-display);font-size:28px;font-weight:400;color:var(--prime);text-transform:uppercase;line-height:1}
+@media (max-width:860px){.dna{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* DIRECTION HEAD */
+.dir-head{display:grid;grid-template-columns:120px minmax(0,1fr);gap:24px;align-items:start}
+.dir-letter{font-family:var(--f-display);font-size:120px;line-height:.8;color:var(--prime)}
+@media (max-width:600px){.dir-head{grid-template-columns:minmax(0,1fr)}.dir-letter{font-size:80px}}
+.refs{display:flex;flex-wrap:wrap;gap:6px}
+.pal{display:flex;height:44px;border:1px solid var(--line)}
+.pal i{flex:1;display:flex;align-items:flex-end;padding:4px 6px;font:10px var(--f-mono);font-style:normal}
+.typo{border:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:6px}
+.boards{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.boards{grid-template-columns:minmax(0,1fr)}}
+.cap{font-family:var(--f-mono);font-size:11px;color:var(--muted);letter-spacing:.06em;margin-top:8px;text-transform:uppercase}
+.pc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+@media (max-width:600px){.pc{grid-template-columns:minmax(0,1fr)}}
+
+/* ===== COMPOSITIONS (container-query units => scale with frame) ===== */
+.frame{container-type:inline-size;position:relative;overflow:hidden;max-width:100%}
+.r169{aspect-ratio:16/9}.r45{aspect-ratio:4/5}
+.frame img{position:absolute;display:block;max-width:none}
+.badge{position:absolute;background:#111;border-radius:2.2cqw;display:grid;place-items:center}
+.frame .badge img{position:absolute;left:20%;top:16%;width:60%;height:68%;object-fit:contain}
+
+/* A — SIGNAL */
+.tA{background:var(--prime);color:#111}
+.tA .kick{position:absolute;left:5cqw;top:6cqw;font:600 2.1cqw/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;background:#111;color:var(--prime);padding:1.1cqw 1.6cqw}
+.tA .ttl{position:absolute;left:4.6cqw;top:12cqw;font:15.5cqw/.86 var(--f-display);text-transform:uppercase;letter-spacing:-.005em;width:52cqw}
+.tA .fig{right:-3cqw;bottom:-1cqw;height:86%;filter:drop-shadow(.5cqw .5cqw 0 #111)}
+.tA .badge{left:4.6cqw;bottom:5cqw;width:8.6cqw;height:8.6cqw}
+.tA .rule{position:absolute;left:4.6cqw;top:40cqw;width:20cqw;height:1cqw;background:#111}
+/* A families */
+.fam{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.fA-news{background:#111;color:var(--prime)}
+.fA-news .band{position:absolute;inset:auto 0 0 0;height:30%;background:var(--prime)}
+.fA-news .fig{right:2cqw;bottom:0;height:92%}
+.fA-news .ttl{position:absolute;left:5cqw;bottom:6.5cqw;font:11cqw/.9 var(--f-display);color:#111;text-transform:uppercase;z-index:2}
+.fA-news .kick{position:absolute;left:5cqw;top:5cqw;font:600 3cqw/1 var(--f-mono);letter-spacing:.14em;background:#FF3B30;color:#fff;padding:1.2cqw 2cqw}
+.fA-theo{background:#111}
+.fA-theo .fig{left:-4cqw;bottom:-2cqw;height:96%;filter:grayscale(1) contrast(1.2) brightness(.8)}
+.fA-theo .ttl{position:absolute;right:24cqw;top:16cqw;z-index:2;font:13cqw/.88 var(--f-display);color:var(--prime);text-align:right;text-transform:uppercase}
+.fA-theo .q{position:absolute;right:5cqw;bottom:-2cqw;font:30cqw/1 var(--f-display);color:var(--prime);opacity:.95}
+.fA-hist{background:var(--prime)}
+.fA-hist .fig{right:0;bottom:0;height:100%;filter:grayscale(1) contrast(1.6);mix-blend-mode:multiply}
+.fA-hist .yr{position:absolute;left:4cqw;top:3cqw;font:26cqw/.85 var(--f-display);color:#111}
+.fA-hist .ttl{position:absolute;left:5cqw;bottom:6cqw;font:600 3.2cqw/1.1 var(--f-mono);letter-spacing:.1em;color:#111;text-transform:uppercase;width:50cqw}
+.fA-guide{background:var(--prime)}
+.fA-guide .grid{position:absolute;left:5cqw;top:6cqw;width:44cqw;display:grid;grid-template-columns:repeat(3,1fr);gap:1.2cqw}
+.fA-guide .grid i{aspect-ratio:2/3;background:#111;display:grid;place-items:center;font:600 3cqw var(--f-mono);color:var(--prime);font-style:normal}
+.fA-guide .ttl{position:absolute;z-index:2;left:5cqw;bottom:5cqw;font:9.5cqw/.9 var(--f-display);color:#111;text-transform:uppercase}
+.fA-guide .fig{right:-10cqw;bottom:0;height:80%}
+.fA-guide .badge,.fA-news .badge,.fA-theo .badge,.fA-hist .badge{width:8cqw;height:8cqw;right:3.5cqw;top:3.5cqw;z-index:3}
+.fA-theo .badge,.fA-news .badge{background:var(--prime)}
+/* A social */
+.sA{background:var(--prime);color:#111}
+.sA .fig{left:-10cqw;bottom:0;width:130cqw}
+.sA .kick{position:absolute;left:7cqw;top:7cqw;font:600 3.4cqw/1 var(--f-mono);letter-spacing:.14em;background:#111;color:var(--prime);padding:1.6cqw 2.4cqw}
+.sA .ttl{position:absolute;z-index:2;left:6.4cqw;top:16cqw;font:19cqw/.85 var(--f-display);text-transform:uppercase}
+.sA .pg{position:absolute;right:7cqw;top:7cqw;font:600 3.4cqw var(--f-mono)}
+/* A lower third */
+.lA{background:#20242E}
+.lA .fig{right:6cqw;bottom:0;height:100%;opacity:.55;filter:blur(.3cqw)}
+.lA .lt{position:absolute;left:5cqw;bottom:8cqw;display:flex;flex-direction:column;align-items:flex-start}
+.lA .lt b{background:var(--prime);color:#111;font:5cqw/1 var(--f-display);text-transform:uppercase;padding:1.2cqw 2cqw 1cqw}
+.lA .lt span{background:#111;color:#fff;font:500 2.4cqw/1 var(--f-body);padding:1.2cqw 2cqw}
+
+/* B — KIOSQUE */
+.tB{background:var(--news);color:#111}
+.tB::before{content:"";position:absolute;inset:0;background-image:radial-gradient(#111 22%,transparent 24%);background-size:1.4cqw 1.4cqw;opacity:.09}
+.tB .mast{position:absolute;left:4cqw;top:3.4cqw;right:4cqw;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:.35cqw solid #111;padding-bottom:1.2cqw}
+.tB .mast img{position:static;height:4.2cqw;width:auto}
+.tB .mast span{font:600 1.8cqw/1 var(--f-mono);letter-spacing:.1em}
+.tB .panel{position:absolute;right:4cqw;top:12cqw;bottom:4cqw;width:52cqw;background:var(--prime);border:.5cqw solid #111;overflow:hidden}
+.tB .panel .fig{right:-6cqw;bottom:-1cqw;height:108%}
+.tB .ttl{position:absolute;left:4cqw;top:13cqw;width:38cqw;font:italic 7.6cqw/.95 var(--f-serif);letter-spacing:-.02em}
+.tB .ttl mark{background:var(--prime);color:#111;padding:0 .6cqw}
+.tB .dek{position:absolute;left:4cqw;top:38cqw;width:34cqw;font:600 2.3cqw/1.25 var(--f-body);font-stretch:80%;text-transform:uppercase;letter-spacing:.04em}
+.tB .box{position:absolute;left:4cqw;bottom:4cqw;border:.35cqw solid #111;padding:.8cqw 1.4cqw;font:600 1.7cqw/1.2 var(--f-mono);background:var(--news)}
+.sB{background:var(--news);color:#111}
+.sB .mast{position:absolute;left:6cqw;right:6cqw;top:6cqw;border-bottom:.6cqw solid #111;padding-bottom:2cqw;display:flex;justify-content:space-between;align-items:flex-end}
+.sB .mast img{position:static;height:6cqw;width:auto}
+.sB .mast span{font:600 3cqw var(--f-mono)}
+.sB .ttl{position:absolute;left:6cqw;top:20cqw;font:italic 15cqw/.9 var(--f-serif);width:88cqw}
+.sB .panel{position:absolute;left:6cqw;right:6cqw;bottom:6cqw;height:62cqw;background:var(--prime);border:.8cqw solid #111;overflow:hidden}
+.sB .panel .fig{left:2cqw;bottom:-2cqw;width:96cqw}
+.lB{background:#2A2A2A}
+.lB .fig{right:6cqw;bottom:0;height:100%;opacity:.5}
+.lB .lt{position:absolute;left:5cqw;bottom:7cqw;background:var(--news);color:#111;padding:1.6cqw 2.4cqw;border-left:1.2cqw solid var(--prime);display:flex;flex-direction:column;gap:.6cqw}
+.lB .lt b{font:italic 4.4cqw/1 var(--f-serif)}
+.lB .lt span{font:600 1.8cqw var(--f-mono);letter-spacing:.1em;text-transform:uppercase}
+
+/* C — MULTIVERS */
+.tC{background:radial-gradient(70cqw 60cqw at 70% 40%,#1D2742 0%,var(--night) 70%);color:#fff}
+.tC .fig{right:-6cqw;bottom:-2cqw;height:92%;filter:drop-shadow(0 0 3cqw rgba(255,229,0,.25))}
+.tC .glow{position:absolute;right:6cqw;top:-10cqw;width:60cqw;height:60cqw;border-radius:50%;background:radial-gradient(circle,rgba(255,229,0,.28),transparent 62%)}
+.tC .ttl,.tC .sub,.tC .ln{z-index:2;text-shadow:0 .4cqw 2cqw rgba(0,0,0,.6)}
+.tC .ttl{position:absolute;left:5cqw;bottom:13cqw;font:900 12cqw/.82 var(--f-wide);text-transform:uppercase;letter-spacing:.01em;width:50cqw}
+.tC .ln{position:absolute;left:5cqw;bottom:9.4cqw;width:10cqw;height:.5cqw;background:var(--prime)}
+.tC .sub{position:absolute;left:5cqw;bottom:5cqw;font:500 2.1cqw/1 var(--f-body);letter-spacing:.2em;text-transform:uppercase;color:#C9CCD6}
+.tC .logo{position:absolute;left:5cqw;top:5cqw;width:20cqw;opacity:.95}
+.sC{background:linear-gradient(180deg,#1D2742 0%,var(--night) 75%);color:#fff}
+.sC .fig{left:-12cqw;top:8cqw;width:132cqw}
+.sC .shade{position:absolute;inset:auto 0 0 0;height:50%;background:linear-gradient(transparent,var(--night) 70%)}
+.sC .ttl{position:absolute;left:7cqw;bottom:16cqw;font:900 17cqw/.82 var(--f-wide);text-transform:uppercase}
+.sC .sub{position:absolute;left:7cqw;bottom:9cqw;font:500 3.2cqw var(--f-body);letter-spacing:.2em;color:#C9CCD6;text-transform:uppercase}
+.sC .logo{position:absolute;left:7cqw;top:7cqw;width:32cqw}
+.lC{background:var(--night)}
+.lC .fig{right:6cqw;bottom:0;height:100%;opacity:.45}
+.lC .lt{position:absolute;left:5cqw;bottom:8cqw;display:flex;gap:1.6cqw;align-items:stretch}
+.lC .lt i{width:.6cqw;background:var(--prime)}
+.lC .lt div{display:flex;flex-direction:column;gap:.8cqw;background:rgba(10,12,18,.6);backdrop-filter:blur(6px);padding:1.4cqw 2cqw}
+.lC .lt b{font:800 4cqw/1 var(--f-wide);color:#fff;text-transform:uppercase;letter-spacing:.02em}
+.lC .lt span{font:500 1.9cqw var(--f-body);color:#C9CCD6;letter-spacing:.14em;text-transform:uppercase}
+
+/* MATRIX */
+table.mx{width:100%;border-collapse:collapse;min-width:620px}
+table.mx th,table.mx td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:15px}
+table.mx th{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.dots{display:inline-flex;gap:4px;vertical-align:middle}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots i.f{background:var(--prime)}
+.reco{background:var(--prime);color:var(--ink);padding:32px;display:flex;flex-direction:column;gap:14px}
+.reco h3{font-family:var(--f-display);font-weight:400;font-size:34px;text-transform:uppercase;line-height:1}
+.reco p{max-width:70ch}
+ol.q{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px}
+ol.q li{max-width:70ch}
+footer{padding-block:40px;border-top:1px solid var(--line);font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow"><b>Primestone Media</b> · Direction artistique · Mission 01</div>
+  <img class="wm" src="assets/wordmark-yellow.png" alt="Logotype Primestone" style="margin-top:28px">
+  <h1>Ce que l'identité actuelle raconte, ce qu'il faut garder, et <em>trois routes</em> pour en faire un média comics de référence.</h1>
+  <div class="phases">
+    <span class="on">Phase 1 · Audit</span><span class="on">Phase 2 · Diagnostic + 3 directions</span><span class="on">Phase 3 · Planches comparatives</span><span>Phase 4 · Votre validation</span><span>Phases 5–8 · Production</span>
+  </div>
+</header>
+
+<!-- ============ AUDIT LOGO ============ -->
+<section>
+  <div class="stack" style="gap:28px">
+    <div class="eyebrow">Phase 1 · A</div>
+    <h2>Audit du logo</h2>
+    <div class="grid2">
+      <div class="stack">
+        <div class="specimen">
+          <img src="assets/P-yellow.png" alt="Icône P" style="height:120px">
+          <img src="assets/wordmark-yellow.png" alt="Logotype" style="width:min(100%,380px)">
+        </div>
+        <div class="specimen" style="background:var(--prime)">
+          <img src="assets/P-black.png" alt="Icône P noire" style="height:80px">
+          <img src="assets/wordmark-black.png" alt="Logotype noir" style="width:min(100%,300px)">
+        </div>
+        <div class="cap">Détourage réalisé depuis vos fichiers : le logo fonctionne déjà en négatif, sans retouche.</div>
+        <h3 style="margin-top:12px">Trois jaunes différents dans trois fichiers</h3>
+        <div class="swatches">
+          <div class="sw"><i style="background:var(--prime-icon)"></i><code>#E0DE06</code><span>Icône P. Tire vers l'olive, paraît terne à côté des deux autres.</span></div>
+          <div class="sw"><i style="background:var(--prime-wm)"></i><code>#FFF503</code><span>Logotype. Jaune citron, très lumineux sur noir.</span></div>
+          <div class="sw"><i style="background:var(--prime)"></i><code>#FFE500</code><span>Miniature. Jaune « process », le plus chaud et le plus imprimable.</span></div>
+        </div>
+      </div>
+      <div class="tbl">
+        <table class="obs">
+          <tr><th>Construction</th><td>Lettres monolithiques à fût vertical, coins à faible rayon, chaque lettre fendue par une <b>incision oblique</b> (≈ 8° vers la droite). Cette incision est la vraie signature : elle évoque la taille de pierre (Prime<i>stone</i>), la ligne de vitesse et le trait d'encre d'un lettreur.</td></tr>
+          <tr><th>Proportions</th><td>Logotype très horizontal, ratio ≈ 7,3 : 1. Approche serrée, presque une barre continue. Excellent en bandeau, fragile en petit : sous ~120 px de large, les incisions bouchent.</td></tr>
+          <tr><th>Typographie</th><td>Dessin sur mesure, stencil à empattements nuls, contreformes réduites (R, O, N). Le N et le E sont stylisés au point de lire « PRIMESTOHE » au premier coup d'œil. Le slogan est en Open Sans, sans lien avec le logotype.</td></tr>
+          <tr><th>Symbolique</th><td>Bloc, pierre, impact, solidité. Le P seul fonctionne comme un sceau : il rappelle la case de coin des couvertures de comics (le « corner box »). C'est un atout que vous n'exploitez pas encore.</td></tr>
+          <tr><th>Couleur</th><td>Jaune et noir : contraste maximal, code de signalisation, mémorisable. Aucune valeur de référence fixée (voir ci-contre).</td></tr>
+          <tr><th>Déclinaisons</th><td>Existantes : P seul, logotype + slogan. Manquent : version réduite, version monochrome officielle, zone de protection, taille minimale, version animée, filigrane vidéo.</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="stack"><span class="tag keep">À garder</span>
+        <ul class="clean">
+          <li>Le couple jaune/noir comme territoire propriétaire.</li>
+          <li>L'incision oblique, à transformer en motif graphique (barre, transition, cadre).</li>
+          <li>L'icône P en carré arrondi : déjà reconnaissable dans le coin des miniatures.</li>
+        </ul></div>
+      <div class="stack"><span class="tag fix">À faire évoluer</span>
+        <ul class="clean warn">
+          <li>Fixer un seul jaune de référence (proposition : <code>#FFE500</code>) et ses équivalents CMJN/Pantone.</li>
+          <li>Retoucher le N et le E du logotype pour la lisibilité, sans changer le style. Intervention chirurgicale, pas une refonte.</li>
+          <li>Remplacer Open Sans par une typo qui dialogue avec le logotype.</li>
+          <li>Dessiner une version « petite taille » avec incisions élargies.</li>
+        </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AUDIT MINIATURE ============ -->
+<section>
+  <div class="stack" style="gap:28px">
+    <div class="eyebrow">Phase 1 · B</div>
+    <h2>Audit de la miniature « L'Espoir »</h2>
+    <div class="grid2">
+      <div class="annot">
+        <img src="assets/miniature-originale.png" alt="Miniature YouTube L'Espoir : titre noir sur fond jaune, deux Superman">
+        <span class="pin" style="left:50%;top:18%">1</span>
+        <span class="pin" style="left:4%;top:50%">2</span>
+        <span class="pin" style="left:22%;top:72%">3</span>
+        <span class="pin" style="left:70%;top:58%">4</span>
+        <span class="pin" style="left:6%;top:88%">5</span>
+      </div>
+      <ol class="pins">
+        <li><div><b>Titre en un mot, pleine largeur.</b> Lisible à toute taille, fort. Mais l'interlettrage très large et le centrage donnent un ton d'affiche générique ; le titre et le personnage se disputent l'attention à poids égal.</div></li>
+        <li><div><b>Fond jaune plein.</b> C'est votre meilleur outil de reconnaissance dans un fil YouTube. À conserver comme couleur d'appel, pas forcément sur 100 % des miniatures.</div></li>
+        <li><div><b>Deux illustrations de facture différente.</b> L'une encrée avec un liseré blanc d'autocollant, l'autre plus lisse, sans liseré. Le traitement du détourage n'est pas unifié, et le rendu lisse de droite mérite une vérification de source et de droits.</div></li>
+        <li><div><b>Personnage en action, regard vers le spectateur.</b> Bon choix éditorial. Il manque un plan de profondeur : tout est au même niveau, posé sur l'aplat.</div></li>
+        <li><div><b>Pastille P en bas à gauche.</b> Bonne idée de signature, mais c'est le coin où YouTube n'affiche rien de gênant… alors que le bas à droite est masqué par la durée. Gardons-la, en la fixant au gabarit.</div></li>
+      </ol>
+    </div>
+    <div class="grid2">
+      <div class="stack"><span class="tag keep">Ce qui fonctionne</span>
+        <ul class="clean">
+          <li>Contraste immédiat, lisible en vignette 168 × 94 px.</li>
+          <li>Un concept par vidéo résumé en un mot (« L'Espoir ») : posture d'analyse, pas d'actualité racoleuse.</li>
+          <li>Illustrations de comics mises en avant, pas de visage YouTubeur.</li>
+        </ul></div>
+      <div class="stack"><span class="tag fix">Ce qui manque</span>
+        <ul class="clean warn">
+          <li>Aucun indicateur de format (analyse, actu, théorie…) : le spectateur ne sait pas quel type de vidéo il ouvre.</li>
+          <li>Pas de grille : la marge, la taille du titre et la place du P ne sont pas fixées.</li>
+          <li>Aucun crédit d'artiste ou de source. Pour un média qui veut faire référence, c'est un marqueur de sérieux (et de respect envers les auteurs).</li>
+          <li>Une seule miniature fournie : je ne peux pas juger la cohérence entre vidéos. Envoyez-m'en 6 à 10 pour la phase 4.</li>
+        </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIAGNOSTIC ============ -->
+<section>
+  <div class="stack" style="gap:28px">
+    <div class="eyebrow">Phase 2 · Diagnostic</div>
+    <h2>Ce que Primestone communique aujourd'hui</h2>
+    <p>Une marque <b>directe, sûre d'elle, très visible</b>, avec un vrai capital graphique (le logotype et le jaune). Elle se lit pour l'instant comme une <b>chaîne</b> plutôt que comme un <b>média</b> : il manque le système qui organise les contenus, les crédits, les rubriques et la hiérarchie qu'on trouve dans un magazine. L'enjeu n'est pas de changer d'image, c'est d'ajouter l'architecture éditoriale autour de ce qui existe.</p>
+    <div class="dna">
+      <div><b>Jaune</b><span class="muted">Couleur d'appel unique, à normaliser.</span></div>
+      <div><b>Incision</b><span class="muted">L'oblique du logo devient motif, transition, cadre.</span></div>
+      <div><b>Sceau P</b><span class="muted">Case de coin, comme sur une couverture de comic.</span></div>
+      <div><b>Un mot</b><span class="muted">Le titre-concept, signature de vos analyses.</span></div>
+    </div>
+    <p class="muted">Ces quatre éléments sont conservés dans les trois directions. Ce qui change entre elles : le terrain culturel de référence, le traitement de l'illustration et le degré de rupture avec l'existant.</p>
+  </div>
+</section>
+
+<!-- ============ DIRECTION A ============ -->
+<section id="direction-a">
+  <div class="stack" style="gap:28px">
+    <div class="dir-head">
+      <div class="dir-letter">A</div>
+      <div class="stack">
+        <div class="eyebrow">Direction A · Évolution</div>
+        <h2>Signal</h2>
+        <p>On radicalise ce que vous avez déjà. Le jaune devient un système de signalisation éditoriale : une grille fixe, une étiquette de rubrique en code mono, un titre-concept massif aligné à gauche, l'illustration détourée avec un <b>liseré d'encre noire</b> (au lieu du blanc) pour rester dans le langage du comic. L'incision oblique sert de séparateur et de transition vidéo.</p>
+        <div class="refs"><span class="tag">Couvertures Bloomberg Businessweek</span><span class="tag">Corner box des comics Marvel 60s–70s</span><span class="tag">Signalétique de stade</span><span class="tag">Grille Criterion Collection</span></div>
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="stack"><div class="eyebrow">Palette</div>
+        <div class="pal"><i style="background:#FFE500;color:#111;flex:3">FFE500</i><i style="background:#111;color:#FFE500;flex:2">111111</i><i style="background:#F4F3EE;color:#111">F4F3EE</i><i style="background:#FF3B30;color:#fff;flex:.6">Actu</i></div></div>
+      <div class="typo"><span style="font:34px/1 var(--f-display);text-transform:uppercase">Anton — Titres</span><span style="font:500 15px var(--f-body);font-stretch:85%">Archivo Condensed — textes et sous-titres</span><span style="font:12px var(--f-mono);letter-spacing:.1em">JETBRAINS MONO — RUBRIQUES, CRÉDITS</span></div>
+      <div class="stack"><div class="eyebrow">Coût de production solo</div><p class="muted">Le plus faible. Un gabarit Photoshop avec calques verrouillés, 15–20 min par miniature.</p></div>
+    </div>
+    <div class="boards">
+      <div>
+        <div class="frame r169 tA">
+          <span class="kick">Analyse · Personnage</span>
+          <div class="ttl">L'Espoir</div>
+          <span class="rule"></span>
+          <img class="fig" src="assets/fig-droite.png" alt="">
+          <span class="badge"><img src="assets/P-yellow.png" alt="P"></span>
+        </div>
+        <div class="cap">Miniature · Famille Analyse de personnage</div>
+      </div>
+      <div class="stack" style="gap:20px">
+        <div><div class="frame r45 sA"><img class="fig" src="assets/fig-gauche.png" alt=""><span class="kick">Analyse</span><span class="pg">01/08</span><div class="ttl">L'Espoir</div></div><div class="cap">Carrousel Instagram 4:5 · couverture</div></div>
+      </div>
+    </div>
+    <div class="stack"><div class="eyebrow">Même identité, compositions différentes · aperçu des familles</div>
+      <div class="fam">
+        <div><div class="frame r169 fA-news"><span class="kick">ACTU</span><img class="fig" src="assets/fig-droite.png" alt=""><span class="band"></span><div class="ttl">Nouveau costume</div><span class="badge"><img src="assets/P-black.png" alt="P"></span></div><div class="cap">Actualités · bandeau + pastille rouge</div></div>
+        <div><div class="frame r169 fA-theo"><img class="fig" src="assets/fig-gauche.png" alt=""><div class="ttl">Et s'il<br>tombait ?</div><div class="q">?</div><span class="badge"><img src="assets/P-black.png" alt="P"></span></div><div class="cap">Théories · fond noir, image désaturée</div></div>
+        <div><div class="frame r169 fA-hist"><img class="fig" src="assets/fig-gauche.png" alt=""><div class="yr">1938</div><div class="ttl">Action Comics #1 · la naissance du super-héros</div><span class="badge"><img src="assets/P-yellow.png" alt="P"></span></div><div class="cap">Histoire des comics · bichromie jaune/noir + année</div></div>
+        <div><div class="frame r169 fA-guide"><div class="grid"><i>01</i><i>02</i><i>03</i></div><img class="fig" src="assets/fig-droite.png" alt=""><div class="ttl">Par où<br>commencer</div><span class="badge"><img src="assets/P-yellow.png" alt="P"></span></div><div class="cap">Guides · couvertures numérotées (ordre de lecture)</div></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div><div class="frame r169 lA"><img class="fig" src="assets/fig-droite.png" alt=""><div class="lt"><b>Tom King</b><span>Scénariste · Superman: Up in the Sky</span></div></div><div class="cap">Lower third · interview</div></div>
+      <div class="pc">
+        <div class="stack"><span class="tag keep">Forces</span><ul class="clean"><li>Votre audience vous reconnaît dès le premier jour.</li><li>Rubriques lisibles en un coup d'œil.</li><li>Le système le plus rapide à produire seul.</li></ul></div>
+        <div class="stack"><span class="tag fix">Risques</span><ul class="clean warn"><li>Peut rester « YouTube » si la grille n'est pas respectée.</li><li>Moins de registre pour les sujets graves ou patrimoniaux.</li></ul></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIRECTION B ============ -->
+<section id="direction-b">
+  <div class="stack" style="gap:28px">
+    <div class="dir-head">
+      <div class="dir-letter">B</div>
+      <div class="stack">
+        <div class="eyebrow">Direction B · Repositionnement éditorial</div>
+        <h2>Kiosque</h2>
+        <p>Primestone devient une publication. Chaque vidéo est traitée comme un numéro : bandeau de titre (masthead), numéro d'épisode, date, case-cadre pour l'illustration comme une case de planche. Un serif italique apporte la voix critique, le jaune passe en surligneur, une trame de points Ben-Day très discrète rappelle l'impression des comics. Le registre le plus « grand magazine culturel ».</p>
+        <div class="refs"><span class="tag">Trade dress des comics (n°, prix, code-barres)</span><span class="tag">Taschen · The Marvel Age of Comics</span><span class="tag">Les Inrockuptibles / Libération</span><span class="tag">Fantagraphics</span></div>
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="stack"><div class="eyebrow">Palette</div>
+        <div class="pal"><i style="background:#ECEBE6;color:#111;flex:3">ECEBE6</i><i style="background:#111;color:#ECEBE6;flex:2">111111</i><i style="background:#FFE500;color:#111;flex:1.4">FFE500</i></div></div>
+      <div class="typo"><span style="font:italic 34px/1 var(--f-serif)">Instrument Serif — titres</span><span style="font:600 15px var(--f-body);font-stretch:75%;text-transform:uppercase;letter-spacing:.04em">Archivo Extra-condensed — chapôs</span><span style="font:12px var(--f-mono);letter-spacing:.1em">JETBRAINS MONO — N°, DATES, CRÉDITS</span></div>
+      <div class="stack"><div class="eyebrow">Coût de production solo</div><p class="muted">Moyen. Le gabarit est simple, mais demande un vrai travail de titrage (le serif exige des formules plus écrites).</p></div>
+    </div>
+    <div class="boards">
+      <div>
+        <div class="frame r169 tB">
+          <div class="mast"><img src="assets/wordmark-black.png" alt="Primestone"><span>N°042 · NOV. 2026 · ANALYSE</span></div>
+          <div class="ttl">Pourquoi <mark>l'espoir</mark> est son vrai pouvoir</div>
+          <div class="dek">Superman, de Siegel &amp; Shuster à Tom King</div>
+          <div class="panel"><img class="fig" src="assets/fig-droite.png" alt=""></div>
+          <div class="box">ART : CRÉDIT ARTISTE<br>DC COMICS</div>
+        </div>
+        <div class="cap">Miniature · numéro, masthead, case-cadre, crédit artiste</div>
+      </div>
+      <div><div class="frame r45 sB"><div class="mast"><img src="assets/wordmark-black.png" alt="Primestone"><span>N°042</span></div><div class="ttl">L'espoir, mode d'emploi</div><div class="panel"><img class="fig" src="assets/fig-gauche.png" alt=""></div></div><div class="cap">Carrousel Instagram 4:5 · couverture</div></div>
+    </div>
+    <div class="grid2">
+      <div><div class="frame r169 lB"><img class="fig" src="assets/fig-droite.png" alt=""><div class="lt"><b>Tom King</b><span>Scénariste · Superman: Up in the Sky</span></div></div><div class="cap">Lower third · interview</div></div>
+      <div class="pc">
+        <div class="stack"><span class="tag keep">Forces</span><ul class="clean"><li>Crédibilité immédiate auprès des éditeurs et auteurs.</li><li>Idéal pour carrousels, chronologies, fiches personnages et site.</li><li>Le crédit d'artiste est intégré au gabarit.</li></ul></div>
+        <div class="stack"><span class="tag fix">Risques</span><ul class="clean warn"><li>Taux de clic YouTube potentiellement plus faible : fond clair et titres longs.</li><li>Rupture visible avec vos miniatures actuelles.</li></ul></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIRECTION C ============ -->
+<section id="direction-c">
+  <div class="stack" style="gap:28px">
+    <div class="dir-head">
+      <div class="dir-letter">C</div>
+      <div class="stack">
+        <div class="eyebrow">Direction C · Montée en gamme cinématographique</div>
+        <h2>Multivers</h2>
+        <p>Le catalogue façon plateforme de streaming. Fond nuit profond, l'illustration éclairée comme une affiche de film, le jaune réduit à une source de lumière (halo, filet, logo). Titres en capitales larges et serrées, sous-titres espacés. Chaque grande saga reçoit une « affiche » déclinable en vignette, bannière et carte de site.</p>
+        <div class="refs"><span class="tag">Disney+ · fiches de catalogue</span><span class="tag">Cartons-titres Marvel Studios</span><span class="tag">Apple TV app</span><span class="tag">Affiches A24 (retenue)</span></div>
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="stack"><div class="eyebrow">Palette</div>
+        <div class="pal"><i style="background:#07080B;color:#C9CCD6;flex:3">07080B</i><i style="background:#1D2742;color:#C9CCD6;flex:2">1D2742</i><i style="background:#FFE500;color:#111;flex:.8">FFE500</i><i style="background:#C9CCD6;color:#111">C9CCD6</i></div></div>
+      <div class="typo"><span style="font:900 34px/1 var(--f-wide);text-transform:uppercase">Big Shoulders — titres</span><span style="font:500 13px var(--f-body);letter-spacing:.2em;text-transform:uppercase">Archivo — sous-titres espacés</span><span style="font:12px var(--f-mono);letter-spacing:.1em">JETBRAINS MONO — MÉTADONNÉES</span></div>
+      <div class="stack"><div class="eyebrow">Coût de production solo</div><p class="muted">Le plus élevé. L'éclairage et la profondeur demandent des retouches par visuel, et des illustrations en haute définition.</p></div>
+    </div>
+    <div class="boards">
+      <div>
+        <div class="frame r169 tC"><span class="glow"></span><img class="logo" src="assets/wordmark-white.png" alt="Primestone"><img class="fig" src="assets/fig-droite.png" alt=""><div class="ttl">L'Espoir</div><span class="ln"></span><div class="sub">Superman · Analyse</div></div>
+        <div class="cap">Miniature · affiche, lumière jaune</div>
+      </div>
+      <div><div class="frame r45 sC"><img class="fig" src="assets/fig-gauche.png" alt=""><span class="shade"></span><img class="logo" src="assets/wordmark-white.png" alt="Primestone"><div class="ttl">L'Espoir</div><div class="sub">Superman · Saga</div></div><div class="cap">Carrousel Instagram 4:5 · couverture</div></div>
+    </div>
+    <div class="grid2">
+      <div><div class="frame r169 lC"><img class="fig" src="assets/fig-droite.png" alt=""><div class="lt"><i></i><div><b>Tom King</b><span>Scénariste · Up in the Sky</span></div></div></div><div class="cap">Lower third · interview</div></div>
+      <div class="pc">
+        <div class="stack"><span class="tag keep">Forces</span><ul class="clean"><li>Image la plus « premium », prête pour l'international.</li><li>Parfait pour un site-catalogue et les adaptations ciné/séries.</li></ul></div>
+        <div class="stack"><span class="tag fix">Risques</span><ul class="clean warn"><li>Le jaune recule : vous perdez votre signal dans le fil YouTube, où beaucoup de miniatures sont déjà sombres.</li><li>Proche des codes officiels des studios : moins de voix propre.</li></ul></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MATRICE ============ -->
+<section>
+  <div class="stack" style="gap:28px">
+    <div class="eyebrow">Phase 3 · Comparatif</div>
+    <h2>Les trois routes face à vos objectifs</h2>
+    <div class="tbl">
+      <table class="mx">
+        <tr><th>Critère</th><th>A · Signal</th><th>B · Kiosque</th><th>C · Multivers</th></tr>
+        <tr><td>Reconnaissance dans le fil YouTube</td><td><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span></td><td><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i></span></td><td><span class="dots"><i class="f"></i><i class="f"></i><i></i><i></i><i></i></span></td></tr>
+        <tr><td>Posture de média éditorial</td><td><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i></span></td><td><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span></td><td><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span></td></tr>
+        <tr><td>Valorisation des illustrations</td><td><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span></td><td><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span></td><td><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span></td></tr>
+        <tr><td>Continuité avec l'existant</td><td><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span></td><td><span class="dots"><i class="f"></i><i class="f"></i><i></i><i></i><i></i></span></td><td><span class="dots"><i class="f"></i><i class="f"></i><i></i><i></i><i></i></span></td></tr>
+        <tr><td>Production en solo, petit budget</td><td><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span></td><td><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span></td><td><span class="dots"><i class="f"></i><i class="f"></i><i></i><i></i><i></i></span></td></tr>
+        <tr><td>Extension site, carrousels, infographies</td><td><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i></span></td><td><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span></td><td><span class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span></td></tr>
+      </table>
+    </div>
+    <div class="reco">
+      <div class="eyebrow" style="color:var(--ink)">Recommandation du directeur artistique</div>
+      <h3>A pour la façade, B pour la profondeur</h3>
+      <p><b>Signal</b> comme colonne vertébrale : miniatures, habillage vidéo, intro/outro, réseaux. Il garde votre capital de reconnaissance et reste tenable seul. On lui greffe deux éléments de <b>Kiosque</b> : la numérotation des épisodes (N°042) et le crédit d'artiste systématique, plus le serif italique réservé aux formats longs (carrousels, chronologies, fiches personnages, site). <b>Multivers</b> reste en réserve pour un format spécial : événements Marvel/DC et dossiers ciné.</p>
+      <p>C'est une recommandation, pas une décision : vous pouvez retenir une direction pure.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VALIDATION ============ -->
+<section>
+  <div class="stack" style="gap:20px">
+    <div class="eyebrow">Phase 4 · À valider avant la production</div>
+    <h2>Vos décisions</h2>
+    <ol class="q">
+      <li><b>Direction :</b> A, B, C, ou l'hybride A + B recommandé ?</li>
+      <li><b>Jaune de référence :</b> validez-vous <code>#FFE500</code> pour tous les supports ?</li>
+      <li><b>Logotype :</b> m'autorisez-vous à retoucher le N et le E pour la lisibilité, ou le logo est-il figé ?</li>
+      <li><b>Liseré des illustrations :</b> encre noire (proposé) ou blanc actuel ?</li>
+      <li><b>Corpus :</b> pouvez-vous m'envoyer 6 à 10 autres miniatures et, si vous les avez, les fichiers sources du logo (AI, SVG ou PDF vectoriel) ?</li>
+      <li><b>Outils :</b> confirmez-vous Photoshop, Illustrator, Premiere Pro et After Effects ? Sinon, je prévois des alternatives gratuites (Photopea, Figma, DaVinci Resolve).</li>
+    </ol>
+  </div>
+</section>
+
+<footer>Primestone Media · Mission 01 · Audit et directions artistiques · Illustrations : extraits de la miniature fournie, usage interne de travail. Les compositions sont des esquisses de principe, pas des gabarits finaux.</footer>
+</div>
