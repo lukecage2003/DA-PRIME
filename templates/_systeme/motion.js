@@ -21,7 +21,7 @@ export function normaliser(d) {
     direction: DIRECTIONS[d.direction] ? d.direction : f.directions[0], format: FORMATS_MOTION[d.format] ? d.format : '16:9',
     textes: {}, images: {}, couleurs: { ...(d.couleurs || {}) }, effets: { ...(d.effets || {}) }, calques: { ...(d.calques || {}) }, ordre: Array.isArray(d.ordre) ? d.ordre : null,
     preset: PRESETS[d.preset] ? d.preset : (f.preset || 'revelation'), duree: clamp(+d.duree || 6, 2, 15), vitesse: clamp(+d.vitesse || 1, 0.5, 2),
-    lettres: d.lettres ?? false, sortie: d.sortie ?? false, sceau: d.sceau ?? true, trameImage: d.trameImage ?? false, cree: d.cree, modifie: d.modifie,
+    lettres: d.lettres ?? false, sortie: d.sortie ?? false, sceau: d.sceau ?? true, trameImage: d.trameImage ?? false, cree: d.cree, modifie: d.modifie, taille: d.taille?.w > 0 && d.taille?.h > 0 ? { w: +d.taille.w, h: +d.taille.h } : undefined,
   };
   for (const c of f.champs) out.textes[c.id] = d.textes?.[c.id] ?? c.defaut ?? '';
   for (const s of f.images) out.images[s.id] = d.images?.[s.id] ?? null;  // null : image de substitution
@@ -144,7 +144,7 @@ function marque(k) {
   const { W, H, dir, u, doc } = k, s = Math.round(64 * u), x = W - k.m - s, y = H - k.m - s;
   const kids = [];
   if (doc.sceau) { const gh = s * 0.68, sc = gh / LOGO.P.h, fondS = clair(dir.fond) ? C.k : C.y, lettre = clair(dir.fond) ? C.y : C.k;
-    kids.push({ k: 'rect', x, y, w: s, h: s, rx: r1(s * T['motif.seal-radius-ratio']), fill: fondS }, { k: 'path', d: LOGO.P.d, fill: lettre, tr: { x: r1(x + (s - LOGO.P.w * sc) / 2), y: r1(y + (s - gh) / 2), s: Math.round(sc * 10000) / 10000 }, statut: 'NON-OFFICIEL' }); }
+    kids.push({ k: 'rect', x, y, w: s, h: s, rx: r1(s * T['motif.seal-radius-ratio']), fill: fondS }, { k: 'path', d: LOGO.P.d, regle: 'evenodd', fill: lettre, tr: { x: r1(x + (s - LOGO.P.w * sc) / 2), y: r1(y + (s - gh) / 2), s: Math.round(sc * 10000) / 10000 }, statut: 'NON-OFFICIEL' }); }
   const cr = k.txt('credit');
   if (cr) kids.push({ k: 'text', lignes: [cr.toLocaleUpperCase('fr-FR')], police: 'mono', taille: Math.round(15 * u), pas: 0, ls: 1.5, align: 'end', x: doc.sceau ? x - 14 * u : W - k.m, y: H - k.m - 4 * u, fill: dir.texte, op: 0.75 });
   if (kids.length) k.couche('marque', 'Marque et crédit', 'texte', 99, kids, { box: { x: W - k.m - 420 * u, y: y, w: 420 * u, h: s } });
@@ -154,7 +154,7 @@ function marque(k) {
 
 // ---------- Composition à l'instant t ----------
 export function composer(docIn, t = null, { final = false, imagesPH = () => null } = {}) {
-  const doc = normaliser(docIn), F = FORMATS_MOTION[doc.format], W = F.w, H = F.h;
+  const doc = normaliser(docIn), F = doc.taille || FORMATS_MOTION[doc.format], W = F.w, H = F.h;
   const fam = FAMILLES_MOTION[doc.famille], k = kit(doc, W, H, imagesPH);
   k.foyerXY = fam.foyer(k); k.foyer = k.foyerXY.map(Math.round).join(',');
   fond(k); effetsFond(k, k.foyerXY);
@@ -192,7 +192,7 @@ export function composer(docIn, t = null, { final = false, imagesPH = () => null
     return { k: 'g', id: 'volets', kids }; };
   if (doc.preset === 'volets' && !final && tt < 1.4) nodes.push(volets(clamp(tt / 1.2), true));
   if (sortie && !final && tt > D - sortie) nodes.push(volets(clamp((tt - (D - sortie)) / sortie), false));
-  return { w: W, h: H, nodes, alertes: k.alertes, pose, duree: D, t: tt, couches: couches.map((c) => ({ id: c.id, nom: c.nom, role: c.role, box: c.box, slot: c.slot, zone: c.zone, champ: c.champ, verrou: !!c.verrou, visible: doc.calques[c.id]?.visible !== false })) };
+  return { w: W, h: H, nodes, alertes: k.alertes, pose, duree: D, t: tt, foyer: k.foyerXY, effets: Object.fromEntries(Object.keys(EFFETS).map((n) => [n, k.eff(n)])), dir: k.dir, couches: couches.map((c) => ({ id: c.id, nom: c.nom, role: c.role, seq: c.seq, rot: c.rot, op: c.op, box: c.box, slot: c.slot, zone: c.zone, champ: c.champ, verrou: !!c.verrou, visible: doc.calques[c.id]?.visible !== false })) };
 }
 // Animation lettre à lettre d'un texte : chaque caractère arrive en décalé
 function lettres(n, p) {

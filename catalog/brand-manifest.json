@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "name": "primestone-brand",
   "release": {
-    "version": "0.5.0",
+    "version": "0.6.0",
     "date": "2026-11-05",
     "channel": "provisoire"
   },
@@ -20,7 +20,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "case",
         "cadre",
@@ -62,7 +62,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "filet",
         "incision",
@@ -104,7 +104,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "filet",
         "incision",
@@ -146,7 +146,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "incision",
         "jaune"
@@ -187,7 +187,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "incision",
         "noir"
@@ -228,7 +228,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "rubrique",
         "actu"
@@ -269,7 +269,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "rubrique",
         "analyse",
@@ -311,7 +311,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "rubrique",
         "analyse",
@@ -353,7 +353,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "rubrique",
         "cosmique"
@@ -394,7 +394,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "rubrique",
         "evenement"
@@ -435,7 +435,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "rubrique",
         "guide"
@@ -476,7 +476,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "rubrique",
         "histoire"
@@ -517,7 +517,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "rubrique",
         "theorie"
@@ -558,7 +558,7 @@
       "category": "elements",
       "kind": "element",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "sceau",
         "jaune",
@@ -601,7 +601,7 @@
       "category": "elements",
       "kind": "element",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "sceau",
         "noir",
@@ -644,7 +644,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "trame",
         "benday",
@@ -686,7 +686,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "volet",
         "transition",
@@ -728,7 +728,7 @@
       "category": "elements",
       "kind": "grille",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "grid",
         "carrousel",
@@ -770,7 +770,7 @@
       "category": "elements",
       "kind": "grille",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "grid",
         "miniature",
@@ -812,7 +812,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "car",
         "avis",
@@ -847,7 +847,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "car",
         "chiffre",
@@ -883,7 +883,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "car",
         "couverture",
@@ -918,7 +918,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "car",
         "faits",
@@ -953,7 +953,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "car",
         "presentation",
@@ -989,7 +989,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "car",
         "recit",
@@ -1024,7 +1024,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "car",
         "planche",
@@ -1051,7 +1051,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "fiche",
         "personnage",
@@ -1086,7 +1086,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "fiche",
         "personnage",
@@ -1121,7 +1121,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "info",
         "barres",
@@ -1156,7 +1156,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "info",
         "chronologie",
@@ -1191,7 +1191,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "analyse",
@@ -1227,7 +1227,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "analyse",
@@ -1263,7 +1263,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "analyse",
@@ -1299,7 +1299,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "analyse",
@@ -1335,7 +1335,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "analyse",
@@ -1371,7 +1371,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "analyse",
@@ -1407,7 +1407,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "actualites",
@@ -1443,7 +1443,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "actualites",
@@ -1479,7 +1479,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "theories",
@@ -1514,7 +1514,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "theories",
@@ -1549,7 +1549,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "guides",
@@ -1584,7 +1584,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "guides",
@@ -1619,7 +1619,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "guides",
@@ -1654,7 +1654,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "evenements",
@@ -1690,7 +1690,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "evenements",
@@ -1726,7 +1726,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "histoire",
@@ -1761,7 +1761,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "histoire",
@@ -1796,7 +1796,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "cosmique",
@@ -1831,7 +1831,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "cosmique",
@@ -1866,7 +1866,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "planche",
@@ -1893,7 +1893,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "logo",
         "icone",
@@ -1952,7 +1952,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "logo",
         "icone",
@@ -2011,7 +2011,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "logo",
         "icone",
@@ -2070,7 +2070,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "logo",
         "logotype",
@@ -2129,7 +2129,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "logo",
         "logotype",
@@ -2188,7 +2188,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "logo",
         "logotype",
@@ -2247,7 +2247,7 @@
       "category": "originaux",
       "kind": "logo",
       "status": "reference",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "logo",
         "icone",
@@ -2272,7 +2272,7 @@
       "category": "originaux",
       "kind": "logo",
       "status": "reference",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "logo",
         "logotype",
@@ -2298,7 +2298,7 @@
       "category": "originaux",
       "kind": "gabarit-miniature",
       "status": "reference",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "min",
         "superman",
@@ -2324,7 +2324,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "anton",
         "ofl"
@@ -2358,7 +2358,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "archivo",
         "bold"
@@ -2434,7 +2434,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "instrumentserif",
         "italic"
@@ -2474,7 +2474,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "jetbrainsmono",
         "bold"
@@ -2514,7 +2514,7 @@
       "category": "tokens",
       "kind": "tokens",
       "status": "provisoire",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "tags": [
         "tokens"
       ],

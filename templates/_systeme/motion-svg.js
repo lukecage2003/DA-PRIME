@@ -20,22 +20,23 @@ export function versSVG(scene, { polices = '', titre = 'Création Motion Studio'
   function noeud(x) {
     switch (x.k) {
       case 'g': {
-        const t = x.tr, tr = t && (t.x || t.y || t.s !== 1 || t.r) ? ` transform="translate(${r1(t.x)} ${r1(t.y)})${t.s !== 1 || t.r ? ` translate(${t.ox} ${t.oy})${t.r ? ` rotate(${t.r})` : ''}${t.s !== 1 ? ` scale(${t.s})` : ''} translate(${-t.ox} ${-t.oy})` : ''}"` : '';
-        let clip = ''; if (x.clip) { const id = uid('c'); defs.push(`<clipPath id="${id}"><polygon points="${pts(x.clip)}"/></clipPath>`); clip = ` clip-path="url(#${id})"`; }
+        const t = x.tr, sx = t?.sx ?? 1, tr = t && (t.x || t.y || t.s !== 1 || t.r || sx !== 1 || t.kx) ? ` transform="translate(${r1(t.x)} ${r1(t.y)})${t.s !== 1 || t.r || sx !== 1 || t.kx ? ` translate(${t.ox} ${t.oy})${t.r ? ` rotate(${t.r})` : ''}${t.kx ? ` skewX(${r1((Math.atan(t.kx) * 180) / Math.PI)})` : ''}${t.s !== 1 || sx !== 1 ? ` scale(${Math.round(t.s * sx * 10000) / 10000}${sx !== 1 ? ` ${t.s}` : ''})` : ''} translate(${-t.ox} ${-t.oy})` : ''}"` : '';
+        let fl = ''; if (x.flou) { const id = uid('f'); defs.push(`<filter id="${id}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="${r1(x.flou / 2)}"/></filter>`); fl = ` filter="url(#${id})"`; }
+        let clip = ''; if (x.clip) { const id = uid('c'); defs.push(`<clipPath id="${id}">${typeof x.clip === 'string' ? `<path d="${x.clip}"/>` : `<polygon points="${pts(x.clip)}"/>`}</clipPath>`); clip = ` clip-path="url(#${id})"`; }
         const lab = x.nom ? ` id="calque-${esc(x.id)}" inkscape:groupmode="layer" inkscape:label="${esc(x.nom)}"` : x.id ? ` id="${esc(x.id)}"` : '';
         const inner = x.kids.map(noeud).join('');
         // Transformation et découpe sur deux groupes : la découpe reste dans le repère de la page
-        return clip ? `<g${lab}${op(x.op)}${clip}${bl(x)}><g${tr}>${inner}</g></g>` : `<g${lab}${tr}${op(x.op)}${bl(x)}>${inner}</g>`;
+        return clip ? `<g${lab}${op(x.op)}${clip}${bl(x)}><g${tr}${fl}>${inner}</g></g>` : `<g${lab}${tr}${op(x.op)}${bl(x)}${fl}>${inner}</g>`;
       }
       case 'rect': return `<rect x="${x.x}" y="${x.y}" width="${x.w}" height="${x.h}"${x.rx ? ` rx="${x.rx}"` : ''}${peint(x.fill)}${trait(x)}${op(x.op)}/>`;
       case 'poly': return `<polygon points="${pts(x.pts)}"${peint(x.fill)}${trait(x)}${op(x.op)}${bl(x)}/>`;
       case 'circ': return `<circle cx="${x.x}" cy="${x.y}" r="${x.r}"${peint(x.fill)}${trait(x)}${op(x.op)}/>`;
-      case 'path': return `<path d="${x.d}"${peint(x.fill)}${trait(x)}${op(x.op)}${x.tr ? ` transform="translate(${x.tr.x} ${x.tr.y}) scale(${x.tr.s})"` : ''}${x.statut ? ` data-ps-statut="${x.statut}"` : ''} fill-rule="evenodd"/>`;
+      case 'path': return `<path d="${x.d}"${peint(x.fill)}${trait(x)}${op(x.op)}${x.tr ? ` transform="translate(${x.tr.x} ${x.tr.y}) scale(${x.tr.s})"` : ''}${x.statut ? ` data-ps-statut="${x.statut}"` : ''}${x.regle ? ` fill-rule="${x.regle}"` : ''}/>`;
       case 'text': {
-        const m = M[x.police], anc = x.align === 'middle' ? 'middle' : x.align === 'end' ? 'end' : 'start';
+        const m = x.fam ? { family: x.fam, weight: x.poids || 400, style: x.style || 'normal' } : M[x.police] || { family: 'sans-serif', weight: 400, style: 'normal' }, anc = x.align === 'middle' ? 'middle' : x.align === 'end' ? 'end' : 'start';
         let filtre = ''; if (x.glow) { const id = uid('l'); defs.push(`<filter id="${id}" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur in="SourceAlpha" stdDeviation="${r1(x.glow.b / 2)}" result="b"/><feFlood flood-color="${x.glow.c}"/><feComposite in2="b" operator="in" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`); filtre = ` filter="url(#${id})"`; }
         const sp = x.lignes.map((l, i) => `<tspan x="${x.x}" y="${r1(x.y + i * x.pas)}">${esc(l)}</tspan>`).join('');
-        return `<text font-family="${m.family}" font-weight="${m.weight}"${m.style !== 'normal' ? ` font-style="${m.style}"` : ''} font-size="${x.taille}"${x.ls ? ` letter-spacing="${x.ls}"` : ''} text-anchor="${anc}"${peint(x.fill)}${x.stroke ? `${trait(x)} paint-order="stroke"` : ''}${op(x.op)}${filtre}>${sp}</text>`;
+        return `<text font-family="${m.family}" font-weight="${m.weight}"${m.style !== 'normal' ? ` font-style="${m.style}"` : ''} font-size="${x.taille}"${x.ls ? ` letter-spacing="${x.ls}"` : ''} text-anchor="${anc}"${peint(x.fill)}${x.stroke ? `${trait({ ...x, lw: (x.lw || 1) * 2 })} paint-order="stroke"` : ''}${op(x.op)}${filtre}>${sp}</text>`;
       }
       case 'img': {
         let f = '';

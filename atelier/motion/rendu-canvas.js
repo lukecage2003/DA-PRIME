@@ -3,7 +3,7 @@ import M from '../../templates/_systeme/metrics.js';
 import { largeur } from '../../templates/_systeme/motion-base.js';
 
 const rgba = (hex, a = 1) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
-const police = (x) => { const m = M[x.police]; return `${m.style === 'italic' ? 'italic ' : ''}${m.weight} ${x.taille}px "${m.family}"`; };
+const police = (x) => { const m = x.fam ? { family: x.fam, weight: x.poids || 400, style: x.style || 'normal' } : M[x.police] || { family: 'sans-serif', weight: 400, style: 'normal' }; return `${m.style === 'italic' ? 'italic ' : ''}${m.weight} ${x.taille}px "${m.family}"`; };
 
 export function creerRendu() {
   const images = new Map(), silhouettes = new Map(), trames = new Map(); let bruit = null;
@@ -16,7 +16,7 @@ export function creerRendu() {
     const gr = f.lin ? g.createLinearGradient(...f.lin) : g.createRadialGradient(f.rad[0], f.rad[1], 0, f.rad[0], f.rad[1], f.rad[2]);
     for (const [o, c, a = 1] of f.st) gr.addColorStop(o, rgba(c, a)); return gr;
   }
-  const chemin = (pts) => { const p = new Path2D(); p.moveTo(pts[0], pts[1]); for (let i = 2; i < pts.length; i += 2) p.lineTo(pts[i], pts[i + 1]); p.closePath(); return p; };
+  const chemin = (pts) => { if (typeof pts === 'string') return new Path2D(pts); const p = new Path2D(); p.moveTo(pts[0], pts[1]); for (let i = 2; i < pts.length; i += 2) p.lineTo(pts[i], pts[i + 1]); p.closePath(); return p; };
   function remplir(g, x, p, regle) {
     if (x.fill && x.fill !== 'none') { g.fillStyle = peint(g, x.fill); g.fill(p, regle); }
     if (x.stroke) { g.strokeStyle = peint(g, x.stroke); g.lineWidth = x.lw || 1; g.lineJoin = 'round'; g.stroke(p); }
@@ -46,8 +46,8 @@ export function creerRendu() {
     const passe = (fn) => x.lignes.forEach((l, i) => {
       const y = x.y + i * x.pas;
       if (!x.ls) { g.textAlign = x.align === 'middle' ? 'center' : x.align === 'end' ? 'right' : 'left'; fn(l, x.x, y); return; }
-      const tot = largeur(l, x.police, x.taille, x.ls); let cx = x.align === 'middle' ? x.x - tot / 2 : x.align === 'end' ? x.x - tot : x.x; g.textAlign = 'left';
-      for (const ch of l) { fn(ch, cx, y); cx += largeur(ch, x.police, x.taille) + x.ls; }
+      const tot = M[x.police] && !x.fam ? largeur(l, x.police, x.taille, x.ls) : [...l].reduce((s, c) => s + g.measureText(c).width, 0) + x.ls * Math.max(0, [...l].length - 1); let cx = x.align === 'middle' ? x.x - tot / 2 : x.align === 'end' ? x.x - tot : x.x; g.textAlign = 'left';
+      for (const ch of l) { fn(ch, cx, y); cx += (M[x.police] && !x.fam ? largeur(ch, x.police, x.taille) : g.measureText(ch).width) + x.ls; }
     });
     if (x.op !== undefined) g.globalAlpha *= x.op;
     if (x.stroke) { g.strokeStyle = x.stroke; g.lineWidth = x.lw * 2; g.lineJoin = 'round'; passe((t, a, b) => g.strokeText(t, a, b)); }
@@ -62,13 +62,14 @@ export function creerRendu() {
         case 'g': {
           if (x.clip) g.clip(chemin(x.clip));
           if (x.blend) g.globalCompositeOperation = x.blend;
-          const t = x.tr; if (t) { g.translate(t.x, t.y); if (t.s !== 1 || t.r) { g.translate(t.ox, t.oy); if (t.r) g.rotate((t.r * Math.PI) / 180); g.scale(t.s, t.s); g.translate(-t.ox, -t.oy); } }
-          for (const k of x.kids) noeud(g, k, e * (t?.s ?? 1)); break;
+          if (x.flou && 'filter' in g) g.filter = `blur(${x.flou * e}px)`;
+          const t = x.tr; if (t) { g.translate(t.x, t.y); if (t.s !== 1 || t.r || t.sx || t.kx) { g.translate(t.ox, t.oy); if (t.r) g.rotate((t.r * Math.PI) / 180); if (t.kx) g.transform(1, 0, t.kx, 1, 0, 0); g.scale(t.s * (t.sx ?? 1), t.s); g.translate(-t.ox, -t.oy); } }
+          for (const k of x.kids) noeud(g, k, e * Math.abs(t?.s ?? 1)); break;
         }
         case 'rect': { const p = new Path2D(); x.rx && p.roundRect ? p.roundRect(x.x, x.y, x.w, x.h, x.rx) : p.rect(x.x, x.y, x.w, x.h); remplir(g, x, p); break; }
         case 'poly': if (x.blend) g.globalCompositeOperation = x.blend; remplir(g, x, chemin(x.pts)); break;
         case 'circ': { const p = new Path2D(); p.arc(x.x, x.y, Math.max(0, x.r), 0, 6.2832); remplir(g, x, p); break; }
-        case 'path': if (x.tr) { g.translate(x.tr.x, x.tr.y); g.scale(x.tr.s, x.tr.s); } remplir(g, x, new Path2D(x.d), 'evenodd'); break;
+        case 'path': if (x.tr) { g.translate(x.tr.x, x.tr.y); g.scale(x.tr.s, x.tr.s); } remplir(g, x, new Path2D(x.d), x.regle || 'nonzero'); break;
         case 'text': texte(g, x, e); break;
         case 'img': {
           const im = images.get(x.href); if (!im) break;

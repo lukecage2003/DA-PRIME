@@ -4,7 +4,7 @@ Dépôt de l'identité visuelle de **Primestone Media** : système graphique, de
 
 Direction artistique de référence : **Signal** (YouTube, accroches, communication) + **Kiosque** (éditorial, dossiers, carrousels, infographies, bibliothèque). Direction sombre et cinématographique en usage secondaire.
 
-## État : lot 4 (Motion Studio dans l'Atelier) · version 0.5.0 provisoire
+## État : lot 5 (Motion Studio, studio de composition et de motion design) · version 0.6.0 provisoire
 
 | Élément | Emplacement | Statut |
 |---|---|---|
@@ -18,7 +18,7 @@ Direction artistique de référence : **Signal** (YouTube, accroches, communicat
 | Gabarits SVG Kiosque 4:5 : 6 diapositives de carrousel, fiche personnage (8 variantes) | `templates/kiosque/` | provisoire (logo non officiel) |
 | Infographies 16:9 pilotées par JSON : chronologie, barres ; validation et schéma | `templates/infographies/`, `data/infographies/`, `schemas/` | provisoire |
 | Atelier : 3 supports, saisie, recadrage, données JSON, contrôles, exports PNG/JPG/SVG, partage, sauvegarde automatique | `atelier/` | prototype |
-| Motion Studio : 8 familles de créations animées, 6 directions visuelles, calques, effets comics, 8 presets d'animation, exports PNG/JPG/SVG/MP4 ou WebM/GIF, créations enregistrées sur l'appareil | `atelier/motion/`, `templates/_systeme/motion*.js` | MVP |
+| Motion Studio : composition libre (texte, image, forme, effet, groupe), typographie avancée, 18 effets comics, 6 systèmes graphiques, animation par calque, séquenceur, caméra, 12 formats et personnalisé, exports PNG/JPG/SVG/GIF/WebM/MP4, bibliothèque, versions, projets et polices locales | `atelier/motion/`, `templates/_systeme/studio*.js`, `templates/_systeme/motion*.js` | version stable, provisoire |
 | Catalogue `brand-manifest.json` + schéma | `catalog/`, `schemas/` | généré |
 | Schéma Supabase | `supabase/` | **brouillon non appliqué** |
 | Présentations des missions 01 et 02 | `presentations/` | archive |

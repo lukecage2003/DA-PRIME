@@ -1,115 +1,212 @@
-# Motion Studio · MVP (lot 4)
+# Motion Studio · studio de composition et de motion design (lot 5, version 0.6.0)
 
-Outil de création graphique et de motion design dédié aux comics, super-héros, éditeurs et à la pop culture, intégré à l'Atelier (`atelier/motion/`). Il produit des **compositions originales et des animations autonomes** (annonces, révélations, affiches animées, présentations). Ce n'est pas un logiciel de montage : pas de timeline, l'animation est pilotée par des presets et quelques réglages.
+Motion Studio est l'outil de création graphique et d'animation de l'Atelier, spécialisé dans les comics, les super-héros, les univers fictifs et la pop culture. Il s'ouvre depuis le bouton *Motion Studio →* de l'Atelier (`atelier/motion/`).
+
+Il produit des compositions originales, fixes ou animées : annonces éditoriales, révélations de couvertures et de personnages, affiches, compositions typographiques, dossiers, cartes d'univers, chronologies, crossovers, visuels pour YouTube, Instagram, TikTok et l'impression. Ce n'est ni un logiciel de montage vidéo ni un outil de publication.
 
 Tout fonctionne sur l'appareil : aucun compte, aucun serveur distant, aucune API d'IA, aucun service payant.
 
-## Ouvrir
-
 ```bash
-npm run atelier            # puis http://localhost:4173/atelier/ → bouton « Motion Studio → »
+npm run atelier            # http://localhost:4173/atelier/motion/
+npm run atelier:reseau     # depuis une tablette ou un téléphone du même Wi-Fi (voir docs/ATELIER.md)
 ```
 
-Adresse directe : `http://localhost:4173/atelier/motion/`. Sur téléphone ou tablette : `npm run atelier:reseau` (voir `docs/ATELIER.md`, mêmes limites HTTP).
+## Ce qui a changé depuis le MVP (0.5.0)
 
-## Utiliser
+Le MVP remplissait 8 familles de modèles par des formulaires. Le studio est désormais un **éditeur de composition libre** : page blanche ou modèle, éléments ajoutés librement, manipulés directement sur la scène, chacun avec sa propre animation. Les 8 familles du MVP restent disponibles comme **modèles intégrés**, convertis à l'ouverture en compositions entièrement éditables. Les créations enregistrées avec le MVP sont converties automatiquement (textes, illustrations, recadrages conservés).
 
-1. **Famille** : choisir l'une des huit familles (tableau ci-dessous). Les textes déjà personnalisés sont conservés d'une famille à l'autre ; les textes par défaut sont remplacés.
-2. **Direction visuelle** : quatre directions adaptées par famille, éditoriales ou cinématographiques. Changer de direction rétablit ses couleurs et ses effets.
-3. **Format** : 16:9 (1920 × 1080), 1:1 (1080 × 1080), 4:5 (1080 × 1350), 9:16 (1080 × 1920). La mise en page s'adapte (paysage ou vertical).
-4. **Textes** : l'aperçu se met à jour à chaque frappe ; les titres s'ajustent seuls ; les listes (équipe, membres, niveaux, étapes, fiche, statistiques) se saisissent une ligne par entrée, avec le format indiqué à côté du champ.
-5. **Illustrations** : *Importer* (PNG, JPG, WebP, AVIF ; réduites à 3000 px), *Recentrer*, *Substitution*, curseur de zoom. Dans l'aperçu : glisser pour recadrer, pincer ou molette pour zoomer. Les illustrations ne sont jamais retouchées : la trame ne les recouvre que si *Trame aussi sur les illustrations* est cochée ; l'encrage est un contour (personnage détouré) ou un filet de cadre.
-6. **Animation** : presets *Révélation, Apparition, Déplacement, Zoom, Parallaxe, Particules, Volets, Statique* ; durée (4 à 12 s) ; vitesse ; *Titres lettre à lettre* ; *Volets de fin*. Lecture, pause, *Rejouer*, curseur de position, boucle.
-7. **Effets** (0 = désactivé) : trame halftone, encrage, lignes de vitesse, lumière et rayons, particules, effets cosmiques (étoiles, crépitement d'énergie), grain d'impression. *Sceau P* : activable (vectorisation NON OFFICIELLE).
-8. **Couleurs** : fond, accent, texte, encre ; *Couleurs de la direction* pour revenir aux valeurs d'origine. Les couleurs de marque ne sont pas modifiées : seules celles de la création changent.
-9. **Calques** : liste du premier plan à l'arrière-plan ; sélectionner (dans la liste ou en touchant l'aperçu), masquer, monter, descendre ; position, échelle et opacité. Glisser dans l'aperçu déplace le calque sélectionné (recadre l'image s'il s'agit d'une illustration, sauf si *Glisser déplace aussi les illustrations* est cochée).
-10. **Contrôles** : débordements, titres vides, images trop agrandies, crédit manquant.
+## L'écran
 
-### Familles et directions
+- **En-tête** : retour à l'Atelier, nom de la création, annuler et rétablir, *Bibliothèque*, *Exporter*, état de la sauvegarde.
+- **Outils** (colonne de gauche ; bandeau sous l'en-tête sur tablette et téléphone) : Sélection, Texte, Forme, Image, Effet, Composant.
+- **Scène** au centre : règles, guides, grille, zones sûres, zoom, lecture et curseur de temps.
+- **Séquenceur** sous la scène : une piste par calque.
+- **Panneau** à droite (sous la scène sur tablette et téléphone) : *Propriétés* (contextuelles), *Animation*, *Calques*, *Document*, puis *Contrôles*.
 
-| Famille | Contenu | Directions | Preset par défaut |
-|---|---|---|---|
-| Annonce de série | nouvelle série, équipe créative | La Une, Pop, Nuit, Pulp | Révélation |
-| Révélation de couverture | couverture 2:3 inclinée, numéro, artiste | Nuit, La Une, Cosmique, Noir et rouge | Zoom |
-| Révélation de personnage | héros ou vilain détouré, écho du nom | Noir et rouge, Pop, Nuit, Cosmique | Révélation |
-| Révélation d'équipe | 2 à 5 membres en panneaux diagonaux | Pop, La Une, Nuit, Noir et rouge | Volets |
-| Crossover et événement | deux camps, coupe diagonale, nom de l'événement | Cosmique, Pop, Noir et rouge, Nuit | Zoom |
-| Dossier de personnage | portrait, fiche, statistiques animées | La Une, Pulp, Nuit, Noir et rouge | Déplacement |
-| Hiérarchie cosmique | 3 à 7 niveaux en pyramide ou en orbites | Cosmique, Nuit, La Une, Pop | Particules |
-| Chronologie | 3 à 7 étapes, axe diagonal ou vertical | La Une, Pulp, Nuit, Pop | Apparition |
+Les réglages courants sont visibles ; les réglages avancés sont dans des sections repliables qui restent ouvertes une fois dépliées.
 
-Directions : **La Une** (papier, encre, jaune), **Pop** (jaune, rouge, Ben-Day, contours épais), **Pulp** (tons chauds, grain), **Nuit** (nuit bleutée, lumière, poussière), **Noir et rouge** (contraste, grain), **Cosmique** (nébuleuses, étoiles, énergie).
+## Composer
 
-## Sauvegarde
+| Action | Comment |
+|---|---|
+| Sélectionner | toucher ou cliquer un élément ; Maj + clic pour ajouter ; glisser dans le vide pour un lasso ; Ctrl+A pour tout |
+| Entrer dans un groupe | double-clic sur l'élément voulu |
+| Déplacer | glisser ; flèches (Maj : ×10 px) ; magnétisme sur les bords et le centre de la scène, les guides, la grille et les autres éléments (Alt pendant le glisser pour l'ignorer) |
+| Redimensionner | 8 poignées (Maj : proportions conservées) ; pincer à deux doigts |
+| Pivoter | poignée ronde (Maj : pas de 15°) ; rotation à deux doigts |
+| Ordre | boutons premier plan, avancer, reculer, arrière-plan ; flèches de l'onglet Calques |
+| Aligner, répartir | 6 alignements (sur la scène pour un élément, sur la sélection pour plusieurs) ; répartition horizontale et verticale |
+| Grouper, dégrouper | Ctrl+G, Ctrl+Maj+G ; les positions sont conservées |
+| Dupliquer, copier, coller, supprimer | Ctrl+D, Ctrl+C, Ctrl+V, Suppr |
+| Verrouiller, masquer | onglet Calques ; un calque verrouillé ne se sélectionne plus sur la scène |
+| Annuler, rétablir | Ctrl+Z, Ctrl+Maj+Z ou Ctrl+Y (120 étapes ; les réglages continus d'un même champ comptent pour une étape) |
+| Lecture | Espace, ou ▶ ; le curseur et la tête de lecture du séquenceur positionnent l'instant |
+| Raccourcis d'ajout | T texte, R rectangle, I illustration |
 
-- **Automatique** sur l'appareil (IndexedDB), quelques dixièmes de seconde après chaque modification, illustrations comprises. La dernière création se rouvre au lancement.
-- **Mes créations** : liste des créations de l'appareil (ouvrir, supprimer). *Nouvelle création*, *Dupliquer*.
-- **Enregistrer en fichier** : `.motion.json` autonome (illustrations intégrées) pour archiver ou passer d'un appareil à l'autre ; *Ouvrir un fichier* en crée une copie locale.
+Les règles se masquent dans *Affichage* ; glisser depuis une règle crée un guide, le ramener hors de la scène le supprime. *Document > Grille et guides* propose des guides au centre et aux tiers.
 
-## Exports
+### Typographie
 
-| Format | Contenu | Méthode |
+Chaque texte est un élément à part entière :
+
+- **Hiérarchie** : Titre, Surtitre, Accroche, Corps, Légende, Onomatopée, avec des styles propres à chaque système graphique ;
+- **Polices** : les cinq polices de la marque (Anton, Archivo, Archivo gras, Instrument Serif italique, JetBrains Mono) et les **polices locales importées** (TTF, OTF, WOFF, WOFF2), enregistrées sur l'appareil et dans les fichiers de projet ;
+- taille, ajustement automatique à la boîte (ou taille fixe avec alerte de débordement), interligne, interlettrage, alignements horizontal et vertical, capitales, retours à la ligne manuels, typographie française (espaces insécables) ;
+- couleur ou dégradé vertical, bandeau de fond diagonal ;
+- contour, second contour, ombre portée (décalage, flou, opacité), lueur, **extrusion** (lettrage en relief) ;
+- **déformations** : arc (texte sur trajectoire circulaire), onde, inclinaison, impact (centre agrandi), perspective ;
+- les contours et l'extrusion restent dans la boîte du texte.
+
+### Illustrations
+
+- import de plusieurs fichiers à la fois (PNG, JPG, WebP, AVIF, GIF) ; **l'original est conservé à l'octet près** (au-delà de 4096 px de côté, une copie de travail réduite est créée et signalée) ;
+- remplissage du cadre ou image entière, zoom, décalage, **recadrage direct sur la scène** (double-clic, puis glisser, molette ou pincer) ;
+- **masques** : rectangle, coins arrondis, ellipse, lame diagonale, losange, hexagone, étoile, explosion, polygone (masques des modèles) ;
+- contour (filet, ou silhouette encrée pour une image détourée), ombre portée ;
+- **traitements non destructifs**, recalculés à partir de l'original : retrait d'un fond uni (couleur et tolérance), noir et blanc, bichromie, contraste, luminosité, trame d'impression en points ;
+- **remplacer l'illustration** conserve masque, recadrage, traitements et animations.
+
+Le détourage automatique d'un personnage sur un fond complexe n'est pas proposé : aucune méthode locale fiable et légère n'a été retenue (voir le backlog). Le retrait d'un fond uni fonctionne sur les illustrations à fond blanc ou coloré.
+
+### Formes, bulles et cadres
+
+Rectangle (coins arrondis), ellipse, polygone, étoile, losange, hexagone, lame diagonale, bandeau, explosion et éclat d'impact (variables), bulle de dialogue, bulle de cri, bulle de pensée (pointe orientable), cartouche narratif, case de comics, cadre éditorial (double filet), ligne, flèche. Remplissage uni ou dégradé, contour, trame intérieure, ombre portée.
+
+### Effets
+
+Chaque effet est un calque : il se déplace, se redimensionne, se masque, s'anime et se combine avec les autres. Paramètres communs : intensité, densité, échelle, angle, couleurs, foyer, variation (graine), animation et vitesse.
+
+| Catégorie | Effets |
+|---|---|
+| Impression | trame halftone (radiale, linéaire, Ben-Day uniforme, inversée), texture papier, grain, motifs (rayures, quadrillage, pois, zigzag) |
+| Mouvement | lignes de vitesse (radiales), lignes de mouvement (parallèles) |
+| Impact | explosion, impact |
+| Énergie | éclairs, aura d'énergie |
+| Lumière | rayons lumineux, lumière (halo, projecteur, reflets d'objectif), dégradé, vignettage |
+| Particules | poussière, étincelles montantes, chute, éclatement |
+| Cosmos | champ d'étoiles, nébuleuse, crépitement cosmique |
+
+### Systèmes graphiques
+
+Six systèmes, chacun avec ses palettes, ses styles typographiques, ses animations par défaut et ses effets conseillés :
+
+| Système | Principe | Palettes |
 |---|---|---|
-| PNG | image finale (composition complète) à la taille du format | canvas |
-| JPG | idem, qualité 90 réduite jusqu'à 60 pour rester sous 2 Mo | canvas |
-| SVG | image finale vectorielle : calques nommés, polices et images intégrées | rendu SVG du même moteur |
-| MP4 ou WebM | animation complète, pleine ou demi-définition, 30 i/s | enregistrement du canvas (MediaRecorder) ; MP4 si le navigateur sait l'encoder, sinon WebM |
-| GIF | animation, 480 px à 12 i/s ou 720 px à 15 i/s, 256 couleurs, en boucle | encodeur intégré, image par image |
+| Éditorial premium | hiérarchie, grille, sobriété | Papier, Encre, Jaune |
+| Comics classique | trames, encrage, couleurs franches, impact | Jaune et rouge, Bleu et rouge, Noir et blanc |
+| Cinématographique | profondeur, lumière, atmosphère | Nuit, Noir et rouge, Ambre |
+| Cosmique | espace, énergie, échelle | Nébuleuse, Aurore, Solaire |
+| Minimaliste | peu d'éléments, contraste fort | Blanc, Noir |
+| Expérimental | collage, géométrie, typographie déformée | Collage, Acide |
 
-Le bouton vidéo affiche le format réellement disponible (« Vidéo MP4 » ou « Vidéo WebM ») ; il est désactivé si le navigateur n'enregistre pas de vidéo.
+Les couleurs des éléments sont des **jetons** (Fond, Papier, Encre, Texte, Accent, Accent 2) ou des couleurs libres. Changer de système ou de palette recolore toute la composition sans casser sa cohérence ; les composants insérés prennent les couleurs du système actif. Les couleurs de la palette sont modifiables pour la création ; les couleurs de marque ne sont pas modifiées.
+
+## Animer
+
+Chaque calque a sa propre animation, en trois parties combinables :
+
+- **Entrée** : fondu, glissement (4 directions), zoom avant ou arrière, tampon (impact), rebond, rotation, révélation par masque (4 directions), iris, volet diagonal, et pour les textes lettre à lettre, mot à mot, machine à écrire ; durée, délai, amplitude ;
+- **Boucle** : flottement, pulsation, battement, rotation continue, balancement, tremblement, scintillement, dérive ; amplitude, période, début ;
+- **Sortie** : fondu, glissement, zoom, agrandissement, rotation, masquage, iris, volet ; durée et avance sur la fin.
+
+**Courbes** : linéaire, décélération douce ou forte, accélération, accélération puis décélération, dépassement, élastique, rebonds, saccadée, ou **courbe de Bézier personnalisée** (quatre valeurs).
+
+**Préréglages** : impact comics, révélation douce, titre de cinéma, arrivée latérale, chute avec rebonds, machine à écrire, lettres en cascade, iris cosmique, volet aller-retour, flottement, battement de cœur, néon ; *Enregistrer comme préréglage* crée les vôtres. Les préréglages s'appliquent à plusieurs calques à la fois ; *Échelonner* décale leurs entrées.
+
+**Composition** : durée (1 à 60 s), lecture en boucle, **caméra** (poussée, recul, travelling, secousse) et **profondeur** de chaque calque pour une parallaxe multicouche.
+
+**Séquenceur** : une piste par calque ; faire glisser la barre bleue change le délai d'entrée, son bord droit sa durée ; la barre rouge règle la sortie ; la tête de lecture se déplace sur la règle des temps. Ce n'est pas une timeline de montage : pas de clips, de pistes audio ni d'images clés libres.
+
+## Formats
+
+Vidéo HD 1920 × 1080 et 4K 3840 × 2160, miniature YouTube 1280 × 720, 9:16 (Story, Reels, TikTok), 4:5, 1:1, bannière YouTube 2560 × 1440, en-tête X 1500 × 500, A4 portrait et paysage en 300 dpi, page de comics US en 300 dpi, affiche 2:3, et **format personnalisé** de 64 à 8192 px de côté.
+
+Changer de format **adapte** la composition : les éléments proches d'un bord y restent ancrés, les autres gardent leur position relative, les éléments plein cadre (fonds, effets) sont étirés, les tailles suivent la moyenne des rapports de dimensions. *Décliner dans ce format en copie* crée une nouvelle création adaptée : les placements se corrigent ensuite à la main. Les **zones sûres** (Affichage) montrent les parties masquées par l'interface des plateformes (9:16, miniature, bannière).
+
+## Exporter
+
+| Format | Contenu |
+|---|---|
+| PNG | composition complète ou instant du curseur, ×1, ×2 ou ×4 (8192 px au plus), fond transparent possible |
+| JPG | qualité 92, ou limité à 2 Mo pour une miniature YouTube |
+| SVG | vectoriel, calques nommés (Inkscape, Figma), images et polices intégrées (y compris importées), fond transparent possible |
+| GIF | 480, 720 ou 1080 px, 10 à 25 images/s, 256 couleurs, en boucle, fond transparent possible |
+| WebM image par image | VP9 (ou VP8), 24, 30 ou 60 images/s, jusqu'à 4K ; rendu exact de chaque image, plus rapide que le temps réel, indépendant de la visibilité de l'onglet (WebCodecs) |
+| MP4 ou WebM temps réel | selon le navigateur (MediaRecorder) ; dure autant que l'animation, onglet visible obligatoire ; 1920 px au plus |
+
+Le panneau n'affiche que les formats que le navigateur sait réellement produire. Aucun export n'a de son.
+
+## Bibliothèque et projets
+
+- **Mes créations** : vignettes, dossiers (champ *Dossier* de l'onglet Document), recherche, ouverture, duplication, suppression ; nouvelle création sur page blanche au format et dans le système choisis.
+- **Modèles** : les 8 modèles intégrés (4 directions chacun, au format choisi) et vos modèles (*Enregistrer comme modèle*).
+- **Composants** : titre d'impact, bandeau de surtitre, accroche, bloc de texte, crédit, onomatopées sur explosion et éclat, bulles de dialogue, de cri et de pensée, cartouche, case et planche de trois cases, badge, bandeau diagonal, cadre éditorial, fiche de statistiques, sceau P (non officiel), et vos composants (*Comme composant* sur une sélection).
+- **Formes et bulles**, **Typographie** (hiérarchie et dix onomatopées), **Effets**, **Ressources** (illustrations et polices importées).
+- **Fichiers** : enregistrer la création en **projet `.motion.json`** (composition, illustrations et polices incluses) ; ouvrir un projet (version 2, ou fichier du MVP converti) ; **exporter ou importer toute la bibliothèque** (créations, ressources, modèles, composants, préréglages ; l'import n'écrase rien).
+
+**Sauvegarde automatique** sur l'appareil (IndexedDB) une demi-seconde après chaque modification, et à la fermeture de l'onglet ; la dernière création se rouvre au lancement. **Versions** : *Enregistrer une version* (Document > Organisation), version automatique toutes les dix minutes d'édition, restauration (l'état courant est d'abord enregistré comme version) ; 30 versions au plus par création. Le studio demande au navigateur un **stockage persistant** ; l'état est affiché dans Bibliothèque > Fichiers. Le stockage du navigateur pouvant être effacé, **le fichier de projet reste la sauvegarde de référence** et le moyen de passer d'un appareil à l'autre.
 
 ## Architecture
 
-- `templates/_systeme/motion-base.js` : formats, directions, effets, générateurs (trame, faisceaux, lames), ajustement du texte (métriques de police de l'Atelier), presets d'animation.
-- `templates/_systeme/motion-familles.js` : les huit familles (champs, images, mise en page paysage et verticale).
-- `templates/_systeme/motion.js` : document de création (`normaliser`), composition à l'instant *t* → **liste d'affichage** indépendante du rendu ; calques, ordre, transformations, volets.
-- `templates/_systeme/motion-svg.js` : rendu SVG (Node et navigateur).
-- `atelier/motion/rendu-canvas.js` : rendu canvas (aperçu, PNG, JPG, vidéo, GIF), caches de trame et de silhouettes.
-- `atelier/motion/gif.js` : encodeur GIF89a (coupe médiane, tramage ordonné, LZW).
-- `atelier/motion/motion.js` : interface, stockage, interactions, exports.
+Le même moteur, sans dépendance, produit l'aperçu et tous les exports : une **liste d'affichage** (groupes, rectangles, polygones, chemins, textes, images, trames, grain) est rendue soit sur canvas (aperçu, PNG, JPG, GIF, vidéo), soit en SVG.
 
-Le moteur est déterministe (aléas à graine fixe) : un même document et un même instant donnent la même image, dans Node comme dans le navigateur. Motion Studio est inclus dans le précache hors ligne de l'Atelier.
+| Couche | Fichiers |
+|---|---|
+| Données et rendu de scène | `templates/_systeme/studio.js` (document, éléments, groupes, matrices, adaptation, conversion des modèles et du MVP) |
+| Typographie | `templates/_systeme/studio-texte.js` |
+| Formes et masques | `templates/_systeme/studio-formes.js` |
+| Effets | `templates/_systeme/studio-effets.js` |
+| Animation | `templates/_systeme/studio-anim.js` (courbes, entrées, boucles, sorties, caméra) |
+| Systèmes, palettes, formats | `templates/_systeme/studio-systemes.js` |
+| Composants intégrés | `templates/_systeme/studio-composants.js` |
+| Modèles (familles du MVP) | `templates/_systeme/motion*.js` |
+| Rendus | `atelier/motion/rendu-canvas.js`, `templates/_systeme/motion-svg.js` |
+| Éditeur | `atelier/motion/` : `app.js` (orchestration), `etat.js` (document, sélection, historique, opérations), `scene.js` (manipulation directe), `proprietes.js` (panneaux), `sequenceur.js`, `bibliotheque.js`, `exports.js`, `stockage.js`, `traitements.js` |
+| Encodeurs | `atelier/motion/gif.js` (GIF89a), `atelier/motion/webm.js` (multiplexeur WebM) |
 
-## Choix techniques : dépôts de référence évalués
+Le moteur est **déterministe** (aléas à graine fixe) : même document, même instant, même image, dans Node comme dans le navigateur. Un élément illisible est signalé dans les contrôles sans bloquer le reste de la composition. Pour ajouter un effet, une forme, une entrée ou un composant, il suffit d'ajouter une entrée au catalogue correspondant : l'éditeur, la bibliothèque, les rendus et les exports la prennent en charge.
 
-Aucune dépendance ajoutée. Licences vérifiées sur le registre npm le 2026-11-05 (l'API GitHub n'était pas accessible depuis l'environnement de travail).
+## Choix techniques : bibliothèques évaluées
+
+Aucune dépendance n'a été ajoutée. Licences et activité vérifiées sur le registre npm (l'API GitHub n'était pas accessible depuis l'environnement de travail).
 
 | Référence | Licence · activité | Décision |
 |---|---|---|
-| Motion Canvas | MIT · dernière publication 02/2025 | Non retenu : outil d'auteur en code avec son propre éditeur, pas un composant intégrable dans une interface simple. Idée reprise : la scène est une fonction pure du temps. |
-| Theatre.js | cœur Apache-2.0, studio **AGPL-3.0** · dernière publication 05/2024 | Non retenu : interface de keyframes (proche d'une timeline), studio sous AGPL, activité ralentie. |
-| PixiJS (+ Filters, Particle Emitter) | MIT · très actif | Non retenu pour le MVP : WebGL, ~500 Ko, pas d'export SVG ; le canvas 2D suffit aux effets visés. Candidat si des filtres GPU deviennent nécessaires. |
-| GSAP | licence propre « Standard no-charge », gratuite mais **non open source**, avec restrictions d'usage | Non retenu : licence non OSI ; les quelques fonctions d'interpolation nécessaires tiennent en dix lignes. |
-| SVG.js | MIT · actif | Non retenu : l'export SVG est généré directement depuis la liste d'affichage, sans manipulation du DOM. |
-| Paper.js | MIT · actif | Non retenu : redondant avec le canvas 2D et le SVG. |
-| Lottie Web | MIT · 05/2025 | Non retenu : lecteur d'animations produites dans After Effects (outil Adobe exclu). |
-| Codrops LetterEffects, GridRevealEffects | démonstrations, conditions d'utilisation de Codrops (pas de redistribution telle quelle) | Aucun code repris. Idées réinterprétées : titres lettre à lettre, volets d'ouverture et de fin. |
+| PixiJS, PixiJS Filters, Particle Emitter | MIT · très actif (filters et émetteur : moins actifs) | Non retenus : WebGL, ~500 Ko, pas d'export SVG, deux chaînes de rendu à maintenir. Le canvas 2D suffit aux effets livrés. Candidat si des filtres GPU (flou directionnel, distorsions) deviennent nécessaires. |
+| GSAP | licence « Standard no-charge », gratuite mais non open source | Non retenu : licence non OSI ; courbes et préréglages implémentés (Bézier comprise) en quelques dizaines de lignes. |
+| Theatre.js | cœur Apache-2.0, studio AGPL-3.0 · peu actif depuis 2024 | Non retenu : éditeur sous AGPL, logique de timeline à images clés hors périmètre. |
+| Motion Canvas | MIT · dernière publication 2025 | Non retenu : outil d'auteur en code avec son éditeur. Principe repris : la scène est une fonction pure du temps. |
+| SVG.js, Paper.js | MIT · actifs | Non retenus : le SVG est produit directement depuis la liste d'affichage. |
+| Lottie Web | MIT | Non retenu : lecteur d'animations conçues dans After Effects (outil Adobe exclu). |
+| Codrops LetterEffects, GridRevealEffects | conditions d'utilisation de Codrops | Aucun code repris ; idées réinterprétées (lettre à lettre, volets, révélations). |
+| Encodage vidéo et GIF (gif.js, mp4-muxer, webm-muxer…) | MIT pour la plupart | Non retenus : encodeur GIF et multiplexeur WebM écrits pour le studio (quelques centaines de lignes, testés) ; MP4 confié au navigateur. |
 
 ## Vérifié et non vérifié
 
-`npm run test:motion` (inclus dans `npm test`) : **51 tests**.
+`npm run test:motion` (inclus dans `npm test`) exécute les tests du moteur dans Node puis ceux de l'éditeur dans Chromium. **93 tests** : 32 dans Node (modèles du MVP ; 96 modèles convertis ; 6 systèmes × styles, formes, effets et composants à 4 instants ; déterminisme ; typographie ; courbes, entrées, boucles, sorties, caméra ; groupes et matrices ; adaptation de format ; jetons de couleur ; migration du MVP ; document invalide ; encodeurs GIF et WebM) et 61 dans Chromium (page blanche, texte, styles, déformation, annuler et rétablir, bibliothèque, déplacement, poignées, rotation, alignement, groupe, duplication, calques, import multiple et original intact, masque, bichromie, recadrage, remplacement, animation par calque, préréglage, échelonnement, séquenceur, lecture, système, caméra, format A4, police locale, composant, version, modèle personnel, sauvegarde et rechargement, recherche, projet et bibliothèque en fichier, PNG ×1 et ×2 transparent, JPG, SVG, GIF, WebM image par image et MP4 temps réel relus par le navigateur, hors ligne, transfert vers un autre appareil, ouverture d'un projet du MVP, Galaxy S25, iPad M2 portrait et paysage, Windows 1366 px).
 
-- Moteur (Node, 15) : 128 compositions (8 familles × 4 formats × 4 directions) sans alerte, SVG bien formé, déterminisme, entrée et pose de chaque preset, preset statique, volets, lettre à lettre, calques (masquage, déplacement, échelle, ordre), effets, débordement et titre vide, document invalide corrigé, image trop agrandie, encodeur GIF (décodage de contrôle et fidélité des couleurs).
-- Interface (Chromium) : accès depuis l'Atelier, 8 familles, saisie et mise à jour immédiate, alerte de débordement, direction et format, import, recadrage souris et molette, sélection et déplacement d'un calque dans l'aperçu, masquage et ordre, effets et couleurs, lecture et curseur, sauvegarde et réouverture après rechargement, liste des créations, fichier `.motion.json` (enregistrer et ouvrir), exports PNG 1920 × 1080, JPG < 2 Mo, SVG autonome et lisible, GIF 480 × 270, vidéo MP4 (Chromium de test), rechargement hors ligne, Galaxy S25 et iPad M2 émulés (pas de défilement horizontal, cibles de 44 px, glisser et pincer au doigt), Windows 1366 px.
-
-**Non vérifié** : aucun appareil physique ; ni Safari, ni Samsung Internet, ni Firefox (seul Chromium est disponible ici). Lecture des fichiers MP4 et WebM dans des lecteurs externes non contrôlée (seuls l'en-tête et la taille le sont).
+**Non vérifié** : aucun appareil physique ; ni Safari, ni Samsung Internet, ni Firefox (seul Chromium est disponible ici). Les gestes tactiles sont des événements tactiles réels de Chromium sur des appareils émulés. Les fichiers vidéo sont vérifiés par lecture dans Chromium (dimensions et durée), pas dans des lecteurs ou logiciels externes.
 
 ## Limites connues
 
-- **Vidéo en temps réel** : l'export dure autant que l'animation ; garder l'onglet visible (un onglet en arrière-plan ralentit ou interrompt l'enregistrement). Sur un téléphone peu puissant, préférer la demi-définition. Pas de son.
-- **MP4** dépend du navigateur : Chromium récent et Safari l'encodent ; ailleurs, l'export se fait en WebM (que certaines applications, notamment sur iPhone, lisent mal). Le format proposé est indiqué sur le bouton.
-- **GIF** : 256 couleurs, fichiers lourds au-delà de 8 s ; calcul de quelques secondes à une minute.
-- **Images fixes** : toujours l'état final (composition complète), pas l'image affichée au curseur.
-- **SVG** : le grain et la lueur utilisent des filtres SVG ; certains logiciels (Inkscape ancien, logiciels de découpe) les rendent différemment.
-- Les créations restent dans le navigateur de l'appareil : vider les données du site les efface. Utiliser *Enregistrer en fichier* pour les conserver.
-- Photos HEIC/HEIF non lisibles par tous les navigateurs (comme dans l'Atelier).
+- **Safari** : le flou des ombres de texte utilise le filtre canvas, absent des versions anciennes de Safari (l'ombre s'affiche alors nette) ; l'encodage WebM image par image dépend de WebCodecs et de VP9, qui peuvent manquer : seul l'enregistrement temps réel est alors proposé.
+- **Vidéo** : pas de son ; MP4 seulement en temps réel et selon le navigateur ; pas de vidéo à transparence.
+- **Très grands formats** : au-delà d'environ 16 millions de pixels (A4 ×2 par exemple), certains appareils mobiles refusent de créer l'image ; le studio prévient.
+- **GIF** : 256 couleurs, fichiers lourds au-delà de quelques secondes en 1080 px.
+- **SVG** : le grain, la texture papier, les lueurs et les flous utilisent des filtres SVG que certains logiciels rendent différemment ; les modes de fusion utilisent `mix-blend-mode`.
+- **Adaptation de format** : automatique mais approximative ; prévoir des corrections manuelles.
+- **Polices importées** : leur mesure utilise le navigateur ; vérifier leur licence avant diffusion. Elles ne sont pas disponibles dans les tests Node.
+- Les éléments vectoriels issus des modèles (fonds, formes composites) se transforment et s'animent mais leurs formes internes ne se modifient pas une à une.
+- Photos HEIC/HEIF non lisibles par tous les navigateurs.
 
-## Backlog post-MVP
+## Backlog (non livré)
 
-- Export de l'image affichée au curseur ; vignette de prévisualisation dans *Mes créations*.
-- Encodage vidéo image par image (WebCodecs) pour des exports plus rapides que le temps réel et indépendants de la visibilité de l'onglet.
-- Ajout libre de textes, images et formes (aujourd'hui : éléments fournis par chaque famille).
-- Traitements d'illustration optionnels (bichromie, contraste), masques personnalisés.
-- Musique ou effets sonores (avec gestion des droits), sous-titres.
-- Familles supplémentaires (citation, chiffre clé, comparatif d'éditions) et directions supplémentaires.
-- Contrôle de lisibilité automatique du contraste texte/fond.
+- Détourage automatique de personnages sur fond complexe (modèle de segmentation local : poids, licence et fiabilité à évaluer).
+- États et scènes successives dans une même composition (transitions entre plans).
+- Images clés libres et trajectoires de mouvement dessinées ; morphing de formes.
+- Masques animés dessinés à la main, masques d'écrêtage entre calques.
+- Export MP4 image par image (multiplexeur MP4), vidéo à transparence (WebM VP9 alpha), séquence PNG, son.
+- Édition point par point des formes et des éléments vectoriels issus des modèles.
+- Sauvegarde automatique dans un dossier de l'ordinateur (File System Access, Chromium seulement).
+- Filtres GPU (flou directionnel, distorsions) si PixiJS ou WebGL deviennent justifiés.
+- Vérifications sur appareils physiques, Safari et Firefox.
