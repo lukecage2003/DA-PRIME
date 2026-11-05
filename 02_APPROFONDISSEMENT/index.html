@@ -1,0 +1,687 @@
+<title>Primestone — Système Signal + Kiosque</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,300..900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout : planche de présentation sur noir maison. Sections = supports. Compositions en unités cqw → elles se redimensionnent comme de vrais gabarits. */
+:root{
+  --ink:#0A0A0A; --ink2:#141414; --line:#2A2A26; --paper:#F4F3EE; --muted:#9C9A8E;
+  --y:#FFE500; --k:#111111; --news:#ECEBE6; --red:#FF3B30;
+  --f-d:"Anton","Impact","Arial Narrow",sans-serif;
+  --f-b:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-s:"Instrument Serif","Times New Roman",serif;
+  --f-m:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ink);color:var(--paper);font-family:var(--f-b);font-size:16px;line-height:1.55;margin:0}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+section{padding-block:64px;border-top:1px solid var(--line)}
+h1,h2,h3,h4{text-wrap:balance;margin:0;font-weight:400}
+h2{font-family:var(--f-d);font-size:clamp(34px,5vw,58px);line-height:1;text-transform:uppercase}
+h3{font-weight:800;font-size:20px;line-height:1.25;font-stretch:90%}
+h4{font-family:var(--f-m);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--y)}
+p{margin:0;max-width:68ch}
+code{font-family:var(--f-m);font-size:.88em}
+.eyebrow{font-family:var(--f-m);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.eyebrow b{color:var(--y);font-weight:600}
+.stack{display:flex;flex-direction:column;gap:16px}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.g2,.g3{grid-template-columns:minmax(0,1fr)}}
+.muted{color:var(--muted)}
+.cap{font-family:var(--f-m);font-size:11px;color:var(--muted);letter-spacing:.06em;margin-top:8px;text-transform:uppercase}
+ul.r{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;font-size:14px;line-height:1.45}
+ul.r li{padding-left:18px;position:relative}
+ul.r li::before{content:"";position:absolute;left:0;top:.6em;width:9px;height:3px;background:var(--y)}
+ul.r.no li::before{background:var(--red)}
+.card{border:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:10px}
+.note{border-left:4px solid var(--y);padding:12px 16px;background:var(--ink2);font-size:14px}
+.tbl{overflow-x:auto}
+table.tb{width:100%;border-collapse:collapse;min-width:640px;font-size:14px}
+table.tb th,table.tb td{text-align:left;vertical-align:top;padding:10px 10px 10px 0;border-bottom:1px solid var(--line)}
+table.tb th{font-family:var(--f-m);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.scroller{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,1fr);gap:12px;overflow-x:auto;padding-bottom:8px}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:24px}
+nav.toc a{font-family:var(--f-m);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--paper);text-decoration:none;border:1px solid var(--line);padding:6px 10px}
+nav.toc a:hover,nav.toc a:focus-visible{border-color:var(--y);color:var(--y);outline:none}
+.tester{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--ink2);border:1px solid var(--line);padding:14px 16px;margin-top:20px}
+.tester label{font-family:var(--f-m);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tester select,.tester button,.tester input{font:14px var(--f-b);background:var(--ink);color:var(--paper);border:1px solid var(--line);padding:7px 10px}
+.tester button{cursor:pointer}
+.tester button:hover,.tester button:focus-visible{border-color:var(--y);outline:none}
+
+/* ================= SYSTÈME COMMUN DES COMPOSITIONS ================= */
+.f{container-type:inline-size;position:relative;overflow:hidden;max-width:100%;isolation:isolate}
+.r169{aspect-ratio:16/9}.r45{aspect-ratio:4/5}.r11{aspect-ratio:1}
+.f img{position:absolute;display:block;max-width:none}
+.bgY{background:var(--y);color:var(--k)}.bgK{background:var(--k);color:var(--y)}.bgN{background:var(--news);color:var(--k)}
+.ink{filter:drop-shadow(.35cqw 0 0 #111) drop-shadow(-.35cqw 0 0 #111) drop-shadow(0 .35cqw 0 #111) drop-shadow(0 -.35cqw 0 #111)}
+.bg{inset:0;width:100%;height:100%;object-fit:cover}
+/* Rubrique : étiquette mono, toujours en haut à gauche */
+.rub{position:absolute;left:4.5cqw;top:4.5cqw;z-index:5;font:600 2.1cqw/1 var(--f-m);letter-spacing:.14em;text-transform:uppercase;background:var(--k);color:var(--y);padding:1.1cqw 1.5cqw}
+.rub.red{background:var(--red);color:#fff}.rub.y{background:var(--y);color:var(--k)}
+/* Sceau P : toujours en bas à gauche, 8 % de largeur */
+.seal{position:absolute;left:4.5cqw;bottom:4.5cqw;z-index:5;width:8cqw;aspect-ratio:1;background:var(--k);border-radius:1.8cqw}
+.seal.y{background:var(--y)}
+.f .seal img{position:absolute;left:22%;top:16%;width:56%;height:68%;object-fit:contain}
+/* Titre Signal */
+.hd{position:absolute;z-index:4;font-family:var(--f-d);text-transform:uppercase;line-height:.86;letter-spacing:-.005em}
+/* Incision : barre oblique 8° (reprise des fentes du logotype) */
+.cut{position:absolute;z-index:4;background:currentColor;transform:skewX(-8deg)}
+/* Crédit artiste vertical, bord droit */
+.cred{position:absolute;right:1.4cqw;top:50%;z-index:5;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font:500 1.15cqw/1 var(--f-m);letter-spacing:.12em;text-transform:uppercase;opacity:.75}
+/* Numéro Kiosque */
+.num{position:absolute;z-index:5;font:600 1.7cqw/1 var(--f-m);letter-spacing:.12em}
+/* Trame Ben-Day */
+.dots::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background-image:radial-gradient(currentColor 22%,transparent 24%);background-size:1.3cqw 1.3cqw;opacity:.08}
+/* Case-cadre */
+.panel{position:absolute;overflow:hidden;border:.5cqw solid var(--k);z-index:2}
+/* Masthead Kiosque */
+.mast{position:absolute;left:5cqw;right:5cqw;top:4cqw;z-index:5;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:.45cqw solid var(--k);padding-bottom:1.6cqw}
+.f .mast img{position:static;height:5cqw;width:auto}
+.mast span{font:600 2.6cqw/1 var(--f-m);letter-spacing:.1em}
+.serif{font-family:var(--f-s);font-style:italic;letter-spacing:-.02em}
+mark{background:var(--y);color:var(--k);padding:0 .4em .02em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+
+/* ================= MINIATURES ================= */
+/* 1 Analyse personnage */
+.m1 .art{right:-3cqw;bottom:-1cqw;height:88%}
+.m1 .hd{left:4.5cqw;top:12.5cqw;font-size:15cqw;width:52cqw}
+.m1 .cut{left:4.5cqw;top:40cqw;width:18cqw;height:1.1cqw}
+/* 2 Analyse comics : couverture en case-cadre */
+.m2 .panel{right:7cqw;top:5cqw;width:30cqw;aspect-ratio:2/3;transform:rotate(3deg);box-shadow:1.4cqw 1.4cqw 0 var(--y)}
+.m2 .panel img{inset:0;width:100%;height:100%;object-fit:cover;object-position:60% 50%}
+.m2 .panel .td{position:absolute;left:0;right:0;top:0;z-index:2;background:var(--k);color:var(--y);font:600 1.6cqw/1 var(--f-m);padding:1cqw;display:flex;justify-content:space-between}
+.m2 .hd{left:4.5cqw;top:14cqw;font-size:11.5cqw;color:var(--y);width:54cqw}
+.m2 .stars{position:absolute;left:4.5cqw;top:39cqw;z-index:4;font:600 2.4cqw var(--f-m);color:var(--paper);letter-spacing:.1em}
+.m2 .stars b{color:var(--y)}
+/* 3 Actu */
+.m3 .art{right:4cqw;top:-6cqw;height:100%}
+.m3 .band{position:absolute;inset:auto 0 0 0;height:31%;background:var(--k);z-index:3}
+.m3 .hd{left:15cqw;bottom:6.4cqw;font-size:11cqw;color:var(--y)}
+.m3 .seal{background:var(--y)}
+.m3 .pub{position:absolute;right:4.5cqw;top:4.5cqw;z-index:5;font:600 2.1cqw/1 var(--f-m);letter-spacing:.14em;border:.3cqw solid var(--k);padding:1cqw 1.4cqw}
+/* 4 Théorie */
+.m4 .bg{filter:grayscale(.3) brightness(.75)}
+.m4 .hd{right:5cqw;top:11cqw;font-size:11.5cqw;color:var(--y);text-align:right;width:56cqw;text-shadow:0 .5cqw 2cqw rgba(0,0,0,.6)}
+.m4 .q{position:absolute;right:4cqw;bottom:-6cqw;z-index:3;font:38cqw/1 var(--f-d);color:var(--y);opacity:.92}
+/* 5 Guide */
+.m5 .covers{position:absolute;right:5cqw;top:9cqw;z-index:3;display:flex;gap:1.8cqw}
+.m5 .cv{position:relative;width:11cqw;aspect-ratio:2/3;border:.45cqw solid var(--k);overflow:hidden;background:var(--k)}
+.m5 .cv:nth-child(2){transform:translateY(4cqw)}.m5 .cv:nth-child(3){transform:translateY(8cqw)}
+.m5 .cv img{inset:0;width:100%;height:100%;object-fit:cover}
+.m5 .cv b{position:absolute;left:0;bottom:0;z-index:2;background:var(--k);color:var(--y);font:2.8cqw/1 var(--f-d);padding:.8cqw 1.2cqw}
+.m5 .hd{left:4.5cqw;top:13cqw;font-size:10.5cqw;width:46cqw}
+/* 6 Événement : deux mondes séparés par l'incision */
+.m6 .wl{position:absolute;inset:0;z-index:1;background:var(--y);clip-path:polygon(0 0,56% 0,48% 100%,0 100%)}
+.m6 .wr{position:absolute;inset:0;z-index:1;background:#16151f;clip-path:polygon(56% 0,100% 0,100% 100%,48% 100%)}
+.m6 .a1{left:-2cqw;bottom:-2cqw;height:84%;z-index:2}
+.m6 .a2{right:-3cqw;top:2cqw;height:96%;z-index:2}
+.m6 .cut{left:50.8%;top:-5%;width:1.4cqw;height:110%;background:var(--k);z-index:3}
+.m6 .hd{left:0;right:0;bottom:6cqw;text-align:center;font-size:10.5cqw;color:#fff;-webkit-text-stroke:.5cqw var(--k);paint-order:stroke fill}
+.m6 .hd span{color:var(--y)}
+/* 7 Histoire */
+.m7 .art{right:0;bottom:0;height:100%;filter:grayscale(1) contrast(1.6);mix-blend-mode:multiply;z-index:2}
+.m7 .hd{left:4cqw;top:11cqw;font-size:24cqw;z-index:1}
+.m7 .sub{position:absolute;left:4.5cqw;top:35cqw;z-index:4;font:600 2.6cqw/1.2 var(--f-m);letter-spacing:.1em;text-transform:uppercase;width:42cqw}
+/* 8 Cosmique */
+.m8 .hd{left:4.5cqw;bottom:13cqw;font-size:13cqw;color:var(--y);width:60cqw}
+.m8 .sub{position:absolute;left:4.5cqw;bottom:29cqw;z-index:4;font:500 2.1cqw/1 var(--f-b);letter-spacing:.3em;text-transform:uppercase;color:#fff}
+.m8 .cut{left:4.5cqw;bottom:26.5cqw;width:22cqw;height:.7cqw;color:var(--y)}
+.m8 .shade{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(0,0,0,.7),transparent 60%)}
+
+/* Grille de construction (surcouche) */
+.gridov{position:absolute;inset:0;z-index:10;pointer-events:none}
+.gridov .safe{position:absolute;inset:4.5cqw;border:.25cqw dashed #00C2FF}
+.gridov .dead{position:absolute;right:1.5%;bottom:3%;width:15%;height:11%;background:repeating-linear-gradient(45deg,rgba(255,59,48,.55) 0 .8cqw,transparent .8cqw 1.6cqw);border:.25cqw solid var(--red)}
+.gridov .dead::after{content:"durée YouTube";position:absolute;inset:auto 0 105% 0;text-align:center;font:600 1.6cqw var(--f-m);color:var(--red)}
+.gridov .col{position:absolute;top:0;bottom:0;width:.15cqw;background:rgba(0,194,255,.5)}
+.gridov .lab{position:absolute;font:600 1.6cqw var(--f-m);color:#00C2FF;background:rgba(0,0,0,.6);padding:.4cqw .8cqw}
+.phone{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;background:#fff;color:#0f0f0f;padding:16px}
+.phone .it{width:168px;display:flex;flex-direction:column;gap:6px;font:12px/1.3 Roboto,Arial,sans-serif}
+.phone .it.big{width:min(360px,100%)}
+.phone .it span{color:#606060}
+
+/* ================= KIOSQUE : CARROUSELS / FICHES / INFOS ================= */
+.kq .mast{left:6cqw;right:6cqw;top:6cqw}
+.kq .mast img{height:5.6cqw}
+.kq .mast span{font-size:3cqw}
+.kq .pg{position:absolute;right:6cqw;bottom:5cqw;z-index:5;font:600 2.8cqw var(--f-m);letter-spacing:.1em}
+.kq .foot{position:absolute;left:6cqw;bottom:5cqw;z-index:5;font:600 2.6cqw var(--f-m);letter-spacing:.12em;text-transform:uppercase}
+.kq .h{position:absolute;left:6cqw;right:6cqw;z-index:4}
+.kq .lead{font:500 4cqw/1.35 var(--f-b);font-stretch:90%}
+.kq .body{font:400 3.6cqw/1.45 var(--f-b)}
+.kq .lbl{font:600 2.6cqw/1.2 var(--f-m);letter-spacing:.12em;text-transform:uppercase}
+.kq .big{font:18cqw/.9 var(--f-d)}
+.kq .panel{left:6cqw;right:6cqw}
+.kq .panel img{inset:0;width:100%;height:100%;object-fit:cover}
+.kq .kv{display:grid;grid-template-columns:15cqw minmax(0,1fr);gap:0 2cqw;border-top:.3cqw solid var(--k)}
+.kq .kv>*{padding:1.6cqw 0;border-bottom:.2cqw solid rgba(17,17,17,.25)}
+.kq .kv dt{font:600 2.1cqw/1.3 var(--f-m);letter-spacing:.1em;text-transform:uppercase}
+.kq .kv dd{margin:0;font:500 3cqw/1.3 var(--f-b)}
+.kq .cover{position:absolute;left:6cqw;top:20cqw;width:36cqw;aspect-ratio:2/3;border:.6cqw solid var(--k);overflow:hidden;z-index:3;box-shadow:1.6cqw 1.6cqw 0 var(--y)}
+.kq .cover img{inset:0;width:100%;height:100%;object-fit:cover}
+.kq .cover b{position:absolute;left:0;right:0;top:0;z-index:2;background:var(--k);color:var(--y);font:600 2.4cqw/1 var(--f-m);padding:1.2cqw;display:flex;justify-content:space-between}
+.kq .side{position:absolute;left:47cqw;right:6cqw;top:20cqw;z-index:4;display:flex;flex-direction:column;gap:2.2cqw}
+.kq .lvl i{display:inline-block;width:2.6cqw;height:2.6cqw;border-radius:50%;border:.4cqw solid var(--k);margin-right:.8cqw}
+.kq .lvl i.f{background:var(--k)}
+/* fiche perso */
+.fiche .panel{top:17cqw;left:6cqw;right:auto;width:42cqw;height:52cqw;background:var(--y)}
+.fiche .panel img{object-fit:contain;object-position:50% 100%}
+.fiche .nm{position:absolute;left:52cqw;right:6cqw;top:17cqw;z-index:4}
+.fiche .nm b{display:block;font:12cqw/.86 var(--f-d);text-transform:uppercase}
+.fiche .nm span{display:block;font:italic 5cqw/1.1 var(--f-s);margin-top:1.4cqw}
+.fiche .kv{position:absolute;left:52cqw;right:6cqw;top:40cqw;z-index:4;grid-template-columns:minmax(0,1fr)}
+.fiche .kv dt{padding-bottom:0;border-bottom:0}
+.fiche .kv dd{padding-top:.4cqw}
+.fiche .reads{position:absolute;left:6cqw;right:6cqw;bottom:12cqw;z-index:4;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2cqw;border-top:.45cqw solid var(--k);padding-top:2cqw}
+.fiche .reads div{display:flex;flex-direction:column;gap:.6cqw}
+.fiche .reads b{font:italic 3.6cqw/1.05 var(--f-s)}
+.fiche .reads span{font:500 2.3cqw/1.25 var(--f-m)}
+/* infographie timeline */
+.tl{padding:0}
+.tl .rail{position:absolute;left:5cqw;right:5cqw;top:38cqw;height:.6cqw;background:var(--k);z-index:3}
+.tl .ages{position:absolute;left:5cqw;right:5cqw;top:19cqw;height:19cqw;display:grid;grid-template-columns:18fr 14fr 15fr 40fr;z-index:2}
+.tl .ages div{border-left:.4cqw solid var(--k);padding:1.4cqw 1.6cqw;display:flex;flex-direction:column;justify-content:space-between}
+.tl .ages div:nth-child(1){background:var(--y)}.tl .ages div:nth-child(2){background:#F5D9A8}.tl .ages div:nth-child(3){background:#E8C08A}.tl .ages div:nth-child(4){background:#D9D7CF}
+.tl .ages b{font:3.4cqw/1 var(--f-d);text-transform:uppercase}
+.tl .ages span{font:600 1.9cqw var(--f-m)}
+.tl .evs{position:absolute;left:5cqw;right:5cqw;top:39cqw;z-index:3;display:grid;grid-template-columns:18fr 14fr 15fr 40fr}
+.tl .evs div{padding:1.2cqw 1.6cqw 0;font:500 1.55cqw/1.35 var(--f-b);border-left:.4cqw solid var(--k)}
+.tl .evs i{display:block;font:italic 2cqw/1.1 var(--f-s);margin-bottom:.6cqw}
+.tl .ttl{position:absolute;left:5cqw;top:10cqw;z-index:4;font:italic 6cqw/1 var(--f-s)}
+.tl .yrs{position:absolute;left:5cqw;right:5cqw;top:44.6cqw;z-index:4}
+/* infographie barres */
+.bars .ttl{position:absolute;left:5cqw;top:10cqw;z-index:4;font:italic 6cqw/1 var(--f-s);width:60cqw}
+.bars .rows{position:absolute;left:5cqw;right:5cqw;top:23cqw;z-index:4;display:flex;flex-direction:column;gap:2cqw;margin:0}
+.bars .row{display:grid;grid-template-columns:24cqw minmax(0,1fr);align-items:center;gap:2cqw}
+.bars .row dt{font:600 1.9cqw/1.25 var(--f-m);letter-spacing:.06em;text-transform:uppercase}
+.bars .row dt i{display:block;font:500 1.6cqw var(--f-b);text-transform:none;letter-spacing:0;font-style:normal;opacity:.7}
+.bars .row dd{margin:0;position:relative;height:5.4cqw}
+.bars .row dd s{position:absolute;inset:0 auto 0 0;background:var(--k);transform:skewX(-8deg);transform-origin:bottom left}
+.bars .row dd b{position:absolute;left:2cqw;top:50%;transform:translateY(-50%);font:3.6cqw/1 var(--f-d);color:var(--y);white-space:nowrap}
+.bars .src{position:absolute;left:5cqw;bottom:4.5cqw;z-index:4;font:500 1.5cqw var(--f-m);opacity:.7;max-width:60cqw}
+
+/* ================= VIDÉO ================= */
+.v .bug{position:absolute;right:3.5cqw;top:3.5cqw;width:5cqw;aspect-ratio:1;background:var(--y);border-radius:1.1cqw;opacity:.85;z-index:6}
+.f .v-bugimg,.v .bug img{position:absolute;left:22%;top:16%;width:56%;height:68%;object-fit:contain}
+.lt1{position:absolute;left:5cqw;bottom:7cqw;z-index:6;display:flex;flex-direction:column;align-items:flex-start}
+.lt1 b{background:var(--y);color:var(--k);font:4.4cqw/1 var(--f-d);text-transform:uppercase;padding:1.1cqw 1.8cqw .9cqw;position:relative}
+.lt1 b::after{content:"";position:absolute;right:-1.6cqw;top:0;bottom:0;width:1.8cqw;background:var(--y);transform:skewX(-8deg);transform-origin:bottom}
+.lt1 span{background:var(--k);color:#fff;font:500 2cqw/1 var(--f-b);padding:1.1cqw 1.8cqw;letter-spacing:.02em}
+.src1{position:absolute;left:5cqw;bottom:5cqw;z-index:6;display:flex;align-items:stretch;font:500 1.7cqw/1 var(--f-m);letter-spacing:.06em}
+.src1 i{font-style:normal;background:var(--y);color:var(--k);padding:1cqw 1.4cqw;font-weight:600}
+.src1 span{background:rgba(17,17,17,.85);color:#fff;padding:1cqw 1.4cqw}
+.chap .no{position:absolute;left:6cqw;top:30cqw;z-index:4;font:600 2.4cqw var(--f-m);letter-spacing:.2em}
+.chap .hd{left:6cqw;top:34cqw;font-size:10cqw}
+.chap .cut{left:6cqw;top:27cqw;width:12cqw;height:1cqw}
+.endc{position:absolute;top:22cqw;width:36cqw;aspect-ratio:16/9;border:.4cqw dashed rgba(255,229,0,.7);z-index:4;display:grid;place-items:center;font:600 1.8cqw var(--f-m);color:var(--y)}
+.subc{position:absolute;left:50%;bottom:8cqw;transform:translateX(-50%);width:10cqw;aspect-ratio:1;border-radius:50%;border:.4cqw dashed rgba(255,255,255,.6);z-index:4;display:grid;place-items:center;font:600 1.4cqw var(--f-m);color:#fff;text-align:center}
+.qcard .no{position:absolute;left:6cqw;top:12cqw;z-index:4;font:600 2.4cqw var(--f-m);letter-spacing:.2em;color:var(--y)}
+.qcard .q{position:absolute;left:6cqw;right:12cqw;top:18cqw;z-index:4;font:italic 6.4cqw/1.08 var(--f-s);color:#fff}
+.split .camA,.split .camB{position:absolute;top:0;bottom:0;z-index:1}
+.split .camA{left:0;width:52%;background:linear-gradient(160deg,#3a3f4f,#1b1d24)}
+.split .camB{right:0;width:52%;background:linear-gradient(200deg,#4f4236,#221c16);clip-path:polygon(8% 0,100% 0,100% 100%,0 100%)}
+.split .cut{left:47.2%;top:-5%;height:110%;width:1.2cqw;color:var(--y);z-index:3}
+.split .who{position:absolute;bottom:5cqw;z-index:4;font:600 1.8cqw var(--f-m);letter-spacing:.1em;color:#fff;background:rgba(0,0,0,.6);padding:.8cqw 1.2cqw}
+.pull .bg{filter:blur(.6cqw) brightness(.45)}
+.pull .q{position:absolute;left:8cqw;right:8cqw;top:16cqw;z-index:4;font:italic 6cqw/1.1 var(--f-s);color:#fff}
+.pull .q::before{content:"«";display:block;font:16cqw/.6 var(--f-d);color:var(--y);font-style:normal;margin-bottom:2cqw}
+.pull .by{position:absolute;left:8cqw;bottom:8cqw;z-index:4;font:600 2cqw var(--f-m);letter-spacing:.12em;color:var(--y);text-transform:uppercase}
+/* Storyboard intro */
+.sb{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:640px){.sb{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.i1 .cut{left:44%;top:-10%;width:3cqw;height:120%;color:var(--y)}
+.i2 .wipe{position:absolute;inset:0;background:var(--y);clip-path:polygon(0 0,62% 0,54% 100%,0 100%);z-index:1}
+.i2 .cut{left:56%;top:-10%;width:3cqw;height:120%;color:var(--k);z-index:2}
+.i3 img.wm,.i4 img.wm,.logo-anim img.wm{left:50%;top:50%;transform:translate(-50%,-50%);width:62cqw;height:auto}
+.i4 .ep{position:absolute;left:0;right:0;bottom:12cqw;text-align:center;font:600 2.6cqw var(--f-m);letter-spacing:.2em;color:var(--y);z-index:3}
+/* Animation logo live */
+.logo-anim{background:var(--k)}
+.logo-anim .bar{position:absolute;top:-10%;height:120%;width:120%;left:-130%;background:var(--y);transform:skewX(-8deg);z-index:2}
+.logo-anim img.wm{clip-path:inset(0 100% 0 0);z-index:3}
+.logo-anim .tagl{position:absolute;left:0;right:0;top:62%;text-align:center;font:500 2.6cqw var(--f-b);color:#fff;opacity:0;z-index:3;letter-spacing:.04em}
+.logo-anim.play .bar{animation:bar 3.2s cubic-bezier(.7,0,.2,1) infinite}
+.logo-anim.play img.wm{animation:wm 3.2s cubic-bezier(.7,0,.2,1) infinite}
+.logo-anim.play .tagl{animation:tg 3.2s ease infinite}
+@keyframes bar{0%{left:-130%}30%{left:-10%}55%{left:110%}100%{left:110%}}
+@keyframes wm{0%,30%{clip-path:inset(0 100% 0 0)}52%{clip-path:inset(0 0 0 0)}90%{clip-path:inset(0 0 0 0);opacity:1}100%{clip-path:inset(0 0 0 0);opacity:0}}
+@keyframes tg{0%,55%{opacity:0;transform:translateY(1cqw)}68%,90%{opacity:1;transform:none}100%{opacity:0}}
+.trans{background:#1b1d24}
+.trans .a{position:absolute;inset:0;z-index:1}
+.trans .slab{position:absolute;top:-10%;height:120%;width:40%;left:-60%;background:var(--y);transform:skewX(-8deg);z-index:3;box-shadow:-3cqw 0 0 var(--k)}
+.trans.play .slab{animation:slab 2.4s cubic-bezier(.75,0,.25,1) infinite}
+.trans.play .a2{animation:swap 2.4s steps(1) infinite}
+@keyframes slab{0%,20%{left:-60%}60%,100%{left:130%}}
+@keyframes swap{0%,40%{opacity:0}40.01%,100%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.logo-anim.play *,.trans.play *{animation:none!important}.logo-anim img.wm{clip-path:none}.logo-anim .tagl{opacity:1}}
+
+/* ================= PAGE D'ACCUEIL ================= */
+.home{background:var(--news);color:var(--k)}
+.home .nav{display:flex;align-items:center;gap:3cqw;padding:2cqw 3cqw;background:var(--k);color:#fff;position:relative;z-index:2}
+.home .nav img{position:static;height:2.2cqw;width:auto}
+.home .nav span{font:600 1.2cqw var(--f-m);letter-spacing:.12em;text-transform:uppercase}
+.home .nav span.on{color:var(--y)}
+.home .nav .sp{flex:1}
+.home .hero{position:relative;display:grid;grid-template-columns:1.25fr 1fr;gap:3cqw;padding:3cqw}
+.home .hero .pic{position:relative;aspect-ratio:16/10;border:.4cqw solid var(--k);overflow:hidden;background:var(--k)}
+.home .hero .pic img{inset:0;width:100%;height:100%;object-fit:cover}
+.home .hero .txt{display:flex;flex-direction:column;gap:1.6cqw;justify-content:center}
+.home .lbl{font:600 1.15cqw var(--f-m);letter-spacing:.14em;text-transform:uppercase}
+.home .hero h5{margin:0;font:italic 4.6cqw/1 var(--f-s);letter-spacing:-.02em;font-weight:400}
+.home .hero p{font:400 1.5cqw/1.5 var(--f-b);max-width:none}
+.home .btn{align-self:flex-start;background:var(--y);color:var(--k);font:1.8cqw/1 var(--f-d);text-transform:uppercase;padding:1.2cqw 2cqw;border:.3cqw solid var(--k)}
+.home .rowh{display:flex;justify-content:space-between;align-items:baseline;margin:0 3cqw;border-top:.35cqw solid var(--k);padding-top:1.2cqw}
+.home .rowh b{font:2.6cqw/1 var(--f-d);text-transform:uppercase}
+.home .vids{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.6cqw;padding:1.6cqw 3cqw 3cqw}
+.home .vids .it{display:flex;flex-direction:column;gap:.6cqw;font:600 1.25cqw/1.3 var(--f-b)}
+.home .vids .it span{font:500 1cqw var(--f-m);letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+.home .two{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.6cqw;padding:1.6cqw 3cqw 3cqw}
+.home .art3{border-top:.25cqw solid var(--k);padding-top:1.2cqw;display:flex;flex-direction:column;gap:.8cqw}
+.home .art3 i{font:italic 2.4cqw/1.05 var(--f-s)}
+.home .art3 span{font:400 1.2cqw/1.45 var(--f-b)}
+.home .news{background:var(--y);margin:0 3cqw 3cqw;padding:2.4cqw 3cqw;display:flex;justify-content:space-between;align-items:center;gap:2cqw;border:.35cqw solid var(--k)}
+.home .news b{font:3.2cqw/1 var(--f-d);text-transform:uppercase}
+.home .news span{font:italic 1.9cqw var(--f-s)}
+.home .news u{text-decoration:none;font:600 1.3cqw var(--f-m);background:var(--k);color:var(--y);padding:1.2cqw 1.6cqw}
+.home .mini{position:relative}
+
+/* Constantes */
+.const{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.const div{background:var(--ink);padding:18px;display:flex;flex-direction:column;gap:8px}
+.const b{font:28px/1 var(--f-d);text-transform:uppercase;color:var(--y)}
+.const span{font-size:14px;color:var(--muted);line-height:1.45}
+@media (max-width:900px){.const{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Logo */
+.lg{min-height:150px;display:grid;place-items:center;border:1px solid var(--line);position:relative;overflow:hidden;padding:20px}
+.lg img{display:block;max-width:80%;height:auto;position:relative;z-index:1}
+.lg.photo{background:url(assets/art-noir.jpg) center/cover}
+.lg .x{position:absolute;inset:0;display:grid;place-items:center;z-index:2}
+.lg .x::before,.lg .x::after{content:"";position:absolute;width:140%;height:3px;background:var(--red);transform:rotate(25deg)}
+.lg .x::after{transform:rotate(-25deg)}
+.clear{position:relative;display:inline-block;padding:28px;background:#000;outline:1px dashed #00C2FF;outline-offset:-28px}
+.clear img{display:block;width:min(420px,70vw)}
+.clear em{position:absolute;font:11px var(--f-m);color:#00C2FF;font-style:normal}
+footer{padding-block:40px;border-top:1px solid var(--line);font-family:var(--f-m);font-size:12px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+
+<header style="padding-block:56px 40px" class="stack">
+  <div class="eyebrow"><b>Primestone Media</b> · Mission 02 · Approfondissement Signal + Kiosque</div>
+  <img src="assets/wordmark-yellow.png" alt="Logotype Primestone" style="width:min(520px,90%);display:block;margin-top:12px">
+  <p style="font-size:clamp(20px,2.4vw,26px);line-height:1.3;font-weight:300;font-stretch:88%;max-width:40ch;margin-top:12px">Un seul langage pour toutes les images : <b style="color:var(--y);font-weight:800">Signal</b> attire le regard sur YouTube, <b style="color:var(--y);font-weight:800">Kiosque</b> installe la voix du magazine partout ailleurs.</p>
+  <div class="note">Le logo n'est pas modifié : il est seulement décliné. Les illustrations Superman viennent de votre miniature. Les autres (cosmos, ville nocturne, encre, pop-art) sont des <b>images de substitution</b> que j'ai générées pour tester des styles très différents, faute d'accès à vos sources. Remplacez-les par de vraies couvertures avec l'outil ci-dessous : toutes les compositions se mettent à jour.</div>
+  <div class="tester" role="group" aria-label="Tester avec vos illustrations">
+    <label for="slot">Remplacer</label>
+    <select id="slot">
+      <option value="perso-a">Personnage détouré A (Superman course)</option>
+      <option value="perso-b">Personnage détouré B (Superman envol)</option>
+      <option value="encre">Personnage détouré C (créature d'encre)</option>
+      <option value="cosmos">Décor cosmique</option>
+      <option value="noir">Décor urbain nocturne</option>
+      <option value="pop">Planche pop-art</option>
+    </select>
+    <input id="up" type="file" accept="image/*" aria-label="Choisir une image">
+    <button id="reset" type="button">Rétablir les images</button>
+    <span class="muted" style="font-size:13px">PNG transparent conseillé pour les personnages. L'image reste dans votre navigateur.</span>
+  </div>
+  <nav class="toc" aria-label="Sommaire">
+    <a href="#constantes">Langage propriétaire</a><a href="#logo">Logo</a><a href="#miniatures">Miniatures</a><a href="#carrousels">Carrousels</a><a href="#fiches">Fiches personnages</a><a href="#infos">Infographies</a><a href="#video">Habillage vidéo</a><a href="#accueil">Page d'accueil</a><a href="#validation">Validation</a>
+  </nav>
+</header>
+
+<!-- ======================= CONSTANTES ======================= -->
+<section id="constantes">
+  <div class="stack" style="gap:24px">
+    <div class="eyebrow">5 · Cohérence de marque</div>
+    <h2>Le langage propriétaire</h2>
+    <p>Les illustrations changeront d'éditeur, d'époque et de style à chaque vidéo. Ce qui doit rester identique, c'est le « cadre Primestone » autour d'elles : huit constantes. Une miniature ou un visuel en respecte au moins <b>cinq</b> ; le jaune, le sceau et la typographie sont obligatoires.</p>
+    <div class="const">
+      <div><b>Jaune FFE500</b><span>Au moins 15 % de la surface, ou l'étiquette de rubrique. Jamais d'autre jaune.</span></div>
+      <div><b>Sceau P</b><span>Carré arrondi, 8 % de la largeur, toujours en bas à gauche. Le « corner box » de Primestone.</span></div>
+      <div><b>Incision 8°</b><span>Reprise des fentes du logotype : séparateur, filet sous titre, volet de transition, bord de cadre.</span></div>
+      <div><b>Rubrique mono</b><span>Étiquette en JetBrains Mono capitales, en haut à gauche. Dit quel type de contenu on ouvre.</span></div>
+      <div><b>Titre Anton</b><span>Capitales, alignées à gauche, trois mots maximum sur YouTube. Le serif italique sert la voix Kiosque.</span></div>
+      <div><b>Liseré d'encre</b><span>Les personnages détourés reçoivent un contour noir uniforme, quel que soit leur style d'origine.</span></div>
+      <div><b>Case-cadre</b><span>Quand l'image est une couverture ou une planche, elle entre dans une case à bord noir épais : on la montre, on ne la découpe pas.</span></div>
+      <div><b>Crédit + N°</b><span>Crédit de l'artiste sur chaque image, numéro d'épisode sur chaque format éditorial.</span></div>
+    </div>
+    <div class="g2">
+      <div class="card"><h4>Traitement des illustrations</h4><ul class="r">
+        <li>On ne repeint jamais une illustration. Seules deux familles la transforment : <b>Histoire</b> (bichromie noir/jaune) et <b>Théorie</b> (désaturation partielle).</li>
+        <li>Détourage si le personnage est l'objet ; case-cadre si l'œuvre (couverture, planche) est l'objet.</li>
+        <li>Pas d'effets ajoutés : pas de lueur, de flamme, de flou de mouvement. Le dessin original suffit.</li>
+        <li>Résolution minimale de la source : 1500 px sur le petit côté.</li></ul></div>
+      <div class="card"><h4>Système typographique (gratuit, Google Fonts)</h4>
+        <div style="font:34px/1 var(--f-d);text-transform:uppercase">Anton · Titres Signal</div>
+        <div style="font:italic 30px/1 var(--f-s)">Instrument Serif · voix Kiosque</div>
+        <div style="font:500 16px var(--f-b);font-stretch:88%">Archivo · textes, chapôs, interface</div>
+        <div style="font:12px var(--f-m);letter-spacing:.12em">JETBRAINS MONO · RUBRIQUES, N°, CRÉDITS, DONNÉES</div>
+        <p class="muted" style="font-size:13px">Le logotype reste un dessin à part : aucune police ne l'imite.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= LOGO ======================= -->
+<section id="logo">
+  <div class="stack" style="gap:24px">
+    <div class="eyebrow">1 · Logo conservé intégralement</div>
+    <h2>Déclinaisons et règles</h2>
+    <div class="g3">
+      <div><div class="lg" style="background:#000"><img src="assets/wordmark-yellow.png" alt="Jaune sur noir"></div><div class="cap">Principale · jaune sur noir</div></div>
+      <div><div class="lg bgY"><img src="assets/wordmark-black.png" alt="Noir sur jaune"></div><div class="cap">Inversée · noir sur jaune</div></div>
+      <div><div class="lg bgN"><img src="assets/wordmark-black.png" alt="Noir sur papier"></div><div class="cap">Kiosque · noir sur papier</div></div>
+      <div><div class="lg photo"><img src="assets/wordmark-white.png" alt="Blanc sur image"></div><div class="cap">Sur image sombre · blanc</div></div>
+      <div><div class="lg" style="background:#000;gap:20px;display:flex;justify-content:center"><span style="width:64px;height:64px;background:var(--y);border-radius:14px;position:relative;display:block"><img src="assets/P-black.png" alt="Sceau jaune" style="position:absolute;left:22%;top:16%;width:56%;height:68%;max-width:none;object-fit:contain"></span><span style="width:64px;height:64px;background:#111;border:1px solid #333;border-radius:14px;position:relative;display:block"><img src="assets/P-yellow.png" alt="Sceau noir" style="position:absolute;left:22%;top:16%;width:56%;height:68%;max-width:none;object-fit:contain"></span></div><div class="cap">Sceau P · jaune ou noir, rayon 22 %</div></div>
+      <div><div class="lg" style="background:#1b1d24"><span style="position:absolute;right:16px;top:16px;width:40px;height:40px;background:var(--y);opacity:.85;border-radius:9px"><img src="assets/P-black.png" alt="Filigrane" style="position:absolute;left:22%;top:16%;width:56%;height:68%;max-width:none;object-fit:contain"></span><span class="muted" style="font:12px var(--f-m)">IMAGE VIDÉO</span></div><div class="cap">Filigrane vidéo · haut droite, 85 %</div></div>
+    </div>
+    <div class="g2">
+      <div class="stack">
+        <h4>Zone de protection et tailles minimales</h4>
+        <div class="clear"><img src="assets/wordmark-yellow.png" alt="Zone de protection"><em style="left:4px;top:6px">x</em><em style="right:6px;bottom:6px">x = ½ hauteur du logotype</em></div>
+        <ul class="r"><li>Logotype : 120 px de large minimum à l'écran, 30 mm en impression. En dessous, utiliser le sceau P.</li><li>Sceau P : 24 px minimum (favicon 32 px).</li><li>Ratio figé 7,3 : 1, exporté depuis vos fichiers d'origine. Vos sources vectorielles restent la référence.</li></ul>
+      </div>
+      <div class="stack">
+        <h4>Interdits</h4>
+        <div class="g2" style="gap:12px">
+          <div><div class="lg" style="background:#000;min-height:110px"><img src="assets/wordmark-yellow.png" alt="" style="transform:scaleX(1.4)"><span class="x"></span></div><div class="cap">Déformer</div></div>
+          <div><div class="lg" style="background:#000;min-height:110px"><img src="assets/wordmark-white.png" alt="" style="filter:sepia(1) saturate(6) hue-rotate(-50deg)"><span class="x"></span></div><div class="cap">Recolorer</div></div>
+          <div><div class="lg" style="min-height:110px;background:url(assets/art-pop.jpg) center/cover"><img src="assets/wordmark-yellow.png" alt=""><span class="x"></span></div><div class="cap">Poser sur un fond chargé</div></div>
+          <div><div class="lg" style="background:#000;min-height:110px"><img src="assets/wordmark-yellow.png" alt="" style="transform:rotate(-12deg);filter:drop-shadow(4px 4px 0 #f0f)"><span class="x"></span></div><div class="cap">Pivoter, ombrer, contourer</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= MINIATURES ======================= -->
+<section id="miniatures">
+  <div class="stack" style="gap:24px">
+    <div class="eyebrow">2 · Système de miniatures YouTube</div>
+    <h2>Huit familles, une grille</h2>
+    <div class="g2">
+      <div>
+        <div class="f r169 bgY m1" style="position:relative">
+          <span class="rub">Analyse · Personnage</span>
+          <div class="hd">L'Espoir</div><span class="cut"></span>
+          <img class="art ink" data-art="perso-a" src="assets/fig-droite.png" alt="">
+          <span class="seal"><img src="assets/P-yellow.png" alt=""></span>
+          <div class="gridov"><span class="safe"></span><span class="dead"></span>
+            <span class="col" style="left:50%"></span>
+            <span class="lab" style="left:5cqw;top:44cqw">titre ≥ 12 % hauteur · 3 mots max</span>
+            <span class="lab" style="left:15cqw;bottom:6cqw">sceau 8 %</span>
+            <span class="lab" style="right:5cqw;top:5cqw">marge 4,5 %</span></div>
+        </div>
+        <div class="cap">Grille de construction 1280 × 720</div>
+      </div>
+      <div class="stack">
+        <h4>Règles communes</h4>
+        <ul class="r">
+          <li>Format 1280 × 720, marge de sécurité 4,5 % (58 px) sur les quatre côtés.</li>
+          <li>Rubrique en haut à gauche, sceau en bas à gauche : ces deux points ne bougent jamais.</li>
+          <li>Coin bas droit (15 % × 11 %) laissé libre : YouTube y affiche la durée.</li>
+          <li>Titre : trois mots maximum, deux lignes, hauteur de capitale d'au moins 12 % de l'image. Il doit rester lisible à 168 px de large.</li>
+          <li>Une seule source de contraste dominante : jaune/noir, ou image sombre + titre jaune.</li>
+          <li>Personnage : au moins 45 % de la hauteur, regard ou geste vers le titre.</li>
+          <li>Crédit artiste vertical au bord droit (lu dans l'agrandissement, pas en vignette).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="g2" id="thumbs">
+      <div><div class="f r169 bgY m1"><span class="rub">Analyse · Personnage</span><div class="hd">L'Espoir</div><span class="cut"></span><img class="art ink" data-art="perso-a" src="assets/fig-droite.png" alt=""><span class="seal"><img src="assets/P-yellow.png" alt=""></span><span class="cred">Art : crédit artiste · DC</span></div>
+        <div class="cap">1 · Analyse de personnage</div><ul class="r"><li>Fond jaune plein, personnage détouré à droite, titre-concept à gauche.</li></ul></div>
+      <div><div class="f r169 bgK m2"><span class="rub y">Analyse · Comic</span><div class="hd">Sous-<br>estimé ?</div><div class="stars"><b>★★★★</b>☆ · N°043</div><div class="panel"><span class="td"><span>1986</span><span>#1</span></span><img data-art="pop" src="assets/art-pop.jpg" alt=""></div><span class="seal y"><img src="assets/P-black.png" alt=""></span><span class="cred" style="color:#fff">Art : crédit artiste · éditeur</span></div>
+        <div class="cap">2 · Analyse de comic</div><ul class="r"><li>Fond noir, la couverture en case-cadre inclinée, ombre portée jaune. L'œuvre est montrée entière.</li></ul></div>
+      <div><div class="f r169 bgY m3"><span class="rub red">Actu</span><span class="pub">MARVEL</span><img class="art ink" data-art="encre" src="assets/art-encre.png" alt=""><span class="band"></span><div class="hd">Il revient</div><span class="seal"><img src="assets/P-black.png" alt=""></span></div>
+        <div class="cap">3 · Actualités Marvel et DC</div><ul class="r"><li>Pastille rouge réservée à l'actu, éditeur en haut à droite, bandeau noir de titre.</li></ul></div>
+      <div><div class="f r169 bgK m4"><img class="bg" data-art="noir" src="assets/art-noir.jpg" alt=""><span class="rub y">Théorie</span><div class="hd">Et si c'était lui ?</div><div class="q">?</div><span class="seal y"><img src="assets/P-black.png" alt=""></span></div>
+        <div class="cap">4 · Théories</div><ul class="r"><li>Image plein cadre assombrie, titre jaune en question, point d'interrogation géant.</li></ul></div>
+      <div><div class="f r169 bgY m5"><span class="rub">Guide de lecture</span><div class="hd">Par où commencer</div><div class="covers"><span class="cv"><img data-art="noir" src="assets/art-noir.jpg" alt=""><b>1</b></span><span class="cv"><img data-art="pop" src="assets/art-pop.jpg" alt=""><b>2</b></span><span class="cv"><img data-art="cosmos" src="assets/art-cosmos.jpg" alt=""><b>3</b></span></div><span class="seal"><img src="assets/P-yellow.png" alt=""></span></div>
+        <div class="cap">5 · Guides de lecture</div><ul class="r"><li>Trois couvertures numérotées en escalier : l'ordre de lecture se comprend sans texte.</li></ul></div>
+      <div><div class="f r169 m6"><span class="wl"></span><span class="wr"></span><img class="a1 ink" data-art="perso-b" src="assets/fig-gauche.png" alt=""><img class="a2 ink" data-art="encre" src="assets/art-encre.png" alt=""><span class="cut"></span><span class="rub">Événement</span><div class="hd">Crise <span>totale</span></div><span class="seal"><img src="assets/P-yellow.png" alt=""></span></div>
+        <div class="cap">6 · Événements comics</div><ul class="r"><li>Deux univers séparés par l'incision à 8°. Le titre chevauche la frontière.</li></ul></div>
+      <div><div class="f r169 bgY m7"><span class="rub">Histoire</span><div class="hd">1938</div><div class="sub">Action Comics #1 · la naissance du super-héros</div><img class="art" data-art="perso-b" src="assets/fig-gauche.png" alt=""><span class="seal"><img src="assets/P-yellow.png" alt=""></span></div>
+        <div class="cap">7 · Histoire des comics</div><ul class="r"><li>Bichromie noir/jaune, année géante en fond. La seule famille qui recolore l'image.</li></ul></div>
+      <div><div class="f r169 bgK m8"><img class="bg" data-art="cosmos" src="assets/art-cosmos.jpg" alt=""><span class="shade"></span><span class="rub y">Dossier cosmique</span><div class="sub">Multivers · épisode 3</div><span class="cut"></span><div class="hd">L'entité</div><span class="seal y"><img src="assets/P-black.png" alt=""></span></div>
+        <div class="cap">8 · Dossiers cosmiques et multiversels</div><ul class="r"><li>Décor plein cadre, dégradé noir à gauche pour le texte, jaune utilisé comme lumière.</li></ul></div>
+    </div>
+
+    <div class="stack">
+      <h4>Test smartphone · taille réelle dans l'application YouTube</h4>
+      <div class="phone" id="phone"></div>
+      <p class="muted" style="font-size:14px">Les vignettes de 168 px correspondent aux suggestions ; celle de 360 px au fil d'accueil mobile. Les huit familles restent lisibles et identifiables à la plus petite taille.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= CARROUSELS ======================= -->
+<section id="carrousels">
+  <div class="stack" style="gap:28px">
+    <div class="eyebrow">3 · Identité éditoriale Kiosque</div>
+    <h2>Trois carrousels</h2>
+    <div class="note">Règles Kiosque : fond papier <code>#ECEBE6</code>, masthead (logotype + n° + rubrique) en haut, titres en serif italique, jaune en surligneur, images en case-cadre, pagination mono en bas à droite. Format 1080 × 1350.</div>
+
+    <div class="stack"><h3>Guide de lecture · présentation de comics</h3>
+      <div class="scroller">
+        <div><div class="f r45 bgN kq dots"><div class="mast"><img src="assets/wordmark-black.png" alt=""><span>GUIDE · N°044</span></div><div class="h" style="top:20cqw"><div class="serif" style="font-size:13cqw;line-height:.92">Batman : <mark>par où</mark> commencer</div></div><div class="panel" style="top:58cqw;bottom:14cqw"><img data-art="noir" src="assets/art-noir.jpg" alt=""></div><span class="foot">3 lectures essentielles</span><span class="pg">01/06</span></div><div class="cap">Couverture</div></div>
+        <div><div class="f r45 bgN kq"><div class="mast"><img src="assets/wordmark-black.png" alt=""><span>GUIDE · N°044</span></div><div class="cover"><b><span>DC</span><span>1987</span></b><img data-art="noir" src="assets/art-noir.jpg" alt=""></div><div class="side"><span class="lbl">Lecture 01</span><div class="serif" style="font-size:8cqw;line-height:.95">Batman : Year One</div><dl class="kv" style="margin:0"><dt>Auteurs</dt><dd>Frank Miller, David Mazzucchelli</dd><dt>Parution</dt><dd>Batman #404–407</dd><dt>Niveau</dt><dd class="lvl"><i class="f"></i><i></i><i></i> débutant</dd></dl></div><div class="h body" style="top:86cqw">La première année de Bruce Wayne à Gotham, racontée comme un polar. Le point d'entrée idéal.</div><span class="pg">02/06</span></div><div class="cap">Présentation d'un comic</div></div>
+        <div><div class="f r45 bgN kq"><div class="mast"><img src="assets/wordmark-black.png" alt=""><span>GUIDE · N°044</span></div><div class="cover"><b><span>DC</span><span>2011</span></b><img data-art="pop" src="assets/art-pop.jpg" alt=""></div><div class="side"><span class="lbl">Lecture 03</span><div class="serif" style="font-size:8cqw;line-height:.95">La Cour des Hiboux</div><dl class="kv" style="margin:0"><dt>Auteurs</dt><dd>Scott Snyder, Greg Capullo</dd><dt>Parution</dt><dd>Batman #1–11 (2011–2012)</dd><dt>Niveau</dt><dd class="lvl"><i class="f"></i><i class="f"></i><i></i> intermédiaire</dd></dl></div><div class="h body" style="top:86cqw">Gotham cache une société secrète plus ancienne que Batman. Le meilleur départ pour l'ère moderne.</div><span class="pg">04/06</span></div><div class="cap">Présentation d'un comic</div></div>
+      </div>
+      <ul class="r"><li>Gabarit réutilisable : la diapo « présentation de comic » sert aussi aux critiques et aux sélections.</li><li>Couverture toujours à gauche, fiche technique à droite, accroche de deux lignes en bas.</li></ul>
+    </div>
+
+    <div class="stack"><h3>Dossier historique</h3>
+      <div class="scroller">
+        <div><div class="f r45 bgY kq"><div class="mast"><img src="assets/wordmark-black.png" alt=""><span>HISTOIRE · N°045</span></div><div class="h big" style="top:18cqw;font-size:34cqw;line-height:.8">1938</div><img data-art="perso-b" src="assets/fig-gauche.png" alt="" style="right:-6cqw;bottom:0;width:78cqw;filter:grayscale(1) contrast(1.6);mix-blend-mode:multiply"><div class="h serif" style="bottom:14cqw;font-size:9cqw;line-height:.95;width:50cqw;right:auto">L'année où tout commence</div><span class="pg">01/05</span></div><div class="cap">Couverture · bichromie</div></div>
+        <div><div class="f r45 bgN kq dots"><div class="mast"><img src="assets/wordmark-black.png" alt=""><span>HISTOIRE · N°045</span></div><div class="h" style="top:20cqw"><span class="lbl">18 avril 1938 · Cleveland → New York</span><div class="serif" style="font-size:9cqw;line-height:.95;margin-top:2cqw">Deux jeunes auteurs vendent leur personnage <mark>130 dollars</mark>.</div><p class="body" style="margin-top:4cqw;max-width:none">Jerry Siegel et Joe Shuster cèdent à l'éditeur les droits de Superman avec leur première histoire. <i>Action Comics</i> #1 sort en kiosque : le super-héros moderne est né.</p></div><div class="h" style="bottom:14cqw;border-top:.45cqw solid var(--k);padding-top:2cqw;display:flex;justify-content:space-between"><span class="lbl">Siegel &amp; Shuster</span><span class="lbl">DC · Action Comics #1</span></div><span class="pg">02/05</span></div><div class="cap">Récit · texte long</div></div>
+        <div><div class="f r45 bgK kq"><div class="h" style="top:14cqw;color:var(--y)"><span class="lbl" style="color:#fff">En 2024, un exemplaire s'est vendu</span><div class="big" style="font-size:40cqw;line-height:.85;margin-top:2cqw">6 M$</div><div class="serif" style="font-size:7cqw;color:#fff;margin-top:3cqw">Le comic le plus cher de l'histoire.</div></div><span class="foot" style="color:var(--y)">Source : à vérifier avant publication</span><span class="pg" style="color:var(--y)">04/05</span></div><div class="cap">Chiffre clé · inversée</div></div>
+      </div>
+      <ul class="r"><li>Alternance papier, jaune et noir pour rythmer le défilement.</li><li>Une diapo « chiffre clé » par dossier : c'est elle qu'on partage en story.</li></ul>
+    </div>
+
+    <div class="stack"><h3>Publication d'actualité</h3>
+      <div class="scroller">
+        <div><div class="f r45 bgY kq"><span class="rub red" style="left:6cqw;top:6cqw;font-size:3cqw">Actu · Marvel</span><img class="ink" data-art="encre" src="assets/art-encre.png" alt="" style="right:-8cqw;top:12cqw;width:92cqw"><div class="h" style="bottom:12cqw;background:var(--k);color:var(--y);padding:3cqw;left:0;right:0"><div class="hd" style="position:static;font-size:13cqw">Il revient en 2027</div></div><span class="foot" style="bottom:4cqw">Exemple fictif</span><span class="pg" style="bottom:4cqw">01/03</span></div><div class="cap">Annonce · Signal</div></div>
+        <div><div class="f r45 bgN kq"><div class="mast"><img src="assets/wordmark-black.png" alt=""><span>ACTU · MARVEL</span></div><div class="h" style="top:20cqw"><div class="serif" style="font-size:10cqw">Ce qu'on sait</div><ol style="margin:4cqw 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:3cqw">
+          <li style="display:grid;grid-template-columns:10cqw 1fr;gap:2cqw;border-top:.3cqw solid var(--k);padding-top:2cqw"><b style="font:9cqw/1 var(--f-d)">1</b><span class="body">Une nouvelle série mensuelle est annoncée pour le printemps.</span></li>
+          <li style="display:grid;grid-template-columns:10cqw 1fr;gap:2cqw;border-top:.3cqw solid var(--k);padding-top:2cqw"><b style="font:9cqw/1 var(--f-d)">2</b><span class="body">L'équipe créative sera dévoilée à la convention de New York.</span></li>
+          <li style="display:grid;grid-template-columns:10cqw 1fr;gap:2cqw;border-top:.3cqw solid var(--k);padding-top:2cqw"><b style="font:9cqw/1 var(--f-d)">3</b><span class="body">Aucune date de parution en France pour l'instant.</span></li></ol></div><span class="foot">Exemple fictif</span><span class="pg">02/03</span></div><div class="cap">Faits · liste numérotée</div></div>
+        <div><div class="f r45 bgK kq"><div class="h" style="top:12cqw;color:#fff"><span class="lbl" style="color:var(--y)">L'avis Primestone</span><div class="serif" style="font-size:9.5cqw;line-height:1.02;margin-top:4cqw">« Le retour était attendu. Reste à savoir si l'équipe saura éviter la nostalgie. »</div></div><img src="assets/wordmark-yellow.png" alt="" style="left:6cqw;bottom:6cqw;width:44cqw"><span class="pg" style="color:var(--y)">03/03</span></div><div class="cap">Avis éditorial</div></div>
+      </div>
+      <ul class="r"><li>L'actu commence en Signal (accroche) et finit en Kiosque (faits, avis) : c'est le passage du flux au média.</li><li>Rouge strictement réservé à l'actualité.</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= FICHES ======================= -->
+<section id="fiches">
+  <div class="stack" style="gap:28px">
+    <div class="eyebrow">3 · Identité éditoriale Kiosque</div>
+    <h2>Deux fiches personnages</h2>
+    <div class="g2">
+      <div><div class="f r45 bgN kq fiche dots"><div class="mast"><img src="assets/wordmark-black.png" alt=""><span>FICHE · DC</span></div>
+        <div class="panel"><img data-art="perso-a" src="assets/fig-droite.png" alt=""></div>
+        <div class="nm"><b>Superman</b><span>Clark Kent · Kal-El</span></div>
+        <dl class="kv"><dt>Première apparition</dt><dd>Action Comics #1 (juin 1938)</dd><dt>Créateurs</dt><dd>Jerry Siegel, Joe Shuster</dd><dt>Origine</dt><dd>Krypton, élevé à Smallville</dd></dl>
+        <div class="reads"><div><span>Lecture 1</span><b>All-Star Superman</b><span>Morrison, Quitely</span></div><div><span>Lecture 2</span><b>Birthright</b><span>Waid, Yu</span></div><div><span>Lecture 3</span><b>For All Seasons</b><span>Loeb, Sale</span></div></div>
+        <span class="foot">Art : crédit artiste</span><span class="pg">N°001</span></div></div>
+      <div><div class="f r45 bgN kq fiche"><div class="mast"><img src="assets/wordmark-black.png" alt=""><span>FICHE · MARVEL</span></div>
+        <div class="panel" style="background:var(--k)"><img data-art="encre" src="assets/art-encre.png" alt="" style="object-position:50% 50%"></div>
+        <div class="nm"><b>Venom</b><span>Eddie Brock et le symbiote</span></div>
+        <dl class="kv"><dt>Première apparition</dt><dd>The Amazing Spider-Man #300 (1988)</dd><dt>Créateurs</dt><dd>David Michelinie, Todd McFarlane</dd><dt>Origine</dt><dd>Symbiote extraterrestre (Secret Wars, 1984)</dd></dl>
+        <div class="reads"><div><span>Lecture 1</span><b>Lethal Protector</b><span>Michelinie, Bagley</span></div><div><span>Lecture 2</span><b>Venom (2018)</b><span>Cates, Stegman</span></div><div><span>Lecture 3</span><b>Spider-Man #300</b><span>Michelinie, McFarlane</span></div></div>
+        <span class="foot">Image de substitution</span><span class="pg">N°002</span></div></div>
+    </div>
+    <ul class="r"><li>Gabarit fixe : image en case jaune (ou noire pour les personnages sombres), nom en Anton, identité civile en serif, trois données, trois lectures.</li><li>La fiche est numérotée : elle devient une collection que l'audience peut suivre et sauvegarder.</li><li>Déclinable en 16:9 pour les vidéos (même structure, colonnes côte à côte).</li></ul>
+  </div>
+</section>
+
+<!-- ======================= INFOGRAPHIES ======================= -->
+<section id="infos">
+  <div class="stack" style="gap:28px">
+    <div class="eyebrow">3 · Identité éditoriale Kiosque</div>
+    <h2>Deux infographies</h2>
+    <div>
+      <div class="f r169 bgN tl dots"><div class="mast" style="top:3cqw;left:5cqw;right:5cqw"><img src="assets/wordmark-black.png" alt="" style="height:3cqw"><span style="font-size:1.6cqw">CHRONOLOGIE · N°046</span></div>
+        <div class="ttl">Les quatre âges des comics américains</div>
+        <div class="ages"><div><b>Âge d'or</b><span>1938 – 1956</span></div><div><b>Âge d'argent</b><span>1956 – 1970</span></div><div><b>Âge de bronze</b><span>1970 – 1985</span></div><div><b>Âge moderne</b><span>1985 – aujourd'hui</span></div></div>
+        <div class="rail"></div>
+        <div class="evs"><div><i>Action Comics #1</i>Superman ouvre l'ère des super-héros.</div><div><i>Showcase #4</i>Le retour de Flash relance le genre.</div><div><i>Green Lantern #76</i>Les comics abordent les questions sociales.</div><div><i>Watchmen, The Dark Knight Returns</i>1986 : le genre devient adulte et critique de lui-même.</div></div>
+        </div>
+      <div class="cap">Chronologie 16:9 · vidéo, site, carrousel en 4 diapos</div>
+    </div>
+    <div class="g2">
+      <div><div class="f r169 bgY bars"><div class="mast" style="top:3cqw;left:5cqw;right:5cqw"><img src="assets/wordmark-black.png" alt="" style="height:3cqw"><span style="font-size:1.6cqw">DONNÉES · N°047</span></div>
+        <div class="ttl">Les trois comics les plus chers jamais vendus</div>
+        <dl class="rows">
+          <div class="row"><dt>Action Comics #1<i>1938 · vendu en 2024</i></dt><dd><s style="width:100%"></s><b>6 M$</b></dd></div>
+          <div class="row"><dt>Superman #1<i>1939 · vendu en 2022</i></dt><dd><s style="width:88.3%"></s><b>5,3 M$</b></dd></div>
+          <div class="row"><dt>Amazing Fantasy #15<i>1962 · vendu en 2021</i></dt><dd><s style="width:60%"></s><b>3,6 M$</b></dd></div>
+        </dl>
+        <div class="src">Prix de vente aux enchères ou de gré à gré. Chiffres de démonstration à vérifier avant publication.</div>
+      </div><div class="cap">Données · barres à l'échelle, biseau 8°</div></div>
+      <div class="stack"><h4>Règles des infographies</h4><ul class="r">
+        <li>Une idée par infographie, posée en titre serif sous forme de phrase.</li>
+        <li>Barres et blocs toujours à l'échelle ; les barres prennent le biseau de l'incision (8°).</li>
+        <li>Couleurs de données : noir, puis jaune, puis trois tons papier chauds. Jamais plus de cinq.</li>
+        <li>Source obligatoire en bas à gauche, en mono.</li>
+        <li>Export natif 16:9 (vidéo, site) et découpage en diapos 4:5 pour Instagram.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= VIDÉO ======================= -->
+<section id="video">
+  <div class="stack" style="gap:28px">
+    <div class="eyebrow">4 · Identité audiovisuelle</div>
+    <h2>Deux habillages vidéo</h2>
+
+    <div class="g2">
+      <div><div class="f r169 logo-anim play" id="la"><span class="bar"></span><img class="wm" src="assets/wordmark-yellow.png" alt="Animation du logo"><div class="tagl">Au-delà des héros.</div></div><div class="cap">Animation du logo · 3 s · aperçu en boucle</div></div>
+      <div><div class="f r169 trans play"><img class="a bg" data-art="noir" src="assets/art-noir.jpg" alt=""><img class="a a2 bg" data-art="cosmos" src="assets/art-cosmos.jpg" alt="" style="z-index:2"><span class="slab"></span></div><div class="cap">Transition « coupe incisée » · 12 images à 25 i/s</div></div>
+    </div>
+    <p class="muted" style="font-size:14px">Le logo ne bouge pas et ne se déforme pas : une barre jaune inclinée à 8° balaie l'écran et le révèle. La même barre sert de transition entre deux séquences. Les deux reposent sur un calque de forme et un cache, faisables en une heure dans After Effects.</p>
+
+    <div class="stack"><h3>Proposition 1 · Habillage « Analyse »</h3>
+      <div class="sb">
+        <div><div class="f r169 bgK i1"><span class="cut"></span></div><div class="cap">Intro 0:00 · incision</div></div>
+        <div><div class="f r169 bgK i2"><span class="wipe"></span><span class="cut"></span></div><div class="cap">0:00,5 · balayage</div></div>
+        <div><div class="f r169 bgK i3"><img class="wm" src="assets/wordmark-yellow.png" alt=""></div><div class="cap">0:01,5 · logotype</div></div>
+        <div><div class="f r169 bgK i4"><img class="wm" src="assets/wordmark-yellow.png" alt="" style="top:42%"><div class="ep">N°042 · L'ESPOIR</div></div><div class="cap">0:02,5 · numéro d'épisode</div></div>
+      </div>
+      <div class="g3">
+        <div><div class="f r169 bgY chap"><span class="cut"></span><span class="no">CHAPITRE 02 · L'HOMME DE DEMAIN</span><div class="hd">Demain</div><img class="ink" data-art="perso-b" src="assets/fig-gauche.png" alt="" style="right:-4cqw;bottom:-2cqw;height:80%;z-index:2"></div><div class="cap">Titre de chapitre · 3 s</div></div>
+        <div><div class="f r169 v"><img class="bg" data-art="pop" src="assets/art-pop.jpg" alt=""><span class="bug"><img src="assets/P-black.png" alt=""></span><div class="src1"><i>SOURCE</i><span>Action Comics #1 · 1938 · Siegel &amp; Shuster</span></div></div><div class="cap">Bandeau source + filigrane</div></div>
+        <div><div class="f r169 bgK"><div class="endc" style="left:6cqw">VIDÉO SUIVANTE</div><div class="endc" style="right:6cqw">PLAYLIST</div><img src="assets/wordmark-yellow.png" alt="" style="left:50%;top:8cqw;transform:translateX(-50%);width:34cqw"><div class="subc">S'ABONNER</div></div><div class="cap">Outro · écran de fin 20 s</div></div>
+      </div>
+    </div>
+
+    <div class="stack"><h3>Proposition 2 · Habillage « Interview »</h3>
+      <div class="g3">
+        <div><div class="f r169 split"><span class="camA"></span><span class="camB"></span><span class="cut"></span><span class="who" style="left:4cqw">PRIMESTONE</span><span class="who" style="right:4cqw">INVITÉ</span><span class="bug" style="position:absolute;right:3.5cqw;top:3.5cqw;width:5cqw;aspect-ratio:1;background:var(--y);border-radius:1.1cqw;z-index:6"><img class="v-bugimg" src="assets/P-black.png" alt=""></span></div><div class="cap">Double cadre · séparation 8°</div></div>
+        <div><div class="f r169" style="background:linear-gradient(200deg,#4f4236,#221c16)"><div class="lt1"><b>Nom Prénom</b><span>Scénariste · titre de la série</span></div></div><div class="cap">Lower third invité · .mogrt</div></div>
+        <div><div class="f r169 bgK qcard"><span class="no">QUESTION 03</span><div class="q">Qu'est-ce qu'un super-héros doit encore nous dire en 2026 ?</div><span class="seal y" style="width:6cqw"><img src="assets/P-black.png" alt=""></span></div><div class="cap">Carton de question · 2 s</div></div>
+      </div>
+      <div class="g2">
+        <div><div class="f r169 pull"><img class="bg" data-art="cosmos" src="assets/art-cosmos.jpg" alt=""><div class="q">Écrire un héros cosmique, c'est écrire sur notre propre petitesse.</div><div class="by">Citation · invité</div></div><div class="cap">Citation mise en avant · réutilisable en story</div></div>
+        <div class="stack"><h4>Règles audiovisuelles</h4><ul class="r">
+          <li>Toute animation suit une seule courbe (accélération forte, arrivée douce) et dure entre 8 et 15 images.</li>
+          <li>L'incision à 8° est le seul mouvement de forme : entrée des bandeaux, transitions, chapitres.</li>
+          <li>Filigrane P en haut à droite pendant toute la vidéo, sauf pendant les plans de planches en plein écran.</li>
+          <li>Musique : un « sting » de 3 s pour l'intro et les chapitres, toujours le même.</li></ul></div>
+      </div>
+    </div>
+
+    <div class="stack"><h4>Production en solo avec Creative Cloud</h4>
+      <div class="tbl"><table class="tb">
+        <tr><th>Élément</th><th>Outil</th><th>Méthode</th><th>Livré en</th><th>Temps par vidéo</th></tr>
+        <tr><td>Animation du logo, intro</td><td>After Effects</td><td>Calque de forme incliné + cache alpha, une fois pour toutes</td><td>ProRes 4444 avec alpha</td><td>0 (réutilisé)</td></tr>
+        <tr><td>Lower thirds, sources, chapitres, questions</td><td>After Effects → Premiere</td><td>Modèles d'animation (.mogrt) avec champs texte modifiables dans Premiere</td><td>.mogrt</td><td>2 min</td></tr>
+        <tr><td>Transition coupe incisée</td><td>After Effects</td><td>Clip de 12 images posé sur la piste supérieure</td><td>ProRes 4444 avec alpha</td><td>0 (glisser-déposer)</td></tr>
+        <tr><td>Filigrane P</td><td>Premiere</td><td>PNG sur piste fixe, opacité 85 %</td><td>PNG</td><td>0</td></tr>
+        <tr><td>Outro</td><td>After Effects</td><td>Modèle de 20 s avec emplacements pour l'écran de fin YouTube</td><td>.mogrt + MP4</td><td>1 min</td></tr>
+        <tr><td>Miniatures</td><td>Photoshop</td><td>Un fichier par famille, objets dynamiques pour l'image, calques verrouillés</td><td>.psd</td><td>15–20 min</td></tr>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= ACCUEIL ======================= -->
+<section id="accueil">
+  <div class="stack" style="gap:28px">
+    <div class="eyebrow">3 · Site internet</div>
+    <h2>Page d'accueil éditoriale</h2>
+    <div class="f home" style="border:1px solid var(--line)">
+      <div class="nav"><img src="assets/wordmark-yellow.png" alt="Primestone"><span class="on">À la une</span><span>Analyses</span><span>Actus</span><span>Guides</span><span>Histoire</span><span>Cosmique</span><span class="sp"></span><span>Rechercher</span></div>
+      <div class="hero">
+        <div class="pic"><img data-art="cosmos" src="assets/art-cosmos.jpg" alt=""></div>
+        <div class="txt"><span class="lbl">Dossier cosmique · N°048</span><h5>Le Multivers expliqué <mark>sans se perdre</mark></h5><p>Terres parallèles, crises et redémarrages : soixante ans d'univers multiples chez Marvel et DC, en un seul dossier.</p><span class="btn">Lire le dossier</span></div>
+      </div>
+      <div class="rowh"><b>Dernières vidéos</b><span class="lbl">Voir tout</span></div>
+      <div class="vids" id="homevids"></div>
+      <div class="rowh"><b>À lire</b><span class="lbl">Magazine</span></div>
+      <div class="two">
+        <div class="art3"><span class="lbl">Histoire</span><i>1938 : l'année où tout commence</i><span>Comment deux jeunes de Cleveland ont inventé le super-héros moderne.</span></div>
+        <div class="art3"><span class="lbl">Fiche personnage · N°002</span><i>Venom, du costume noir à l'antihéros</i><span>Les étapes d'un personnage né d'une idée de lecteur.</span></div>
+        <div class="art3"><span class="lbl">Guide de lecture</span><i>Batman : par où commencer</i><span>Trois lectures pour entrer à Gotham sans se tromper.</span></div>
+      </div>
+      <div class="news"><div style="display:flex;flex-direction:column;gap:.6cqw"><b>La lettre Primestone</b><span>Chaque dimanche, l'essentiel des comics en cinq minutes.</span></div><u>S'INSCRIRE</u></div>
+    </div>
+    <ul class="r"><li>Le site est en Kiosque (papier, serif), les miniatures Signal y entrent telles quelles : la cohérence se fait par le jaune et le sceau.</li><li>Navigation = rubriques des miniatures. Une vidéo, un article et une fiche partagent la même rubrique et le même N°.</li></ul>
+  </div>
+</section>
+
+<!-- ======================= VALIDATION ======================= -->
+<section id="validation">
+  <div class="stack" style="gap:20px">
+    <div class="eyebrow">Avant la production</div>
+    <h2>À valider</h2>
+    <ol style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px;max-width:72ch">
+      <li><b>Les huit constantes</b> du langage propriétaire, et la règle « cinq sur huit, dont jaune, sceau et typographie ».</li>
+      <li><b>Les huit familles de miniatures</b> : lesquelles gardez-vous telles quelles, lesquelles faut-il retravailler ?</li>
+      <li><b>Le partage Signal / Kiosque</b> : Signal pour YouTube et les accroches, Kiosque pour carrousels, fiches, infographies et site.</li>
+      <li><b>Le rouge réservé à l'actualité</b> : d'accord pour cette seule couleur supplémentaire ?</li>
+      <li><b>L'habillage vidéo</b> : animation par balayage incliné, sans déformer le logo.</li>
+      <li><b>Les vraies images</b> : envoyez 5 ou 6 illustrations de styles différents pour un dernier test avant production.</li>
+    </ol>
+    <p class="muted">Après validation : fichiers Photoshop des huit familles, modèles Illustrator des formats Kiosque, projets After Effects et .mogrt, export SVG/PNG des déclinaisons du logo, arborescence de ressources et brand book PDF.</p>
+  </div>
+</section>
+
+<footer>Primestone Media · Mission 02 · Les personnages et marques cités appartiennent à leurs éditeurs. Illustrations Superman : extraits de la miniature fournie. Autres illustrations : images de substitution générées pour les tests. Contenus d'actualité : exemples fictifs.</footer>
+</div>
+
+<script>
+(function(){
+  // Vignettes smartphone et page d'accueil : copies des miniatures
+  var src=[].slice.call(document.querySelectorAll('#thumbs > div'));
+  var titles=["L'Espoir : pourquoi Superman compte encore","Un comic sous-estimé de 1986","Il revient : ce qu'on sait","Et si c'était lui depuis le début ?","Par où commencer les comics","Crise totale : l'événement expliqué","1938 : la naissance du super-héros","L'entité : dossier cosmique"];
+  var phone=document.getElementById('phone'), home=document.getElementById('homevids');
+  src.forEach(function(d,i){
+    var fr=d.querySelector('.f');
+    var it=document.createElement('div'); it.className='it'+(i===0?' big':'');
+    it.appendChild(fr.cloneNode(true));
+    var t=document.createElement('b'); t.textContent=titles[i]; it.appendChild(t);
+    var s=document.createElement('span'); s.textContent='Primestone · 24 k vues'; it.appendChild(s);
+    phone.appendChild(it);
+    if(i<4){var h=document.createElement('div');h.className='it';h.appendChild(fr.cloneNode(true));var l=document.createElement('span');l.textContent=d.querySelector('.cap').textContent.replace(/^\d+ · /,'');h.appendChild(l);var tt=document.createElement('div');tt.textContent=titles[i];h.appendChild(tt);home.appendChild(h);}
+  });
+  // Remplacement des illustrations
+  var imgs=function(k){return document.querySelectorAll('img[data-art="'+k+'"]');};
+  document.querySelectorAll('img[data-art]').forEach(function(i){i.dataset.orig=i.getAttribute('src');});
+  document.getElementById('up').addEventListener('change',function(e){
+    var f=e.target.files&&e.target.files[0]; if(!f) return;
+    var url=URL.createObjectURL(f), k=document.getElementById('slot').value;
+    imgs(k).forEach(function(i){i.src=url;});
+    e.target.value='';
+  });
+  document.getElementById('reset').addEventListener('click',function(){
+    document.querySelectorAll('img[data-art]').forEach(function(i){i.src=i.dataset.orig;});
+  });
+})();
+</script>
