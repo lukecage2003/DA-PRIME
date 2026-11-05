@@ -1,0 +1,29 @@
+{
+ "version": "0.1.1-c471f57b53",
+ "fichiers": [
+  "./",
+  "index.html",
+  "atelier.css",
+  "polices.css",
+  "atelier.js",
+  "manifest.webmanifest",
+  "../templates/_systeme/briques.js",
+  "../templates/_systeme/familles.js",
+  "../templates/_systeme/logo.js",
+  "../templates/_systeme/metrics.js",
+  "../templates/_systeme/moteur.js",
+  "../templates/_systeme/placeholders.js",
+  "../templates/_systeme/tokens.js",
+  "../brand/03_fonts/web/Anton-Regular.woff2",
+  "../brand/03_fonts/web/Archivo-Bold.woff2",
+  "../brand/03_fonts/web/Archivo-Medium.woff2",
+  "../brand/03_fonts/web/InstrumentSerif-Italic.woff2",
+  "../brand/03_fonts/web/JetBrainsMono-Bold.woff2",
+  "../brand/99_tests/substitution/PLACEHOLDER_art-cosmos.jpg",
+  "../brand/99_tests/substitution/PLACEHOLDER_art-encre.png",
+  "../brand/99_tests/substitution/PLACEHOLDER_art-noir.jpg",
+  "../brand/99_tests/substitution/PLACEHOLDER_art-pop.jpg",
+  "../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png",
+  "../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL@2x.png"
+ ]
+}

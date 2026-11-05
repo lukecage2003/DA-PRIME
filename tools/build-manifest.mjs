@@ -15,12 +15,13 @@ const walk = (d) => readdirSync(d).flatMap((f) => { const p = join(d, f); return
 const sha = (p) => createHash('sha256').update(readFileSync(p)).digest('hex');
 const dims = (p, buf) => {
   if (p.endsWith('.png')) return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+  if (p.endsWith('.jpg')) { for (let i = 2; i < buf.length;) { const m = buf[i + 1], l = buf.readUInt16BE(i + 2); if (m >= 0xc0 && m <= 0xc3) return { width: buf.readUInt16BE(i + 7), height: buf.readUInt16BE(i + 5) }; i += 2 + l; } }
   if (p.endsWith('.svg')) { const m = buf.toString('utf8', 0, 600).match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/); if (m) return { width: +m[1], height: +m[2] }; }
   return {};
 };
 const stemOf = (p) => basename(p, extname(p)).replace(/@\dx$/, '').replace(/_\d+px(?=_|$)/, '');
 const slug = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const KIND = { LOGO: 'logo', EL: 'element', GRID: 'grille', MIN: 'miniature' };
+const KIND = { LOGO: 'logo', EL: 'element', GRID: 'grille', MIN: 'gabarit-miniature' };
 const title = (stem) => { const s = stem.replace(/^PS_[A-Z]+_/, '').replace(/_NON-OFFICIEL$/, '').replace(/[-_]/g, ' '); return s.charAt(0).toUpperCase() + s.slice(1); };
 
 const assets = new Map();
@@ -32,9 +33,9 @@ for (const f of cfg.folders) {
     const buf = readFileSync(abs); const stem = stemOf(abs);
     let id, ttl, kind;
     if (f.groupBy === 'fontFamily') {
-      if (!/\.(ttf|otf)$/.test(abs) && !/OFL\.txt$/.test(abs)) continue;
+      if (!/\.(ttf|otf|woff2)$/.test(abs) && !/OFL\.txt$/.test(abs)) continue;
       const famOf = (x) => x.family.replace(/ Condensed$/, '');
-      const key = /OFL\.txt$/.test(abs) ? basename(abs).split('-')[0].toLowerCase() : famOf(fonts.find((x) => x.file === inner)).replace(/\s/g, '').toLowerCase();
+      const key = /OFL\.txt$|\.woff2$/.test(abs) ? basename(abs).split('-')[0].toLowerCase() : famOf(fonts.find((x) => x.file === inner)).replace(/\s/g, '').toLowerCase();
       const fam = famOf(fonts.find((x) => x.family.replace(/\s/g, '').toLowerCase().startsWith(key)));
       id = `police-${slug(fam)}`; ttl = `Police ${fam}`; kind = 'police';
     } else if (f.groupAs === 'tokens') { id = 'tokens'; ttl = 'Design tokens'; kind = 'tokens'; }
@@ -47,7 +48,7 @@ for (const f of cfg.folders) {
 }
 for (const a of assets.values()) {
   a.files.sort((x, y) => x.path.localeCompare(y.path));
-  const pv = a.files.find((x) => x.format === 'png' && !x.scale && (x.width || 0) <= 1300) || a.files.find((x) => x.format === 'svg') || a.files.find((x) => x.format === 'png');
+  const pv = a.files.find((x) => x.format === 'jpg') || a.files.find((x) => x.format === 'png' && !x.scale && (x.width || 0) <= 1300) || a.files.find((x) => x.format === 'svg') || a.files.find((x) => x.format === 'png');
   a.preview = pv ? pv.path : null;
 }
 const tokensPath = 'brand/02_tokens/tokens.json';

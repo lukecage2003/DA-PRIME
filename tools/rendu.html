@@ -1,0 +1,12 @@
+<!doctype html><meta charset="utf-8"><title>Rendu de gabarit</title>
+<link rel="stylesheet" href="../atelier/polices.css">
+<style>html,body{margin:0;background:#fff}svg{display:block}#planche{display:flex;flex-wrap:wrap;gap:12px;padding:12px;width:1000px;background:#fff;font:12px Archivo,sans-serif}#planche figure{margin:0;width:168px}#planche figcaption{margin-top:4px;color:#333}#planche svg{width:168px;height:auto}</style>
+<body><script type="module">
+// Charge un ou plusieurs fichiers SVG de gabarit et les insère tels quels (les liens d'images sont résolus depuis leur dossier).
+const q = new URLSearchParams(location.search);
+const charger = async (f) => { const t = await (await fetch('../' + f)).text(); const base = '../' + f.slice(0, f.lastIndexOf('/') + 1); return t.replace(/(xlink:href|href)="(?!data:|https?:|\/)([^"]+)"/g, (m, a, h) => `${a}="${base}${h}"`); };
+if (q.get('f')) document.body.innerHTML = await charger(q.get('f'));
+else { const fs = q.get('planche').split(','); document.body.innerHTML = '<div id="planche">' + (await Promise.all(fs.map(async (f) => `<figure>${await charger(f)}<figcaption>${f.split('/')[2]}/${f.split('_')[3]}</figcaption></figure>`))).join('') + '</div>'; }
+await document.fonts.ready; await Promise.all([...document.images, ...document.querySelectorAll('image')].map((i) => i.decode ? i.decode().catch(() => {}) : 0));
+await new Promise((r) => setTimeout(r, 150)); window.pret = true;
+</script></body>

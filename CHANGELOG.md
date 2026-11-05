@@ -1,5 +1,13 @@
 # Journal des versions
 
+## 0.2.0 · 2026-11-05 · lot 2 (gabarits + Atelier prototype)
+
+- Moteur de gabarits partagé (`templates/_systeme/`) : mesure du texte par métriques de police, ajustement automatique du titre, typographie française, contrôles de lisibilité et de débordement.
+- 8 familles de miniatures, 19 variantes, SVG en calques nommés ; exemples JPG avec images PLACEHOLDER et planche de lisibilité à 168 px.
+- Polices web WOFF2 (sous-ensembles latin + français, 61 Ko au total).
+- Atelier prototype (`atelier/`) : saisie, import et recadrage tactile/souris, contrôles, exports PNG, JPG ≤ 2 Mo, SVG autonome, hors ligne.
+- Serveur local sans dépendance (`tools/serve.mjs`) et 31 tests de bout en bout (`tools/test-atelier.mjs`).
+
 ## 0.1.1 · 2026-11-05 · vérification finale du lot 1
 
 - Volet Adobe abandonné à votre demande : scripts de diagnostic, export ExtendScript des tokens et nuancier `.ase` retirés.

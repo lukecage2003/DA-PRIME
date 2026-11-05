@@ -1,0 +1,397 @@
+{
+  "version": "0.1.1",
+  "statut": "provisoire · sceau NON OFFICIEL · jaune non validé",
+  "format": {
+    "largeur": 1280,
+    "hauteur": 720
+  },
+  "familles": [
+    {
+      "id": "01-analyse-personnage",
+      "nom": "Analyse de personnage",
+      "description": "Personnage détouré, titre-concept en capitales.",
+      "champs": [
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Titre",
+          "conseil": "3 mots maximum"
+        },
+        {
+          "id": "personnage",
+          "type": "image",
+          "label": "Personnage détouré"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste",
+          "conseil": "Ex. : Art : Nom de l’artiste · Éditeur"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "jaune",
+          "nom": "Fond jaune",
+          "fichier": "01-analyse-personnage/PS_MIN_01-analyse-personnage_jaune_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "noir",
+          "nom": "Fond noir",
+          "fichier": "01-analyse-personnage/PS_MIN_01-analyse-personnage_noir_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "miroir",
+          "nom": "Personnage à gauche",
+          "fichier": "01-analyse-personnage/PS_MIN_01-analyse-personnage_miroir_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "02-analyse-comic",
+      "nom": "Analyse de comic",
+      "description": "La couverture entière en case-cadre, avec la note de la rédaction.",
+      "champs": [
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Titre",
+          "conseil": "3 mots maximum"
+        },
+        {
+          "id": "note",
+          "type": "choix",
+          "label": "Note"
+        },
+        {
+          "id": "couverture",
+          "type": "image",
+          "label": "Couverture"
+        },
+        {
+          "id": "couverture2",
+          "type": "image",
+          "label": "Seconde couverture"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste",
+          "conseil": "Ex. : Art : Nom de l’artiste · Éditeur"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "inclinee",
+          "nom": "Couverture inclinée",
+          "fichier": "02-analyse-comic/PS_MIN_02-analyse-comic_inclinee_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "jaune",
+          "nom": "Fond jaune",
+          "fichier": "02-analyse-comic/PS_MIN_02-analyse-comic_jaune_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "duo",
+          "nom": "Deux couvertures",
+          "fichier": "02-analyse-comic/PS_MIN_02-analyse-comic_duo_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "03-actualites",
+      "nom": "Actualités Marvel et DC",
+      "description": "Pastille rouge réservée à l’actu, éditeur en haut à droite, bandeau de titre.",
+      "champs": [
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Titre",
+          "conseil": "3 mots maximum"
+        },
+        {
+          "id": "editeur",
+          "type": "texte",
+          "label": "Éditeur"
+        },
+        {
+          "id": "personnage",
+          "type": "image",
+          "label": "Personnage détouré"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste",
+          "conseil": "Ex. : Art : Nom de l’artiste · Éditeur"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "bandeau-noir",
+          "nom": "Bandeau noir",
+          "fichier": "03-actualites/PS_MIN_03-actualites_bandeau-noir_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "bandeau-jaune",
+          "nom": "Bandeau jaune",
+          "fichier": "03-actualites/PS_MIN_03-actualites_bandeau-jaune_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "04-theories",
+      "nom": "Théories",
+      "description": "Image plein cadre assombrie, titre en question.",
+      "champs": [
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Titre",
+          "conseil": "3 mots maximum"
+        },
+        {
+          "id": "decor",
+          "type": "image",
+          "label": "Image plein cadre"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste",
+          "conseil": "Ex. : Art : Nom de l’artiste · Éditeur"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "question",
+          "nom": "Point d’interrogation",
+          "fichier": "04-theories/PS_MIN_04-theories_question_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "gauche",
+          "nom": "Titre à gauche",
+          "fichier": "04-theories/PS_MIN_04-theories_gauche_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "05-guides",
+      "nom": "Guides de lecture",
+      "description": "Couvertures numérotées en escalier : l’ordre de lecture se lit sans texte.",
+      "champs": [
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Titre",
+          "conseil": "3 mots maximum"
+        },
+        {
+          "id": "couv1",
+          "type": "image",
+          "label": "Couverture 1"
+        },
+        {
+          "id": "couv2",
+          "type": "image",
+          "label": "Couverture 2"
+        },
+        {
+          "id": "couv3",
+          "type": "image",
+          "label": "Couverture 3"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste",
+          "conseil": "Ex. : Art : Nom de l’artiste · Éditeur"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "trois",
+          "nom": "Trois couvertures",
+          "fichier": "05-guides/PS_MIN_05-guides_trois_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "deux",
+          "nom": "Deux couvertures",
+          "fichier": "05-guides/PS_MIN_05-guides_deux_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "noir",
+          "nom": "Fond noir",
+          "fichier": "05-guides/PS_MIN_05-guides_noir_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "06-evenements",
+      "nom": "Événements",
+      "description": "Deux univers séparés par l’incision à 8°.",
+      "champs": [
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Titre",
+          "conseil": "3 mots maximum"
+        },
+        {
+          "id": "personnageA",
+          "type": "image",
+          "label": "Personnage univers A"
+        },
+        {
+          "id": "personnageB",
+          "type": "image",
+          "label": "Personnage univers B"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste",
+          "conseil": "Ex. : Art : Nom de l’artiste · Éditeur"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "titre-bas",
+          "nom": "Titre en bas",
+          "fichier": "06-evenements/PS_MIN_06-evenements_titre-bas_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "titre-haut",
+          "nom": "Titre en haut",
+          "fichier": "06-evenements/PS_MIN_06-evenements_titre-haut_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "07-histoire",
+      "nom": "Histoire des comics",
+      "description": "Année géante, bichromie noir et jaune : la seule famille qui recolore l’image.",
+      "champs": [
+        {
+          "id": "annee",
+          "type": "texte",
+          "label": "Année ou décennie"
+        },
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Sujet",
+          "conseil": "3 lignes maximum"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste"
+        },
+        {
+          "id": "personnage",
+          "type": "image",
+          "label": "Personnage détouré"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "bichromie",
+          "nom": "Bichromie",
+          "fichier": "07-histoire/PS_MIN_07-histoire_bichromie_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "couleur",
+          "nom": "Image en couleur",
+          "fichier": "07-histoire/PS_MIN_07-histoire_couleur_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "08-cosmique",
+      "nom": "Dossiers cosmiques et multiversels",
+      "description": "Décor plein cadre, voile noir à gauche, jaune utilisé comme lumière.",
+      "champs": [
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Titre",
+          "conseil": "3 mots maximum"
+        },
+        {
+          "id": "soustitre",
+          "type": "texte",
+          "label": "Surtitre"
+        },
+        {
+          "id": "decor",
+          "type": "image",
+          "label": "Décor plein cadre"
+        },
+        {
+          "id": "personnage",
+          "type": "image",
+          "label": "Personnage détouré"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste",
+          "conseil": "Ex. : Art : Nom de l’artiste · Éditeur"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "decor",
+          "nom": "Décor seul",
+          "fichier": "08-cosmique/PS_MIN_08-cosmique_decor_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "surimpression",
+          "nom": "Personnage en surimpression",
+          "fichier": "08-cosmique/PS_MIN_08-cosmique_surimpression_NON-OFFICIEL.svg"
+        }
+      ]
+    }
+  ]
+}

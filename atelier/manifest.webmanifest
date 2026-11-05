@@ -1,0 +1,15 @@
+{
+  "name": "Atelier Primestone",
+  "short_name": "Atelier",
+  "description": "Miniatures YouTube Primestone à partir des gabarits officiels (prototype).",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0B0B0B",
+  "theme_color": "#111111",
+  "icons": [
+    { "src": "../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL@2x.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" }
+  ]
+}

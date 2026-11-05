@@ -4,7 +4,7 @@ Dépôt de l'identité visuelle de **Primestone Media** : système graphique, de
 
 Direction artistique de référence : **Signal** (YouTube, accroches, communication) + **Kiosque** (éditorial, dossiers, carrousels, infographies, bibliothèque). Direction sombre et cinématographique en usage secondaire.
 
-## État : lot 1 (fondations) · version 0.1.0 provisoire
+## État : lot 2 (gabarits + Atelier prototype) · version 0.2.0 provisoire
 
 | Élément | Emplacement | Statut |
 |---|---|---|
@@ -14,6 +14,8 @@ Direction artistique de référence : **Signal** (YouTube, accroches, communicat
 | Polices OFL (statiques pour le bureau, variables pour le web) | `brand/03_fonts/` | provisoire |
 | Éléments graphiques SVG + PNG 1x/2x | `brand/04_elements/` | provisoire (sceau P : non officiel) |
 | Comparaison du jaune proposé aux jaunes d'origine | `docs/COULEUR_JAUNE.md` | à valider |
+| Gabarits SVG des miniatures : 8 familles, 19 variantes, exemples, planche 168 px | `templates/` | provisoire (sceau non officiel) |
+| Atelier : saisie, recadrage, contrôles, exports PNG/JPG/SVG, hors ligne | `atelier/` | prototype |
 | Catalogue `brand-manifest.json` + schéma | `catalog/`, `schemas/` | généré |
 | Schéma Supabase | `supabase/` | **brouillon non appliqué** |
 | Présentations des missions 01 et 02 | `presentations/` | archive |
@@ -28,11 +30,15 @@ brand/
   03_fonts/          TTF statiques · _variable/ · licences OFL · fonts.json
   04_elements/       svg/ · png/  (incision, filet, volet, sceau, cadres, trame, rubriques, grilles)
   99_tests/          substitution/ (PLACEHOLDER_*, images générées) · client/ (vos illustrations, ignoré par Git)
+templates/
+  _systeme/          moteur de gabarits (partagé avec l'Atelier)
+  miniatures/        8 familles : SVG, exemples, planche, catalogue.json
+atelier/             application web de saisie (PWA hors ligne)
 catalog/             catalog.config.json (règles) · brand-manifest.json (généré)
 schemas/             brand-manifest.schema.json
 supabase/            migrations/ (brouillon)
 tools/               générateurs et contrôles
-docs/                architecture, conventions, logo, couleur jaune
+docs/                architecture, conventions, logo, couleur jaune, gabarits, Atelier
 presentations/       planches des missions 01 et 02
 ```
 
@@ -41,7 +47,10 @@ presentations/       planches des missions 01 et 02
 Prérequis : Node 20+ (`npm ci` installe Playwright pour les rendus PNG), Python 3.11+ (`pip install -r requirements.txt`).
 
 ```bash
-npm run build          # tokens -> éléments SVG/PNG -> manifeste
+npm run build          # tokens -> éléments -> gabarits et exemples -> manifeste
+npm run atelier        # Atelier sur http://localhost:4173/atelier/
+npm run test:atelier   # tests de bout en bout (Chromium, appareils émulés)
+npm run build:webfonts # polices web et métriques (si les polices changent)
 npm run build:logo     # re-vectorise le logo et refait la comparaison (≈ 1 min)
 npm run build:yellow   # recalcule la comparaison des jaunes
 npm run check          # contrôles obligatoires avant chaque commit

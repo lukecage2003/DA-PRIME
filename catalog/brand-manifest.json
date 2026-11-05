@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "name": "primestone-brand",
   "release": {
-    "version": "0.1.1",
+    "version": "0.2.0",
     "date": "2026-11-05",
     "channel": "provisoire"
   },
@@ -20,7 +20,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "case",
         "cadre",
@@ -62,7 +62,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "filet",
         "incision",
@@ -104,7 +104,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "filet",
         "incision",
@@ -146,7 +146,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "incision",
         "jaune"
@@ -187,7 +187,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "incision",
         "noir"
@@ -228,7 +228,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "rubrique",
         "actu"
@@ -269,7 +269,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "rubrique",
         "analyse",
@@ -311,7 +311,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "rubrique",
         "analyse",
@@ -353,7 +353,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "rubrique",
         "cosmique"
@@ -394,7 +394,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "rubrique",
         "evenement"
@@ -435,7 +435,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "rubrique",
         "guide"
@@ -476,7 +476,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "rubrique",
         "histoire"
@@ -517,7 +517,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "rubrique",
         "theorie"
@@ -558,7 +558,7 @@
       "category": "elements",
       "kind": "element",
       "status": "non-officiel",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "sceau",
         "jaune",
@@ -601,7 +601,7 @@
       "category": "elements",
       "kind": "element",
       "status": "non-officiel",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "sceau",
         "noir",
@@ -644,7 +644,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "trame",
         "benday",
@@ -686,7 +686,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "volet",
         "transition",
@@ -728,7 +728,7 @@
       "category": "elements",
       "kind": "grille",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "grid",
         "carrousel",
@@ -770,7 +770,7 @@
       "category": "elements",
       "kind": "grille",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "grid",
         "miniature",
@@ -807,12 +807,714 @@
       ]
     },
     {
+      "id": "min-01-analyse-personnage-jaune-non-officiel",
+      "title": "01 analyse personnage jaune",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "analyse",
+        "personnage",
+        "jaune",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/01-analyse-personnage/exemples/PS_MIN_01-analyse-personnage_jaune_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/01-analyse-personnage/exemples/PS_MIN_01-analyse-personnage_jaune_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 61841,
+          "sha256": "5cd4a6debf86640191a02e1f3d86fcf694552a244f9ede71139a272cd31449bd",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/01-analyse-personnage/PS_MIN_01-analyse-personnage_jaune_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11055,
+          "sha256": "df0bb142270e6238acc4fac6a0bb1fc1a82bed5992832b988a65fc3281d07c1d",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-01-analyse-personnage-miroir-non-officiel",
+      "title": "01 analyse personnage miroir",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "analyse",
+        "personnage",
+        "miroir",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/01-analyse-personnage/exemples/PS_MIN_01-analyse-personnage_miroir_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/01-analyse-personnage/exemples/PS_MIN_01-analyse-personnage_miroir_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 61145,
+          "sha256": "8675ffc726013a7874e68326d3efbe323ba1cc7bb580368efbedf8c6d62b640c",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/01-analyse-personnage/PS_MIN_01-analyse-personnage_miroir_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11071,
+          "sha256": "a32e24bf08c3f3eac7190e52874268dde9fb81a801df78574766a8b31f286cf6",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-01-analyse-personnage-noir-non-officiel",
+      "title": "01 analyse personnage noir",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "analyse",
+        "personnage",
+        "noir",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/01-analyse-personnage/exemples/PS_MIN_01-analyse-personnage_noir_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/01-analyse-personnage/exemples/PS_MIN_01-analyse-personnage_noir_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 68018,
+          "sha256": "09cf29e8de0f01301404189577190c5c2b921addec782c71c726771da1b9da39",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/01-analyse-personnage/PS_MIN_01-analyse-personnage_noir_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11059,
+          "sha256": "798159033e292367c57550cc7862a1ce2f9bbef80cd363f94af22f2c5e644f86",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-02-analyse-comic-duo-non-officiel",
+      "title": "02 analyse comic duo",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "analyse",
+        "comic",
+        "duo",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/02-analyse-comic/exemples/PS_MIN_02-analyse-comic_duo_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/02-analyse-comic/exemples/PS_MIN_02-analyse-comic_duo_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 94161,
+          "sha256": "75269b5268ed7088b53509aaf1f78ba21e6f95b045a6d21586b60ec703dd0c2e",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/02-analyse-comic/PS_MIN_02-analyse-comic_duo_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 12904,
+          "sha256": "65e749fa80f409e78d6dca97a1769a77b8df8af89c42accdd91d06530a1e634f",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-02-analyse-comic-inclinee-non-officiel",
+      "title": "02 analyse comic inclinee",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "analyse",
+        "comic",
+        "inclinee",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/02-analyse-comic/exemples/PS_MIN_02-analyse-comic_inclinee_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/02-analyse-comic/exemples/PS_MIN_02-analyse-comic_inclinee_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 104959,
+          "sha256": "79d83a110fbf17caa044414c595e4ea2b4834682019019d19ff3431ea8cfb5e1",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/02-analyse-comic/PS_MIN_02-analyse-comic_inclinee_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 12295,
+          "sha256": "bcae8324a5c46583597265fa2a4d3524e4facc9b5d5af4ab0ed1f2ff8ec753e5",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-02-analyse-comic-jaune-non-officiel",
+      "title": "02 analyse comic jaune",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "analyse",
+        "comic",
+        "jaune",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/02-analyse-comic/exemples/PS_MIN_02-analyse-comic_jaune_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/02-analyse-comic/exemples/PS_MIN_02-analyse-comic_jaune_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 105088,
+          "sha256": "5e488090cd19b839a7e210293736c86197063e291014dda1f63069ddb62ddc7a",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/02-analyse-comic/PS_MIN_02-analyse-comic_jaune_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 12282,
+          "sha256": "00c7f31f30ee4f7abbd6171ac9b27040cae1f449d09980c4c3a91be9220c058d",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-03-actualites-bandeau-jaune-non-officiel",
+      "title": "03 actualites bandeau jaune",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "actualites",
+        "bandeau",
+        "jaune",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/03-actualites/exemples/PS_MIN_03-actualites_bandeau-jaune_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/03-actualites/exemples/PS_MIN_03-actualites_bandeau-jaune_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 49884,
+          "sha256": "e187962f3795b6a88f0eccbc28e0e6174779d7bca2aa142cedb29dd6a84c1519",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/03-actualites/PS_MIN_03-actualites_bandeau-jaune_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11309,
+          "sha256": "2bcbb5add8dbad4ea5b7ae438985a13148ce0c14964c0be9a70e2798a6c0e573",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-03-actualites-bandeau-noir-non-officiel",
+      "title": "03 actualites bandeau noir",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "actualites",
+        "bandeau",
+        "noir",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/03-actualites/exemples/PS_MIN_03-actualites_bandeau-noir_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/03-actualites/exemples/PS_MIN_03-actualites_bandeau-noir_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 45495,
+          "sha256": "30762c17d471b2b4129a2b0995716af5c921f95172f4a3157ac5dc5657145a0b",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/03-actualites/PS_MIN_03-actualites_bandeau-noir_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11301,
+          "sha256": "5bb973ab4d8df8eeb264cab2d57cc06da14ca3e420a4b076ce279cab20c0bc3f",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-04-theories-gauche-non-officiel",
+      "title": "04 theories gauche",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "theories",
+        "gauche",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/04-theories/exemples/PS_MIN_04-theories_gauche_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/04-theories/exemples/PS_MIN_04-theories_gauche_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 84590,
+          "sha256": "19cec84d5182d56fa295df950582d7c0466bf86103bef69b9662d0827150c880",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/04-theories/PS_MIN_04-theories_gauche_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11115,
+          "sha256": "ce983e5aaa8ffcac23aa968a2c68dd6097e89123907455ef2d7ffc73017e9371",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-04-theories-question-non-officiel",
+      "title": "04 theories question",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "theories",
+        "question",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/04-theories/exemples/PS_MIN_04-theories_question_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/04-theories/exemples/PS_MIN_04-theories_question_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 95130,
+          "sha256": "bf35a677cc28510f4bea06904221eeace7815a87272ed41c2cb34ed2d759704d",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/04-theories/PS_MIN_04-theories_question_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11185,
+          "sha256": "5c25aefc24129fdae4ca0dd79bd7b803684f86f5c00f5db246356cb47985753a",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-05-guides-deux-non-officiel",
+      "title": "05 guides deux",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "guides",
+        "deux",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/05-guides/exemples/PS_MIN_05-guides_deux_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/05-guides/exemples/PS_MIN_05-guides_deux_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 80288,
+          "sha256": "7a112a3e867d62f78814784fd238152c8306c325458acff5b70499c80df0a7dd",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/05-guides/PS_MIN_05-guides_deux_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 12199,
+          "sha256": "be917bea35ea523cb921fd92b7042ec6fd89e99ad5e6d402f19eda5e4054256a",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-05-guides-noir-non-officiel",
+      "title": "05 guides noir",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "guides",
+        "noir",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/05-guides/exemples/PS_MIN_05-guides_noir_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/05-guides/exemples/PS_MIN_05-guides_noir_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 74391,
+          "sha256": "39f4b471ca85f38f558eafdda4876968b14f2a91c561520004b50981aa504bd9",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/05-guides/PS_MIN_05-guides_noir_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 12953,
+          "sha256": "6ec38401cd5e9fdbca6fc06b7369eed5a4576eae0957f0431ee112b91c1f2827",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-05-guides-trois-non-officiel",
+      "title": "05 guides trois",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "guides",
+        "trois",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/05-guides/exemples/PS_MIN_05-guides_trois_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/05-guides/exemples/PS_MIN_05-guides_trois_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 73846,
+          "sha256": "a5b1b53c710b8f08566bffdd4ac65e579e5010a5712aa4d13f22ea99441b1bbf",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/05-guides/PS_MIN_05-guides_trois_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 12962,
+          "sha256": "82d3d6b696a9edd502a7d3ccbfdc378fc44709af54af32b5ba5e80da7c0d1bb3",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-06-evenements-titre-bas-non-officiel",
+      "title": "06 evenements titre bas",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "evenements",
+        "titre",
+        "bas",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/06-evenements/exemples/PS_MIN_06-evenements_titre-bas_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/06-evenements/exemples/PS_MIN_06-evenements_titre-bas_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 89648,
+          "sha256": "d7b293d14cbfa4b47fb11911c410476f036127ec96399914c939caacc6cfd090",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/06-evenements/PS_MIN_06-evenements_titre-bas_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11529,
+          "sha256": "a09e29243dc5652f5f9e8711435dbc76adbfafb71e2a5373ea2b36ec06f3c248",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-06-evenements-titre-haut-non-officiel",
+      "title": "06 evenements titre haut",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "evenements",
+        "titre",
+        "haut",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/06-evenements/exemples/PS_MIN_06-evenements_titre-haut_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/06-evenements/exemples/PS_MIN_06-evenements_titre-haut_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 78769,
+          "sha256": "8f117cf35bb5df2cf817b41b6f8ac5a2a9ac1ecee4f49ddcefdbaf616620e1b6",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/06-evenements/PS_MIN_06-evenements_titre-haut_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11532,
+          "sha256": "baad97451b45e4180bc267fe539d04e63b606ac744f89aaf37ff8cc8e767f88b",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-07-histoire-bichromie-non-officiel",
+      "title": "07 histoire bichromie",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "histoire",
+        "bichromie",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/07-histoire/exemples/PS_MIN_07-histoire_bichromie_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/07-histoire/exemples/PS_MIN_07-histoire_bichromie_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 74577,
+          "sha256": "9b22888c37da1f236fee3d64e0cd36a92fcb3f99cf3ba2e914fd8a59b66bcfd5",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/07-histoire/PS_MIN_07-histoire_bichromie_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11302,
+          "sha256": "40b14f5b12dfc00d5ed6ee72d1f5df6179d12611cfe070a1889c499d67f43f60",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-07-histoire-couleur-non-officiel",
+      "title": "07 histoire couleur",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "histoire",
+        "couleur",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/07-histoire/exemples/PS_MIN_07-histoire_couleur_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/07-histoire/exemples/PS_MIN_07-histoire_couleur_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 74469,
+          "sha256": "9cf0be3f7077e393f0c41e02f1321a7d37c0b91295f6edda352010dffa40bc97",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/07-histoire/PS_MIN_07-histoire_couleur_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11303,
+          "sha256": "bc247965e86da1f8362acd6a04ba03f970ef0cca0438b9b7dbacca2e0ccad719",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-08-cosmique-decor-non-officiel",
+      "title": "08 cosmique decor",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "cosmique",
+        "decor",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/08-cosmique/exemples/PS_MIN_08-cosmique_decor_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/08-cosmique/exemples/PS_MIN_08-cosmique_decor_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 110209,
+          "sha256": "377face251ba8c4d26031a67253f3799efd955152d845ff3108ebadb0ce7aa43",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/08-cosmique/PS_MIN_08-cosmique_decor_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11438,
+          "sha256": "deb5c2ab541b24d545f093bb8bd4fd8828fb36bbf02d4a07f2cacc07cd0f828c",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-08-cosmique-surimpression-non-officiel",
+      "title": "08 cosmique surimpression",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "cosmique",
+        "surimpression",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/08-cosmique/exemples/PS_MIN_08-cosmique_surimpression_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/08-cosmique/exemples/PS_MIN_08-cosmique_surimpression_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 127014,
+          "sha256": "206419a5d1bdf4d01830ec1d0403ae6698fdf4d183770252885109876fbc7c8f",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/08-cosmique/PS_MIN_08-cosmique_surimpression_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11783,
+          "sha256": "8fef01fed9cd3668b5c1e8076f31ca6617684da412ea806dae89ddacb1508a64",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-planche-168px-non-officiel",
+      "title": "Planche 168px",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.2.0",
+      "tags": [
+        "min",
+        "planche",
+        "168px",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/PS_MIN_planche-168px_NON-OFFICIEL.png",
+      "files": [
+        {
+          "path": "templates/miniatures/PS_MIN_planche-168px_NON-OFFICIEL.png",
+          "format": "png",
+          "bytes": 188953,
+          "sha256": "59ad4a48f034d4bbb238b91d361f69233fecba7a3059070076dd74c102c73cb2",
+          "width": 1024,
+          "height": 510
+        }
+      ]
+    },
+    {
       "id": "logo-icone-p-blanc-non-officiel",
       "title": "Icone P blanc",
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "logo",
         "icone",
@@ -871,7 +1573,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "logo",
         "icone",
@@ -930,7 +1632,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "logo",
         "icone",
@@ -989,7 +1691,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "logo",
         "logotype",
@@ -1048,7 +1750,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "logo",
         "logotype",
@@ -1107,7 +1809,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "logo",
         "logotype",
@@ -1166,7 +1868,7 @@
       "category": "originaux",
       "kind": "logo",
       "status": "reference",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "logo",
         "icone",
@@ -1191,7 +1893,7 @@
       "category": "originaux",
       "kind": "logo",
       "status": "reference",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "logo",
         "logotype",
@@ -1215,9 +1917,9 @@
       "id": "min-superman-espoir-original",
       "title": "Superman espoir original",
       "category": "originaux",
-      "kind": "miniature",
+      "kind": "gabarit-miniature",
       "status": "reference",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "min",
         "superman",
@@ -1243,7 +1945,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "anton",
         "ofl"
@@ -1262,6 +1964,12 @@
           "format": "ttf",
           "bytes": 170812,
           "sha256": "a4ba3a92350ebb031da0cb47630ac49eb265082ca1bc0450442f4a83ab947cab"
+        },
+        {
+          "path": "brand/03_fonts/web/Anton-Regular.woff2",
+          "format": "woff2",
+          "bytes": 14812,
+          "sha256": "afc05970def1a2fef27e74a8a2e18cdf863b95647e44ea7cf97c55c76d320e88"
         }
       ]
     },
@@ -1271,7 +1979,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "archivo",
         "bold"
@@ -1326,6 +2034,18 @@
           "format": "ttf",
           "bytes": 121040,
           "sha256": "a8113c2e48e1d9696b549cfb17f254bb2ad939c1ed55b56a99d34d865c0910e3"
+        },
+        {
+          "path": "brand/03_fonts/web/Archivo-Bold.woff2",
+          "format": "woff2",
+          "bytes": 10916,
+          "sha256": "3e451840ed82bf578ec551fa202c08642ce7c08b528d204476e84aec083b9f9b"
+        },
+        {
+          "path": "brand/03_fonts/web/Archivo-Medium.woff2",
+          "format": "woff2",
+          "bytes": 10912,
+          "sha256": "dccdf6dd092be9fcb4e43ed77072c1b681c759d40079e2c81d5d0295a84020bc"
         }
       ]
     },
@@ -1335,7 +2055,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "instrumentserif",
         "italic"
@@ -1360,6 +2080,12 @@
           "format": "ttf",
           "bytes": 70012,
           "sha256": "498efd461f6ddfcb7a111bf9a565709d2085d48201d501ead960d93e84ffbb88"
+        },
+        {
+          "path": "brand/03_fonts/web/InstrumentSerif-Italic.woff2",
+          "format": "woff2",
+          "bytes": 20684,
+          "sha256": "85b20aa60c23ef02b9b8da0db2d38104b03105efc2359a278077914eb02bfa78"
         }
       ]
     },
@@ -1369,7 +2095,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "jetbrainsmono",
         "bold"
@@ -1394,6 +2120,12 @@
           "format": "ttf",
           "bytes": 115164,
           "sha256": "69c6f6c08493fa06f6dc14e9a49c52cc7c074e4b8cae2f8dce2d1c38d61e8983"
+        },
+        {
+          "path": "brand/03_fonts/web/JetBrainsMono-Bold.woff2",
+          "format": "woff2",
+          "bytes": 8072,
+          "sha256": "5cf660c8ac4b1b04d9df1fafbe2319883d95648c3e9ed5b00e08ed048917bbae"
         }
       ]
     },
@@ -1403,7 +2135,7 @@
       "category": "tokens",
       "kind": "tokens",
       "status": "provisoire",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "tags": [
         "tokens"
       ],

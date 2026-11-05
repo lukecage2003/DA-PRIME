@@ -37,7 +37,7 @@ for fo in cfg['folders']:
     for p in (ROOT / fo['path']).rglob('*'):
         inner = p.relative_to(ROOT / fo['path']).as_posix()
         if not p.is_file() or IGN.search(inner) or any(inner.startswith(e) for e in fo.get('exclude', [])): continue
-        if fo.get('groupBy') == 'fontFamily' and not re.search(r'\.(ttf|otf)$|OFL\.txt$', inner): continue
+        if fo.get('groupBy') == 'fontFamily' and not re.search(r'\.(ttf|otf|woff2)$|OFL\.txt$', inner): continue
         if rel(p) not in listed: missing.append(rel(p))
 ko('fichiers absents du manifeste : ' + ', '.join(missing[:5])) if missing else ok('chaque fichier des dossiers catalogués figure dans le manifeste')
 
@@ -48,13 +48,13 @@ for p in svgs:
     try: ET.parse(p)
     except ET.ParseError as e: badsvg.append(f'{rel(p)} ({e})')
 ko('SVG invalides : ' + ', '.join(badsvg)) if badsvg else ok(f'{len(svgs)} SVG bien formés (XML)')
-pngs = [ROOT / f['path'] for a in man['assets'] if a['category'] in ('logo', 'elements') for f in a['files'] if f['format'] == 'png']
+pngs = [ROOT / f['path'] for a in man['assets'] if a['category'] in ('logo', 'elements', 'gabarits') for f in a['files'] if f['format'] == 'png']
 badpng = []
 for p in pngs:
     try:
         Image.open(p).verify(); im = Image.open(p)
         # RGBA attendu ; RGB toléré uniquement pour un visuel plein (le moteur de rendu omet alors la couche alpha)
-        assert im.mode == 'RGBA' or (im.mode == 'RGB' and 'rubrique' in p.name)
+        assert im.mode == 'RGBA' or (im.mode == 'RGB' and ('rubrique' in p.name or 'planche' in p.name))
     except Exception: badpng.append(rel(p))
 ko('PNG invalides ou sans canal alpha : ' + ', '.join(badpng)) if badpng else ok(f'{len(pngs)} PNG de logo et d\'éléments valides (RGBA ; étiquettes de rubrique pleines en RGB opaque)')
 
@@ -92,7 +92,7 @@ ko('exports de tokens périmés : lancer npm run build:tokens') if before != aft
 # 9. Documentation : aucune référence au volet Adobe abandonné ni à des chemins supprimés
 docs = [ROOT / 'README.md', ROOT / 'CHANGELOG.md'] + list((ROOT / 'docs').glob('*.md')) + list((ROOT / 'brand').rglob('README.md'))
 stale = [f'{rel(p)}:{i+1}' for p in docs for i, l in enumerate(p.read_text().splitlines())
-         if re.search(r'templates/|\.jsx|\.ase\b|ExtendScript|MOGRT|diagnostic', l, re.I) and 'abandonn' not in l and 'retir' not in l]
+         if re.search(r'\.jsx|\.ase\b|ExtendScript|MOGRT|diagnostic', l, re.I) and 'abandonn' not in l and 'retir' not in l]
 ko('documentation périmée : ' + ', '.join(stale)) if stale else ok('documentation sans référence au volet Adobe abandonné')
 
 sys.exit(1 if fails else 0)

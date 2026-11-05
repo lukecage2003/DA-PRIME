@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atelier Primestone</title>
+<meta name="theme-color" content="#111111">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png">
+<link rel="apple-touch-icon" href="../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png">
+<link rel="stylesheet" href="polices.css">
+<link rel="stylesheet" href="atelier.css">
+</head>
+<body>
+<header class="barre">
+  <strong>Atelier Primestone</strong><span class="sous">Miniatures YouTube</span>
+  <span class="statut" title="Logo et jaune provisoires">Sceau P NON OFFICIEL · jaune provisoire</span>
+</header>
+<main class="atelier">
+  <section class="scene" aria-label="Aperçu">
+    <div id="apercu" class="apercu" aria-label="Aperçu de la miniature. Faire glisser pour déplacer l'image, pincer ou utiliser la molette pour zoomer."></div>
+    <div class="sous-apercu">
+      <label class="bascule"><input type="checkbox" id="guides"> Guides</label>
+      <figure class="mini"><div id="mini"></div><figcaption>Taille smartphone · 168 px</figcaption></figure>
+    </div>
+  </section>
+  <section class="panneau" aria-label="Réglages">
+    <fieldset><legend>Famille</legend><div id="familles" class="puces"></div></fieldset>
+    <fieldset><legend>Variante</legend><div id="variantes" class="puces"></div></fieldset>
+    <fieldset><legend>Textes</legend><div id="champs" class="champs"></div></fieldset>
+    <fieldset><legend>Images</legend><div id="images" class="images"></div></fieldset>
+    <fieldset><legend>Contrôles</legend><ul id="alertes" class="alertes" aria-live="polite"></ul></fieldset>
+    <fieldset><legend>Exporter</legend>
+      <div class="exports">
+        <button type="button" data-export="png">PNG 1280 × 720</button>
+        <button type="button" data-export="jpg">JPG (≤ 2 Mo)</button>
+        <button type="button" data-export="svg">SVG autonome</button>
+      </div>
+      <p id="export-info" class="info" aria-live="polite"></p>
+      <button type="button" id="reinit" class="discret">Réinitialiser le brouillon</button>
+    </fieldset>
+  </section>
+</main>
+<script type="module" src="atelier.js"></script>
+</body>
+</html>
