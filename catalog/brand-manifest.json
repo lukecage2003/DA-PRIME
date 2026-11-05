@@ -1038,9 +1038,9 @@
         {
           "path": "templates/kiosque/PS_CAR_planche-360px_NON-OFFICIEL.png",
           "format": "png",
-          "bytes": 335923,
-          "sha256": "8a9520bdc78efbd5138ff1610edc34171dd1044fa5a3463e8df81dc810554785",
-          "width": 1024,
+          "bytes": 847500,
+          "sha256": "cef2a83b0995dc4b64265343d8a18a9fed28342c45335d2b7afc5ce0498ed829",
+          "width": 756,
           "height": 1932
         }
       ]
@@ -1810,10 +1810,10 @@
         {
           "path": "templates/miniatures/PS_MIN_planche-168px_NON-OFFICIEL.png",
           "format": "png",
-          "bytes": 188953,
-          "sha256": "59ad4a48f034d4bbb238b91d361f69233fecba7a3059070076dd74c102c73cb2",
-          "width": 1024,
-          "height": 510
+          "bytes": 283541,
+          "sha256": "c90aa45e388e6e98a6081b9416ee3a1cb61e81e3b2c93c9cee6b759de7ac9eed",
+          "width": 912,
+          "height": 512
         }
       ]
     },

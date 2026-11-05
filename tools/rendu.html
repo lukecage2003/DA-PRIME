@@ -4,9 +4,15 @@
 <body><script type="module">
 // Charge un ou plusieurs fichiers SVG de gabarit et les insère tels quels (les liens d'images sont résolus depuis leur dossier).
 const q = new URLSearchParams(location.search);
-const charger = async (f) => { const t = await (await fetch('../' + f)).text(); const base = '../' + f.slice(0, f.lastIndexOf('/') + 1); return t.replace(/(xlink:href|href)="(?!data:|https?:|\/)([^"]+)"/g, (m, a, h) => `${a}="${base}${h}"`); };
+// Identifiants préfixés : plusieurs SVG dans une même page ne doivent pas partager leurs filtres ni leurs découpes
+const isoler = (svg, k) => svg.replace(/\bid="([^"]+)"/g, `id="${k}-$1"`).replace(/url\(#([^)]+)\)/g, `url(#${k}-$1)`);
+let n = 0;
+const charger = async (f) => { const t = await (await fetch('../' + f)).text(); const base = '../' + f.slice(0, f.lastIndexOf('/') + 1); return isoler(t.replace(/(xlink:href|href)="(?!data:|https?:|\/|#)([^"]+)"/g, (m, a, h) => `${a}="${base}${h}"`), `s${n++}`); };
 if (q.get('f')) document.body.innerHTML = await charger(q.get('f'));
-else { const fs = q.get('planche').split(','); document.body.innerHTML = `<div id="planche" style="--l:${+q.get('l') || 168}px">` + (await Promise.all(fs.map(async (f) => `<figure>${await charger(f)}<figcaption>${f.split('/')[2]}/${f.split('_')[3]}</figcaption></figure>`))).join('') + '</div>'; }
-await document.fonts.ready; await Promise.all([...document.images, ...document.querySelectorAll('image')].map((i) => i.decode ? i.decode().catch(() => {}) : 0));
-await new Promise((r) => setTimeout(r, 150)); window.pret = true;
+else if (q.get('planche')) { const fs = q.get('planche').split(','); document.body.innerHTML = `<div id="planche" style="--l:${+q.get('l') || 168}px">` + (await Promise.all(fs.map(async (f) => `<figure>${await charger(f)}<figcaption>${f.split('/')[2]}/${f.split('_')[3]}</figcaption></figure>`))).join('') + '</div>'; }
+// Rendu déterministe : polices chargées, toutes les images préchargées et décodées, puis deux images d'affichage
+await document.fonts.ready;
+const urls = [...new Set([...document.querySelectorAll('image')].map((i) => i.getAttribute('href')))];
+await Promise.all(urls.map((u) => { const i = new Image(); i.src = u; return i.decode().catch(() => {}); }));
+await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 300)))); window.pret = true;
 </script></body>

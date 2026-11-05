@@ -57,7 +57,8 @@ function dessiner() {
     planifie = false;
     rendu = rendre(etat.fam, etat.vari, etat.donnees, { guides: $('#guides').checked });
     $('#apercu').innerHTML = rendu.svg;
-    $('#mini').innerHTML = rendre(etat.fam, etat.vari, etat.donnees).svg;
+    // Aperçu réduit : identifiants préfixés pour ne pas partager filtres et découpes avec l'aperçu principal
+    $('#mini').innerHTML = rendre(etat.fam, etat.vari, etat.donnees).svg.replace(/\bid="([^"]+)"/g, 'id="mini-$1"').replace(/url\(#([^)]+)\)/g, 'url(#mini-$1)');
     afficherAlertes(rendu.alertes);
   });
 }

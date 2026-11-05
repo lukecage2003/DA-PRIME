@@ -78,18 +78,27 @@ if (!process.argv.includes('--no-render')) {
   for (const { racine, nomColl, catalogue } of collections) {
     const fichiers = catalogue.familles.flatMap((f) => f.variantes.map((v) => v.fichier));
     await p.setViewportSize({ width: catalogue.format.largeur, height: catalogue.format.hauteur });
+    await p.goto('http://127.0.0.1:4199/tools/rendu.html?f=');
     for (const f of fichiers) {
       await p.goto(`http://127.0.0.1:4199/tools/rendu.html?f=${encodeURIComponent(`templates/${nomColl}/${f}`)}`);
       await p.waitForFunction(() => window.pret === true);
       const ex = join(racine, dirname(f), 'exemples'); mkdirSync(ex, { recursive: true });
       await p.locator('svg').screenshot({ path: join(ex, f.split('/')[1].replace('.svg', '.jpg')), type: 'jpeg', quality: 85 });
     }
-    // Planche de lisibilité à la taille d'affichage réelle sur téléphone : 168 px (suggestions YouTube), 360 px (fil Instagram)
+    // Planche de lisibilité à la taille d'affichage réelle sur téléphone : 168 px (suggestions YouTube), 360 px (fil Instagram).
+    // Composée sur canvas à partir des exemples JPG (réduction déterministe, contrairement au rendu SVG à la volée).
     const lp = nomColl === 'miniatures' ? 168 : 360;
-    await p.setViewportSize({ width: 1280, height: 720 });
-    await p.goto(`http://127.0.0.1:4199/tools/rendu.html?l=${lp}&planche=${encodeURIComponent(fichiers.map((f) => `templates/${nomColl}/${f}`).join(','))}`);
-    await p.waitForFunction(() => window.pret === true);
-    await p.locator('#planche').screenshot({ path: join(racine, `PS_${nomColl === 'miniatures' ? 'MIN' : 'CAR'}_planche-${lp}px_NON-OFFICIEL.png`) });
+    const ex = fichiers.map((f) => ({ src: `/templates/${nomColl}/${dirname(f)}/exemples/${f.split('/')[1].replace('.svg', '.jpg')}`, leg: `${dirname(f)}/${f.split('_')[3]}` }));
+    const png = await p.evaluate(async ({ ex, lp }) => {
+      await document.fonts.load('500 12px Archivo');
+      const ims = await Promise.all(ex.map(async (e) => { const i = new Image(); i.src = e.src; await i.decode(); return i; }));
+      const hp = Math.round((lp * ims[0].naturalHeight) / ims[0].naturalWidth), cols = Math.floor(1000 / (lp + 12)), rows = Math.ceil(ims.length / cols);
+      const c = Object.assign(document.createElement('canvas'), { width: 12 + cols * (lp + 12), height: 12 + rows * (hp + 30) }); const g = c.getContext('2d');
+      g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.imageSmoothingQuality = 'high'; g.font = '500 12px Archivo, sans-serif'; g.fillStyle = '#333';
+      ims.forEach((im, i) => { const x = 12 + (i % cols) * (lp + 12), y = 12 + Math.floor(i / cols) * (hp + 30); g.drawImage(im, x, y, lp, hp); g.fillText(ex[i].leg, x, y + hp + 16); });
+      return c.toDataURL('image/png');
+    }, { ex, lp });
+    writeFileSync(join(racine, `PS_${nomColl === 'miniatures' ? 'MIN' : 'CAR'}_planche-${lp}px_NON-OFFICIEL.png`), Buffer.from(png.split(',')[1], 'base64'));
     console.log(`${fichiers.length} exemples JPG + planche ${lp} px (${nomColl})`);
   }
   await b.close(); srv.close();
