@@ -1,5 +1,5 @@
 {
- "version": "0.1.1-b27fbb36f6",
+ "version": "0.1.1-8eff408c16",
  "fichiers": [
   "./",
   "index.html",
@@ -14,8 +14,6 @@
   "motion/exports.js",
   "motion/gif.js",
   "motion/index.html",
-  "motion/motion.css",
-  "motion/motion.js",
   "motion/proprietes.js",
   "motion/rendu-canvas.js",
   "motion/scene.js",

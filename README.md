@@ -75,3 +75,11 @@ npm run check          # contrôles obligatoires avant chaque commit
 - Rien n'est déployé, acheté ou rendu public sans accord.
 
 Voir `docs/` pour le détail et `CHANGELOG.md` pour l'historique.
+
+## Publication sur GitHub Pages (préparée, non activée)
+
+- `npm run build:pages` construit `_site/` (non versionné) : uniquement les fichiers chargés par l'Atelier et Motion Studio, d'après `atelier/precache.json` (application, moteur, polices web, sceau P non officiel, images PLACEHOLDER), plus une page d'accueil qui redirige vers `atelier/`. Ni originaux de marque, ni Supabase, ni outils, ni données ; le script refuse tout fichier hors de cette liste et tout motif de secret.
+- `.github/workflows/pages.yml` vérifie le dépôt (`npm run check`, `npm test`), construit `_site/` et le publie. Déclenchement **manuel uniquement** (Actions > « Publier sur GitHub Pages » > Run workflow).
+- Le site est entièrement statique, en chemins relatifs : il fonctionne à la racine d'un domaine comme sous `https://<compte>.github.io/<dépôt>/`, avec le mode hors ligne (HTTPS fourni par Pages).
+- Les créations, illustrations importées, polices et projets restent dans le navigateur de chaque visiteur (IndexedDB) ou dans les fichiers qu'il télécharge : l'application n'envoie aucune donnée et ne fait aucune requête externe.
+- Activation (par le propriétaire du dépôt, après accord) : 1) fusionner ce travail dans la branche par défaut du dépôt (`ccr-1edc037c-4ye7hs` à ce jour ; l'environnement `github-pages` n'accepte par défaut que celle-ci, et le workflow n'apparaît dans l'onglet Actions qu'une fois présent sur cette branche) ; 2) Settings > Pages > Build and deployment > Source : **GitHub Actions** ; 3) Actions > « Publier sur GitHub Pages » > Run workflow. Adresse attendue : `https://lukecage2003.github.io/da-prime/`.

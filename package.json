@@ -23,7 +23,8 @@
     "test:moteur": "node tools/test-moteur.mjs",
     "test:motion": "node tools/test-motion.mjs",
     "test": "node tools/test-moteur.mjs && node tools/test-atelier.mjs && node tools/test-motion.mjs",
-    "atelier:reseau": "node tools/serve.mjs 4173 --reseau"
+    "atelier:reseau": "node tools/serve.mjs 4173 --reseau",
+    "build:pages": "node tools/build-pages.mjs"
   },
   "devDependencies": {
     "playwright": "1.63.0"
