@@ -1,7 +1,7 @@
 {
   "$comment": "Règles de catalogage lues par tools/build-manifest.mjs. Ajouter un dossier ici pour qu'il apparaisse dans la Brand Library.",
   "release": {
-    "version": "0.3.0",
+    "version": "0.4.0",
     "date": "2026-11-05",
     "channel": "provisoire"
   },
@@ -67,6 +67,15 @@
         "catalogue.json"
       ],
       "usage": "Gabarits SVG Kiosque 4:5 (1080 × 1350) : diapositives de carrousel et fiche personnage. Exemples avec images PLACEHOLDER."
+    },
+    {
+      "path": "templates/infographies",
+      "category": "gabarits",
+      "status": "provisoire",
+      "exclude": [
+        "catalogue.json"
+      ],
+      "usage": "Gabarits d'infographies 16:9 (1920 × 1080) alimentés par des données JSON (data/infographies, schemas/infographie.schema.json)."
     }
   ]
 }

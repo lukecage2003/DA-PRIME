@@ -2,13 +2,15 @@
 // rendre(familleId, varianteId, donnees, options) -> { svg, alertes, zones, variante }
 // Le SVG produit est structuré en calques (Inkscape / Figma) ; les champs modifiables portent data-ps-champ.
 import { T, W, H, C, G, esc, placer, DEFS, calque, guides, inter, utiliserFormat, FORMATS } from './briques.js';
+import { COLLECTIONS, trouver } from './registre.js';
 import FAMILLES from './familles.js';
 import KIOSQUE from './kiosque.js';
-export { W, H, C, G, placer, FAMILLES, KIOSQUE, FORMATS, T };
+import INFOGRAPHIES from './infographies.js';
+export { W, H, C, G, placer, FAMILLES, KIOSQUE, INFOGRAPHIES, FORMATS, COLLECTIONS, trouver, T };
 
 export function rendre(familleId, varianteId, donnees = {}, { guides: avecGuides = false } = {}) {
-  const fam = FAMILLES[familleId] || KIOSQUE[familleId]; if (!fam) throw new Error(`Gabarit inconnu : ${familleId}`);
-  utiliserFormat(fam.format || 'miniature');
+  const t = trouver(familleId); if (!t) throw new Error(`Gabarit inconnu : ${familleId}`);
+  const fam = t.gabarit; utiliserFormat(t.collection.format);
   const vari = fam.variantes[varianteId] ? varianteId : Object.keys(fam.variantes)[0];
   const d = { ...Object.fromEntries(fam.champs.filter((c) => c.defaut !== undefined).map((c) => [c.id, c.defaut])), ...donnees };
   const ctx = { alertes: [], zones: {}, textes: [] };
@@ -37,7 +39,7 @@ export function rendre(familleId, varianteId, donnees = {}, { guides: avecGuides
   if (!String(d.credit || '').trim() && fam.champs.some((c) => c.id === 'credit')) ctx.alertes.push({ niveau: 'attention', champ: 'credit', message: 'Crédit artiste manquant.' });
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" data-ps-format="${G.format}" data-ps-famille="${familleId}" data-ps-variante="${vari}" data-ps-version="${T.$version}">
-<title>Primestone · ${fam.format === 'carrousel' ? 'Kiosque' : 'miniature'} ${esc(fam.nom)} · ${esc(fam.variantes[vari].nom)}</title>
+<title>Primestone · ${esc(t.collection.nom)} · ${esc(fam.nom)} · ${esc(fam.variantes[vari].nom)}</title>
 <desc>Gabarit Primestone provisoire (tokens v${T.$version}). Sceau P : vectorisation NON OFFICIELLE. Jaune ${C.y} : proposition non validée. Généré par templates/_systeme/moteur.js.</desc>
 ${DEFS()}
 ${calque('fond', 'Fond', out.fond || '')}
@@ -48,6 +50,6 @@ ${calque('marque', 'Marque (rubrique, sceau, crédit)', out.marque || '')}
 ${calque('guides', 'Guides (masqué)', guides(), !avecGuides)}
 </svg>
 `;
-  return { svg, alertes: ctx.alertes, zones: ctx.zones, variante: vari };
+  return { svg, alertes: ctx.alertes, zones: ctx.zones, variante: vari, format: { id: G.format, w: W, h: H }, collection: t.collection.id };
 }
 

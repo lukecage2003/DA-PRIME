@@ -83,6 +83,11 @@ tests = [p for p in (ROOT / 'brand/99_tests').rglob('*') if p.is_file() and p.su
 badt = [rel(p) for p in tests if not p.name.startswith('PLACEHOLDER_') or rel(p) in listed]
 ko('images de test mal identifiées : ' + ', '.join(badt)) if badt else ok(f'{len(tests)} images de test préfixées PLACEHOLDER_, absentes du catalogue')
 
+# 7 bis. Données d'infographie conformes au schéma JSON publié (contrôle croisé de la génération du schéma)
+schema_i = json.loads((ROOT / 'schemas/infographie.schema.json').read_text())
+badi = [f'{p.name} : {e.message}' for p in sorted((ROOT / 'data/infographies').glob('*.json')) for e in Draft202012Validator(schema_i).iter_errors(json.loads(p.read_text()))]
+ko('données non conformes au schéma : ' + ', '.join(badi[:3])) if badi else ok(f"{len(list((ROOT / 'data/infographies').glob('*.json')))} fichiers de données conformes à schemas/infographie.schema.json")
+
 # 8. Exports de tokens reproductibles
 B = sorted((ROOT / 'brand/02_tokens/build').glob('*')); before = {p.name: p.read_bytes() for p in B}
 subprocess.run(['node', str(ROOT / 'tools/build-tokens.mjs')], check=True, capture_output=True)

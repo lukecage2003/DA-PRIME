@@ -1,0 +1,14 @@
+{
+  "$schema": "../../schemas/infographie.schema.json",
+  "type": "barres",
+  "titre": "Les trois comics les plus chers jamais vendus",
+  "rubrique": "Données",
+  "numero": "N°047",
+  "unite": "M$",
+  "source": "Chiffres de démonstration à vérifier avant publication.",
+  "barres": [
+    { "label": "Action Comics #1", "sous": "1938 · vendu en 2024", "valeur": 6 },
+    { "label": "Superman #1", "sous": "1939 · vendu en 2022", "valeur": 5.3 },
+    { "label": "Amazing Fantasy #15", "sous": "1962 · vendu en 2021", "valeur": 3.6 }
+  ]
+}

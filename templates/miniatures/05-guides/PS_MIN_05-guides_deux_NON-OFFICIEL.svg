@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="0 0 1280 720" width="1280" height="720" data-ps-format="miniature" data-ps-famille="05-guides" data-ps-variante="deux" data-ps-version="0.1.1">
-<title>Primestone · miniature Guides de lecture · Deux couvertures</title>
+<title>Primestone · Miniatures YouTube · Guides de lecture · Deux couvertures</title>
 <desc>Gabarit Primestone provisoire (tokens v0.1.1). Sceau P : vectorisation NON OFFICIELLE. Jaune #FFE500 : proposition non validée. Généré par templates/_systeme/moteur.js.</desc>
 <defs>
 <filter id="encre" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feMorphology in="SourceAlpha" operator="dilate" radius="4.5" result="d"/><feFlood flood-color="#111111"/><feComposite in2="d" operator="in" result="c"/><feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge></filter>

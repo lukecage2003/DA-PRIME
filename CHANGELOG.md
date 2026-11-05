@@ -1,5 +1,12 @@
 # Journal des versions
 
+## 0.4.0 · 2026-11-05 · lot 3 : Kiosque dans l'Atelier, infographies JSON
+
+- Architecture commune des supports : registre unique (`templates/_systeme/registre.js`), format 16:9 1920 × 1080 ajouté, briques éditoriales partagées (`editorial.js`).
+- Atelier : choix du support (Miniatures YouTube, Kiosque, Infographies), édition individuelle des 8 diapositives Kiosque, textes longs multilignes, aperçu aux proportions du support, exports à la taille du support, dernière création retrouvée par support. Miniatures inchangées.
+- Infographies : spécification déclarative unique pour la validation (Atelier et Node) et le schéma `schemas/infographie.schema.json` ; gabarits chronologie et barres ; exemples `data/infographies/` ; erreurs localisées ; import et export JSON dans l'Atelier.
+- Tests : 15 tests du moteur, 54 tests de bout en bout.
+
 ## 0.3.0 · 2026-11-05 · audit mobile + fondations du lot 3 (Kiosque)
 
 - Atelier, corrections mobiles : orientation des photos de téléphone figée à l'import ; sélecteur de fichiers ouvert à toutes les images (galerie, appareil photo) ; sauvegarde automatique complète (images et recadrage compris) dans IndexedDB, un brouillon par famille ; résumé des contrôles à côté de l'aperçu ; bouton Partager (JPG) quand le système le permet ; familles et variantes sur une ligne défilante sous 600 px.

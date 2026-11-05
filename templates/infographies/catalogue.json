@@ -1,0 +1,48 @@
+{
+  "version": "0.1.1",
+  "statut": "provisoire · logo NON OFFICIEL · jaune non validé",
+  "format": {
+    "largeur": 1920,
+    "hauteur": 1080
+  },
+  "familles": [
+    {
+      "id": "info-chronologie",
+      "nom": "Chronologie",
+      "description": "Périodes proportionnelles à leur durée, à partir d’un fichier JSON.",
+      "champs": [
+        {
+          "id": "donnees",
+          "type": "json",
+          "label": "Données (JSON)"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "standard",
+          "nom": "Papier",
+          "fichier": "info-chronologie/PS_INFO_info-chronologie_standard_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "info-barres",
+      "nom": "Barres comparatives",
+      "description": "Valeurs à l’échelle, biseau de l’incision, source obligatoire.",
+      "champs": [
+        {
+          "id": "donnees",
+          "type": "json",
+          "label": "Données (JSON)"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "standard",
+          "nom": "Jaune",
+          "fichier": "info-barres/PS_INFO_info-barres_standard_NON-OFFICIEL.svg"
+        }
+      ]
+    }
+  ]
+}

@@ -38,6 +38,33 @@ ok(x.includes('&lt;B&gt;&amp;&quot;') && !x.includes('<B>'), 'texte saisi échap
 const sans = rendre('01-analyse-personnage', 'jaune', {});
 ok(sans.alertes.some((x) => x.niveau === 'erreur' && x.champ === 'personnage'), 'image obligatoire absente : erreur');
 
+// Infographies : validation des données et schéma JSON
+const { valider, versJsonSchema } = await import(pathToFileURL(join(ROOT, 'templates/_systeme/infographies.js')));
+const { readFileSync, readdirSync } = await import('node:fs');
+const fichiers = readdirSync(join(ROOT, 'data/infographies')).filter((f) => f.endsWith('.json'));
+ok(fichiers.length >= 2 && fichiers.every((f) => !valider(readFileSync(join(ROOT, 'data/infographies', f), 'utf8')).erreurs.length), `${fichiers.length} fichiers de données valides (data/infographies)`);
+const ex = JSON.parse(readFileSync(join(ROOT, 'data/infographies/chronologie-ages-comics.json'), 'utf8'));
+const cas = [
+  ['JSON mal formé', '{"type": "chronologie",', /JSON invalide/],
+  ['type inconnu', { type: 'camembert' }, /type inconnu/],
+  ['champ inconnu', { ...ex, couleur: 'rouge' }, /couleur.*champ inconnu/],
+  ['titre manquant', { ...ex, titre: '' }, /titre.*obligatoire/],
+  ['trop de périodes', { ...ex, periodes: Array(7).fill(ex.periodes[0]) }, /periodes.*7 élément/],
+  ['fin avant début', { ...ex, periodes: [{ nom: 'A', debut: 1950, fin: 1940 }, ex.periodes[1]] }, /periodes\[0\]\.fin.*postérieure/],
+  ['chevauchement', { ...ex, periodes: [{ nom: 'A', debut: 1938, fin: 1960 }, ex.periodes[1]] }, /periodes\[1\]\.debut.*chevauche/],
+  ['échelle de fin manquante', { ...ex, finEchelle: undefined }, /finEchelle.*obligatoire/],
+  ['année hors limites', { ...ex, periodes: [{ ...ex.periodes[0], debut: 1700 }, ex.periodes[1]] }, /debut.*au moins 1800/],
+  ['barres : source obligatoire', { type: 'barres', titre: 'T', barres: [{ label: 'a', valeur: 1 }, { label: 'b', valeur: 2 }] }, /source.*obligatoire/],
+  ['barres : échelle trop petite', { type: 'barres', titre: 'T', source: 's', echelleMax: 1, barres: [{ label: 'a', valeur: 1 }, { label: 'b', valeur: 2 }] }, /echelleMax.*au moins égale/],
+  ['barres : valeur texte', { type: 'barres', titre: 'T', source: 's', barres: [{ label: 'a', valeur: '3' }, { label: 'b', valeur: 2 }] }, /valeur.*nombre attendu/],
+];
+const rates = cas.filter(([, d, re]) => !valider(typeof d === 'string' ? d : JSON.stringify(d)).erreurs.some((e) => re.test(`${e.chemin} ${e.message}`)));
+ok(!rates.length, `${cas.length} cas de données invalides détectés avec un message localisé${rates.length ? ' · manqués : ' + rates.map((c) => c[0]).join(', ') : ''}`);
+ok(readFileSync(join(ROOT, 'schemas/infographie.schema.json'), 'utf8') === JSON.stringify(versJsonSchema(), null, 2) + '\n', 'schéma JSON publié identique à la spécification du moteur');
+const ri = rendre('info-chronologie', 'standard', {}), rb = rendre('info-barres', 'standard', { donnees: '{' });
+ok(ri.format.w === 1920 && ri.format.h === 1080 && !ri.alertes.length, 'infographie rendue en 1920 × 1080, sans alerte');
+ok(/DONNÉES INVALIDES/i.test(rb.svg) && rb.alertes.every((a) => a.niveau === 'erreur' && a.champ === 'donnees'), 'données invalides : SVG d’erreur et alertes rattachées au champ');
+
 const ko = res.filter((c) => !c).length;
 console.log(ko ? `\n${ko} test(s) en échec sur ${res.length}.` : `\n${res.length} tests du moteur réussis.`);
 process.exit(ko ? 1 : 0);

@@ -1,5 +1,6 @@
 // Atelier Primestone · saisie des miniatures sur les gabarits du moteur (aucun serveur, aucun compte).
-import { rendre, placer, FAMILLES, W, H, T } from '../templates/_systeme/moteur.js';
+import { rendre, COLLECTIONS, trouver, T } from '../templates/_systeme/moteur.js';
+const gab = (id) => trouver(id).gabarit;
 import PH from '../templates/_systeme/placeholders.js';
 import M from '../templates/_systeme/metrics.js';
 
@@ -8,13 +9,14 @@ const CLE = 'primestone-atelier-brouillon-v1';
 const MAX_SOURCE = 3000;   // côté maximal d'une image importée (px), pour la mémoire des tablettes
 const JPG_MAX = 2 * 1024 * 1024;
 
-const etat = { fam: Object.keys(FAMILLES)[0], vari: null, donnees: {}, actif: null };
+const etat = { coll: COLLECTIONS[0].id, fam: Object.keys(COLLECTIONS[0].gabarits)[0], vari: null, donnees: {}, actif: null };
+const collection = () => COLLECTIONS.find((c) => c.id === etat.coll);
 
 // ---------- Données ----------
-const champsImages = () => FAMILLES[etat.fam].champs.filter((c) => c.type === 'image' && (!c.variantes || c.variantes.includes(etat.vari)));
+const champsImages = () => gab(etat.fam).champs.filter((c) => c.type === 'image' && (!c.variantes || c.variantes.includes(etat.vari)));
 const imagePlaceholder = (c) => { const p = PH[c.placeholder]; return { href: '../' + p.src, w: p.w, h: p.h, placeholder: true, nom: 'PLACEHOLDER ' + c.placeholder }; };
 function initFamille(fam, garder = {}) {
-  etat.fam = fam; const f = FAMILLES[fam];
+  etat.fam = fam; etat.coll = trouver(fam).collection.id; const f = gab(fam);
   etat.vari = f.variantes[garder.vari] ? garder.vari : Object.keys(f.variantes)[0];
   const d = {};
   for (const c of f.champs) {
@@ -32,20 +34,20 @@ function sauver() {
   clearTimeout(minuterie);
   minuterie = setTimeout(async () => {
     const b = { fam: etat.fam, vari: etat.vari, donnees: etat.donnees, date: Date.now() };
-    try { await idb('readwrite', (s) => { s.put(b, etat.fam); s.put(etat.fam, '_derniere'); }); }
+    try { await idb('readwrite', (s) => { s.put(b, etat.fam); s.put(etat.fam, '_derniere'); s.put(etat.fam, `_derniere:${etat.coll}`); }); }
     catch { try { localStorage.setItem(CLE, JSON.stringify({ ...b, donnees: undefined, textes: Object.fromEntries(Object.entries(etat.donnees).filter(([, v]) => typeof v === 'string')) })); } catch { /* stockage indisponible */ } }
   }, 300);
 }
 async function lireBrouillon(fam) { try { return await idb('readonly', (s) => s.get(fam)); } catch { return null; } }
 function appliquer(b) {
   initFamille(b.fam, { vari: b.vari });
-  for (const c of FAMILLES[b.fam].champs) if (b.donnees?.[c.id] !== undefined) etat.donnees[c.id] = b.donnees[c.id];
+  for (const c of gab(b.fam).champs) if (b.donnees?.[c.id] !== undefined) etat.donnees[c.id] = b.donnees[c.id];
 }
 async function charger() {
   let fam = null; try { fam = await idb('readonly', (s) => s.get('_derniere')); } catch { /* pas d'IndexedDB */ }
-  const b = fam && FAMILLES[fam] ? await lireBrouillon(fam) : null;
+  const b = fam && trouver(fam) ? await lireBrouillon(fam) : null;
   if (b) return appliquer(b);
-  try { const l = JSON.parse(localStorage.getItem(CLE) || 'null'); if (l && FAMILLES[l.fam]) return initFamille(l.fam, l); } catch { /* brouillon illisible */ }
+  try { const l = JSON.parse(localStorage.getItem(CLE) || 'null'); if (l && trouver(l.fam)) return initFamille(l.fam, l); } catch { /* brouillon illisible */ }
   initFamille(etat.fam);
 }
 
@@ -57,6 +59,9 @@ function dessiner() {
     planifie = false;
     rendu = rendre(etat.fam, etat.vari, etat.donnees, { guides: $('#guides').checked });
     $('#apercu').innerHTML = rendu.svg;
+    const { w, h } = rendu.format; $('#apercu').style.setProperty('--r', (w / h).toFixed(4));
+    $('[data-export="png"]').textContent = `PNG ${w} × ${h}`;
+    $('.mini').hidden = rendu.format.id !== 'miniature';
     // Aperçu réduit : identifiants préfixés pour ne pas partager filtres et découpes avec l'aperçu principal
     $('#mini').innerHTML = rendre(etat.fam, etat.vari, etat.donnees).svg.replace(/\bid="([^"]+)"/g, 'id="mini-$1"').replace(/url\(#([^)]+)\)/g, 'url(#mini-$1)');
     afficherAlertes(rendu.alertes);
@@ -74,7 +79,7 @@ function afficherAlertes(al) {
   const n = (x) => al.filter((a) => a.niveau === x).length, e = n('erreur'), t = n('attention');
   const r = $('#resume'); r.dataset.niveau = e ? 'erreur' : t ? 'attention' : 'ok';
   r.textContent = e || t ? [e && `${e} erreur${e > 1 ? 's' : ''}`, t && `${t} point${t > 1 ? 's' : ''} d'attention`].filter(Boolean).join(' · ') : 'Contrôles OK';
-  for (const i of document.querySelectorAll('#champs input, #champs select')) i.setAttribute('aria-invalid', al.some((a) => a.champ === i.dataset.champ && a.niveau === 'erreur'));
+  for (const i of document.querySelectorAll('#champs input[data-champ], #champs select, #champs textarea')) i.setAttribute('aria-invalid', al.some((a) => a.champ === i.dataset.champ && a.niveau === 'erreur'));
 }
 
 // ---------- Panneau ----------
@@ -85,21 +90,39 @@ function puces(conteneur, items, actif, choisir) {
   }));
 }
 function construirePanneau() {
-  const f = FAMILLES[etat.fam];
-  puces($('#familles'), Object.entries(FAMILLES).map(([id, x]) => [id, `${id.slice(0, 2)} · ${x.nom}`]), etat.fam, (id) => {
-    lireBrouillon(id).then((b) => { if (b) appliquer(b); else initFamille(id); sauver(); construirePanneau(); dessiner(); });
+  const f = gab(etat.fam), coll = collection();
+  const ouvrirGabarit = (id) => lireBrouillon(id).then((b) => { if (b) appliquer(b); else initFamille(id); sauver(); construirePanneau(); dessiner(); });
+  puces($('#supports'), COLLECTIONS.map((c) => [c.id, c.nom]), etat.coll, async (cid) => {
+    if (cid === etat.coll) return;
+    let id = null; try { id = await idb('readonly', (s) => s.get(`_derniere:${cid}`)); } catch { /* rien */ }
+    const c = COLLECTIONS.find((x) => x.id === cid); ouvrirGabarit(id && c.gabarits[id] ? id : Object.keys(c.gabarits)[0]);
   });
+  puces($('#familles'), Object.entries(coll.gabarits).map(([id, x]) => [id, coll.etiquette(id, x)]), etat.fam, ouvrirGabarit);
   puces($('#variantes'), Object.entries(f.variantes).map(([id, v]) => [id, v.nom]), etat.vari, (id) => { etat.vari = id; if (!champsImages().some((c) => c.id === etat.actif)) etat.actif = champsImages()[0]?.id ?? null; sauver(); construirePanneau(); dessiner(); });
   $('#champs').replaceChildren(...f.champs.filter((c) => c.type !== 'image').map((c) => {
     const l = document.createElement('label'); l.textContent = c.label + (c.conseil ? ` (${c.conseil})` : '');
     let i;
     if (c.type === 'choix') { i = document.createElement('select'); i.append(...c.options.map((o) => Object.assign(document.createElement('option'), { value: o, textContent: o }))); }
+    else if (c.type === 'texte-long' || c.type === 'json') { i = document.createElement('textarea'); i.rows = c.type === 'json' ? 16 : 4; i.spellcheck = c.type !== 'json'; if (c.type === 'json') i.className = 'json'; }
     else { i = document.createElement('input'); i.type = 'text'; i.autocomplete = 'off'; }
     i.id = `champ-${c.id}`; i.dataset.champ = c.id; i.value = etat.donnees[c.id] ?? '';
     i.addEventListener('input', () => { etat.donnees[c.id] = i.value; sauver(); dessiner(); });
-    l.append(i); return l;
+    l.append(i);
+    if (c.type === 'json') l.append(outilsJson(c, i));
+    return l;
   }));
   $('#images').replaceChildren(...champsImages().map((c) => blocImage(c)));
+  $('#images').closest('fieldset').hidden = !champsImages().length;
+}
+// Données JSON : importer un fichier, exporter le contenu, revenir à l'exemple
+function outilsJson(c, zoneTexte) {
+  const r = document.createElement('div'); r.className = 'rangee';
+  const f = Object.assign(document.createElement('input'), { type: 'file', accept: '.json,application/json', hidden: true, id: `fichier-${c.id}` });
+  const maj = (v) => { zoneTexte.value = etat.donnees[c.id] = v; sauver(); dessiner(); };
+  f.addEventListener('change', async () => { const x = f.files?.[0]; if (x) maj(await x.text()); f.value = ''; });
+  const btn = (txt, fn) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = txt; b.addEventListener('click', fn); return b; };
+  r.append(btn('Importer .json', () => f.click()), btn('Exporter .json', () => telecharger(new Blob([etat.donnees[c.id] ?? ''], { type: 'application/json' }), 'json')), btn('Exemple', () => maj(c.defaut)), f);
+  return r;
 }
 function blocImage(c) {
   const img = etat.donnees[c.id];
@@ -138,7 +161,7 @@ async function importer(file) {
 
 // ---------- Recadrage : glisser (souris, doigt, stylet), pincer, molette ----------
 const pointeurs = new Map(); let geste = null;
-const echelleEcran = () => $('#apercu').getBoundingClientRect().width / W;
+const echelleEcran = () => $('#apercu').getBoundingClientRect().width / (rendu?.format.w ?? 1280);
 function zoneSous(e) {
   const r = $('#apercu').getBoundingClientRect(), x = (e.clientX - r.left) / echelleEcran(), y = (e.clientY - r.top) / echelleEcran();
   const ids = Object.keys(rendu?.zones || {});
@@ -189,15 +212,18 @@ async function svgAutonome() {
 async function versCanvas(svg) {
   const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
   try {
-    const im = new Image(); im.width = W; im.height = H; im.src = url; await im.decode();
-    const cv = Object.assign(document.createElement('canvas'), { width: W, height: H });
-    cv.getContext('2d').drawImage(im, 0, 0, W, H); return cv;
+    const { w, h } = rendu.format;
+    const im = new Image(); im.width = w; im.height = h; im.src = url; await im.decode();
+    const cv = Object.assign(document.createElement('canvas'), { width: w, height: h });
+    cv.getContext('2d').drawImage(im, 0, 0, w, h); return cv;
   } finally { URL.revokeObjectURL(url); }
 }
 const versBlob = (cv, type, q) => new Promise((ok) => cv.toBlob(ok, type, q));
 async function telecharger(blob, ext) {
-  const slug = (etat.donnees.titre || 'miniature').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'miniature';
-  const nom = `primestone_${etat.fam.slice(0, 2)}-${etat.vari}_${slug}.${ext}`;
+  let titre = etat.donnees.titre || etat.donnees.nom;
+  if (!titre && etat.donnees.donnees) { try { titre = JSON.parse(etat.donnees.donnees).titre; } catch { /* JSON invalide */ } }
+  const slug = (titre || 'creation').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'miniature';
+  const nom = `primestone_${etat.coll === 'miniatures' ? etat.fam.slice(0, 2) : etat.fam}-${etat.vari}_${slug}.${ext}`;
   if (partager) { partager = false; const f = new File([blob], nom, { type: blob.type }); if (navigator.canShare?.({ files: [f] })) { try { await navigator.share({ files: [f], title: nom }); return; } catch (e) { if (e.name === 'AbortError') return; } } }
   const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: nom });
   document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
@@ -209,11 +235,11 @@ async function exporter(type) {
     const svg = await svgAutonome();
     if (type === 'svg') { telecharger(new Blob([svg], { type: 'image/svg+xml' }), 'svg'); info.textContent = 'SVG exporté (images et polices intégrées).'; return; }
     const cv = await versCanvas(svg);
-    if (type === 'png') { const b = await versBlob(cv, 'image/png'); telecharger(b, 'png'); info.textContent = `PNG exporté · ${W} × ${H} · ${(b.size / 1048576).toFixed(2)} Mo${b.size > JPG_MAX ? ' · au-delà de 2 Mo, préférer le JPG pour YouTube' : ''}.`; return; }
+    if (type === 'png') { const b = await versBlob(cv, 'image/png'); telecharger(b, 'png'); info.textContent = `PNG exporté · ${rendu.format.w} × ${rendu.format.h} · ${(b.size / 1048576).toFixed(2)} Mo${b.size > JPG_MAX ? ' · au-delà de 2 Mo, préférer le JPG' : ''}.`; return; }
     let q = 0.9, b = await versBlob(cv, 'image/jpeg', q);
     while (b.size > JPG_MAX && q > 0.6) { q = Math.round((q - 0.1) * 10) / 10; b = await versBlob(cv, 'image/jpeg', q); }
     telecharger(b, 'jpg');
-    info.textContent = `JPG exporté · ${W} × ${H} · qualité ${Math.round(q * 100)} · ${(b.size / 1048576).toFixed(2)} Mo${b.size > JPG_MAX ? ' · toujours au-delà de 2 Mo' : ''}.`;
+    info.textContent = `JPG exporté · ${rendu.format.w} × ${rendu.format.h} · qualité ${Math.round(q * 100)} · ${(b.size / 1048576).toFixed(2)} Mo${b.size > JPG_MAX ? ' · toujours au-delà de 2 Mo' : ''}.`;
   } catch (e) { info.textContent = `Export impossible : ${e.message || e}.`; }
 }
 for (const b of document.querySelectorAll('[data-export]')) b.addEventListener('click', () => exporter(b.dataset.export));

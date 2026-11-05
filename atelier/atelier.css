@@ -8,11 +8,11 @@ html, body { margin:0; background:var(--fond); color:var(--texte); font:15px/1.4
 .atelier { display:grid; grid-template-columns:minmax(0, 1fr) 400px; gap:20px; padding:16px max(16px, env(safe-area-inset-right)) 32px max(16px, env(safe-area-inset-left)); max-width:1700px; margin:0 auto; }
 @media (max-width: 1000px) { .atelier { grid-template-columns:minmax(0, 1fr); } }
 .scene { position:sticky; top:8px; align-self:start; z-index:2; background:var(--fond); padding-bottom:8px; }
-.apercu { width:100%; aspect-ratio:16/9; background:#222; touch-action:none; cursor:grab; user-select:none; -webkit-user-select:none; overflow:hidden; border:1px solid var(--ligne); }
+.apercu { --r:1.7778; --hmax:calc(100vh - 190px); width:min(100%, calc(var(--hmax) * var(--r))); margin-inline:auto; aspect-ratio:var(--r); background:#222; touch-action:none; cursor:grab; user-select:none; -webkit-user-select:none; overflow:hidden; border:1px solid var(--ligne); }
 .apercu:active { cursor:grabbing; } .apercu svg { display:block; width:100%; height:100%; }
 .sous-apercu { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-top:10px; }
 .mini { margin:0; } .mini div { width:168px; aspect-ratio:16/9; overflow:hidden; } .mini svg { width:168px; height:auto; display:block; } .mini figcaption { font-size:12px; color:var(--doux); margin-top:4px; }
-@media (max-width: 1000px) { .scene { padding-top:4px; } .mini { display:none; } }
+@media (max-width: 1000px) { .scene { padding-top:4px; } .mini { display:none; } .apercu { --hmax:46vh; } }
 .panneau { display:flex; flex-direction:column; gap:14px; min-width:0; }
 fieldset { border:1px solid var(--ligne); background:var(--surface); margin:0; padding:12px 14px 14px; min-width:0; }
 legend { font:700 11px/1 "JetBrains Mono", monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--jaune); padding:0 6px; }
@@ -22,8 +22,8 @@ legend { font:700 11px/1 "JetBrains Mono", monospace; letter-spacing:.12em; text
 button:focus-visible, input:focus-visible { outline:2px solid var(--jaune); outline-offset:2px; }
 .champs { display:flex; flex-direction:column; gap:10px; }
 .champs label, .image label { display:flex; flex-direction:column; gap:4px; font-size:13px; color:var(--doux); }
-  .champs select, .champs input { font:16px Archivo, sans-serif; color:var(--texte); background:var(--fond); border:1px solid var(--ligne); padding:10px; min-height:44px; }
-  .champs select[aria-invalid="true"], .champs input[aria-invalid="true"] { border-color:var(--rouge); }
+  .champs textarea, .champs select, .champs input { font:16px Archivo, sans-serif; color:var(--texte); background:var(--fond); border:1px solid var(--ligne); padding:10px; min-height:44px; }
+  .champs textarea[aria-invalid="true"], .champs select[aria-invalid="true"], .champs input[aria-invalid="true"] { border-color:var(--rouge); }
 .images { display:flex; flex-direction:column; gap:12px; }
 .image { display:grid; grid-template-columns:64px minmax(0, 1fr); gap:10px; padding:10px; border:1px solid var(--ligne); }
 .image[data-actif="true"] { border-color:var(--jaune); }
@@ -49,3 +49,7 @@ button:focus-visible, input:focus-visible { outline:2px solid var(--jaune); outl
   .puces { flex-wrap:nowrap; overflow-x:auto; scroll-snap-type:x proximity; padding-bottom:6px; -webkit-overflow-scrolling:touch; }
   .puces button { flex:0 0 auto; white-space:nowrap; scroll-snap-align:start; }
 }
+.champs textarea { resize:vertical; line-height:1.4; }
+.champs textarea.json { font:14px/1.45 "JetBrains Mono", ui-monospace, monospace; white-space:pre; overflow:auto; }
+.champs .rangee { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.champs .rangee button { font:inherit; color:var(--texte); background:var(--fond); border:1px solid var(--ligne); padding:9px 12px; min-height:44px; cursor:pointer; }

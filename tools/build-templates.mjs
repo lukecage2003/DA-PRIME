@@ -28,13 +28,26 @@ for (const f of readdirSync(join(ROOT, 'brand/99_tests/substitution')).filter((x
 }
 gen('placeholders.js', `// Images de substitution (PLACEHOLDER) : aucune valeur de marque. Chemins relatifs à la racine du dépôt.\nexport default ${JSON.stringify(PH, null, 1)};\n`);
 
+// Données d'exemple des infographies (data/infographies/*.json) : un exemple par structure, utilisé comme valeur par défaut
+const EX = {};
+for (const f of readdirSync(join(ROOT, 'data/infographies')).filter((x) => x.endsWith('.json')).sort()) {
+  const j = JSON.parse(readFileSync(join(ROOT, 'data/infographies', f), 'utf8')); delete j.$schema; EX[j.type] ??= j;
+}
+gen('exemples.js', `// Exemples d'infographies, copiés depuis data/infographies/*.json\nexport default ${JSON.stringify(EX, null, 1)};\n`);
+
 // 2. Gabarits SVG
-const { rendre, FAMILLES, KIOSQUE, FORMATS } = await import(pathToFileURL(join(SYS, 'moteur.js')) + `?t=${Date.now()}`);
-const KIO = join(ROOT, 'templates/kiosque');
+const { rendre, COLLECTIONS, FORMATS } = await import(pathToFileURL(join(SYS, 'moteur.js')) + `?t=${Date.now()}`);
+const { valider, versJsonSchema } = await import(pathToFileURL(join(SYS, 'infographies.js')) + `?t=${Date.now()}`);
+writeFileSync(join(ROOT, 'schemas/infographie.schema.json'), JSON.stringify(versJsonSchema(), null, 2) + '\n');
 const rapports = [], collections = [];
-for (const [racine, gabarits, nomColl] of [[MIN, FAMILLES, 'miniatures'], [KIO, KIOSQUE, 'kiosque']]) {
+for (const f of readdirSync(join(ROOT, 'data/infographies')).filter((x) => x.endsWith('.json'))) {
+  const { erreurs } = valider(readFileSync(join(ROOT, 'data/infographies', f), 'utf8'));
+  if (erreurs.length) rapports.push({ fid: 'data/infographies', vid: f, alertes: erreurs.map((e) => ({ message: `${e.chemin} : ${e.message}` })) });
+}
+for (const coll of COLLECTIONS) {
+const { gabarits, id: nomColl } = coll, racine = join(ROOT, 'templates', nomColl);
 rmSync(racine, { recursive: true, force: true });
-const fmt = FORMATS[Object.values(gabarits)[0].format || 'miniature'];
+const fmt = FORMATS[coll.format];
 const catalogue = { version: flat.version, statut: 'provisoire · logo NON OFFICIEL · jaune non validé', format: { largeur: fmt.w, hauteur: fmt.h }, familles: [] };
 collections.push({ racine, nomColl, catalogue });
 for (const [fid, fam] of Object.entries(gabarits)) {
@@ -44,7 +57,7 @@ for (const [fid, fam] of Object.entries(gabarits)) {
   const vs = [];
   for (const vid of Object.keys(fam.variantes)) {
     const { svg, alertes } = rendre(fid, vid, donnees);
-    const nom = `PS_${fam.prefixe || 'MIN'}_${fid}_${vid}_NON-OFFICIEL.svg`; writeFileSync(join(dir, nom), svg);
+    const nom = `PS_${fam.prefixe || coll.prefixe}_${fid}_${vid}_NON-OFFICIEL.svg`; writeFileSync(join(dir, nom), svg);
     vs.push({ id: vid, nom: fam.variantes[vid].nom, fichier: `${fid}/${nom}` });
     rapports.push({ fid, vid, alertes: alertes.filter((a) => a.niveau !== 'info') });
   }
@@ -87,7 +100,7 @@ if (!process.argv.includes('--no-render')) {
     }
     // Planche de lisibilité à la taille d'affichage réelle sur téléphone : 168 px (suggestions YouTube), 360 px (fil Instagram).
     // Composée sur canvas à partir des exemples JPG (réduction déterministe, contrairement au rendu SVG à la volée).
-    const lp = nomColl === 'miniatures' ? 168 : 360;
+    const lp = COLLECTIONS.find((c) => c.id === nomColl).planche; if (!lp) { console.log(`${fichiers.length} exemples JPG (${nomColl})`); continue; }
     const ex = fichiers.map((f) => ({ src: `/templates/${nomColl}/${dirname(f)}/exemples/${f.split('/')[1].replace('.svg', '.jpg')}`, leg: `${dirname(f)}/${f.split('_')[3]}` }));
     const png = await p.evaluate(async ({ ex, lp }) => {
       await document.fonts.load('500 12px Archivo');
@@ -98,7 +111,7 @@ if (!process.argv.includes('--no-render')) {
       ims.forEach((im, i) => { const x = 12 + (i % cols) * (lp + 12), y = 12 + Math.floor(i / cols) * (hp + 30); g.drawImage(im, x, y, lp, hp); g.fillText(ex[i].leg, x, y + hp + 16); });
       return c.toDataURL('image/png');
     }, { ex, lp });
-    writeFileSync(join(racine, `PS_${nomColl === 'miniatures' ? 'MIN' : 'CAR'}_planche-${lp}px_NON-OFFICIEL.png`), Buffer.from(png.split(',')[1], 'base64'));
+    writeFileSync(join(racine, `PS_${COLLECTIONS.find((c) => c.id === nomColl).prefixe}_planche-${lp}px_NON-OFFICIEL.png`), Buffer.from(png.split(',')[1], 'base64'));
     console.log(`${fichiers.length} exemples JPG + planche ${lp} px (${nomColl})`);
   }
   await b.close(); srv.close();

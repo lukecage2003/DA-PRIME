@@ -1,4 +1,4 @@
-# Gabarits : miniatures YouTube et supports Kiosque
+# Gabarits : miniatures YouTube, supports Kiosque et infographies
 
 **Statut : provisoire.** Tous les gabarits portent le sceau P issu de la vectorisation **NON OFFICIELLE** du logo, et le jaune `#FFE500` reste une proposition. Ils se régénèrent automatiquement (`npm run build:templates`) quand le logo ou les couleurs sont validés.
 
@@ -10,6 +10,9 @@ templates/
     briques.js       formats, couleurs, grille, mesure et ajustement du texte, formes, images, filtres
     familles.js      les 8 familles de miniatures et leurs variantes
     kiosque.js       les gabarits Kiosque 4:5 (lot 3)
+    infographies.js  structures de données, validation, schéma JSON et gabarits d'infographies
+    editorial.js     briques Kiosque partagées
+    registre.js      la liste des supports et leur format
     moteur.js        rendre(famille, variante, données) -> SVG + alertes de contrôle
     tokens.js, logo.js, placeholders.js, metrics.js   modules générés, ne pas éditer
   miniatures/
@@ -22,7 +25,21 @@ templates/
     <gabarit>/exemples/*.jpg · PS_CAR_planche-360px_NON-OFFICIEL.png · catalogue.json
 ```
 
-Le même moteur sert à générer les fichiers et à faire fonctionner l'Atelier : un gabarit modifié dans `familles.js` change partout à la fois.
+Le même moteur sert à générer les fichiers et à faire fonctionner l'Atelier : un gabarit modifié change partout à la fois.
+
+## Architecture commune des supports
+
+`templates/_systeme/registre.js` est la seule liste des supports :
+
+| Collection | Format | Gabarits | Préfixe | Planche de lisibilité |
+|---|---|---|---|---|
+| Miniatures YouTube | 1280 × 720 | `familles.js` | `PS_MIN_` | 168 px |
+| Kiosque | 1080 × 1350 | `kiosque.js` | `PS_CAR_`, `PS_FICHE_` | 360 px |
+| Infographies | 1920 × 1080 | `infographies.js` (données JSON) | `PS_INFO_` | aucune |
+
+Un gabarit déclare ses champs (`texte`, `texte-long`, `choix`, `image`, `json`) et ses variantes ; le moteur choisit le format de sa collection, applique les contrôles communs et renvoie le SVG, les alertes, les zones d'image et le format. L'Atelier, la génération des fichiers et les tests lisent tous ce registre : ajouter un support revient à ajouter une collection.
+
+Briques partagées : `briques.js` (formats, texte, formes, images, filtres) et `editorial.js` (masthead, trame, styles serif, corps et mono, communs à Kiosque et aux infographies).
 
 ## Les 8 familles (19 variantes)
 
@@ -89,4 +106,8 @@ La taille du titre s'ajuste automatiquement (de 170 à 72 px selon la famille) �
 
 Règles Kiosque : fond papier avec trame Ben-Day à 7 %, masthead (logotype NON OFFICIEL, rubrique · n°, filet de 5 px), marge de 65 px, titres en Instrument Serif italique, textes en Archivo, repères en JetBrains Mono, pagination en bas à droite. Pas de contrôle de zone de durée (propre à YouTube) ; capitales minimales de 48 px pour les titres.
 
-Ces gabarits se modifient dans Inkscape ou Figma. Ils ne sont pas éditables dans l'Atelier (pas d'éditeur de carrousels à ce stade).
+Ces gabarits se modifient dans l'Atelier, diapositive par diapositive (Support *Kiosque*), ou dans Inkscape ou Figma. Il n'y a pas d'éditeur de carrousel complet (enchaînement des diapositives) à ce stade.
+
+## Infographies
+
+Voir `docs/INFOGRAPHIES.md`.

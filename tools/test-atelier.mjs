@@ -10,7 +10,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = process.argv[2] || join(tmpdir(), 'primestone-tests'); mkdirSync(OUT, { recursive: true });
 const { chromium } = createRequire(import.meta.url)('playwright');
 const { demarrer } = await import(pathToFileURL(join(ROOT, 'tools/serve.mjs')));
-const { FAMILLES } = await import(pathToFileURL(join(ROOT, 'templates/_systeme/moteur.js')));
+const { FAMILLES, KIOSQUE, INFOGRAPHIES } = await import(pathToFileURL(join(ROOT, 'templates/_systeme/moteur.js')));
 const PORT = 4198, URL0 = `http://localhost:${PORT}/atelier/`;
 const srv = await demarrer(PORT);
 const res = []; const ok = (c, m) => { res.push([c, m]); console.log(`  ${c ? 'ok' : 'KO'}  ${m}`); };
@@ -81,6 +81,50 @@ async function grandeImage(p) {
   writeFileSync(join(OUT, 'fichiers-exportes.json'), JSON.stringify({ png: pngF, jpg: jpgF, svg: svgF }));
   await p.screenshot({ path: join(OUT, 'ecran-windows-1920.png') });
   ok(!err.length, `aucune erreur JavaScript${err.length ? ' · ' + err.join(' | ') : ''}`);
+  // ---- Kiosque : édition individuelle des diapositives ----
+  const vb = () => p.getAttribute('#apercu svg', 'viewBox');
+  const erreursAffichees = () => p.locator('#alertes li[data-niveau="erreur"]').allTextContents();
+  await p.getByRole('button', { name: 'Kiosque', exact: true }).click(); await p.waitForFunction(() => window.__atelier.etat.coll === 'kiosque');
+  let kn = 0, kb = [];
+  for (const [i, [id, g]] of Object.entries(KIOSQUE).entries()) {
+    await p.locator('#familles button').nth(i).click(); await p.waitForFunction((x) => window.__atelier.etat.fam === x, id);
+    for (const v of Object.values(g.variantes)) { await p.locator('#variantes button', { hasText: v.nom }).click(); await p.waitForTimeout(40); kn++;
+      if ((await vb()) !== '0 0 1080 1350' || (await erreursAffichees()).length) kb.push(`${id}/${v.nom}`); }
+  }
+  ok(!kb.length, `Kiosque : ${kn} diapositives éditables, 1080 × 1350, sans erreur${kb.length ? ' · ' + kb.join(', ') : ''}`);
+  const ap = await p.locator('#apercu').boundingBox(); ok(Math.abs(ap.width / ap.height - 0.8) < 0.01, `Kiosque : aperçu aux proportions 4:5 (${Math.round(ap.width)} × ${Math.round(ap.height)})`);
+  await p.locator('#familles button').nth(2).click(); await p.waitForSelector('#champ-corps');
+  ok((await p.evaluate(() => document.querySelector('#champ-corps').tagName)) === 'TEXTAREA', 'Kiosque : texte long saisi dans une zone multiligne');
+  await p.fill('#champ-corps', 'Texte beaucoup trop long pour la diapositive. '.repeat(40)); await p.waitForTimeout(60);
+  ok((await erreursAffichees()).some((t) => /déborde/.test(t)), 'Kiosque : débordement du texte long signalé');
+  await p.locator('#familles button').nth(6).click(); await p.waitForSelector('#fichier-personnage', { state: 'attached' });
+  await p.setInputFiles('#fichier-personnage', join(ROOT, 'brand/99_tests/substitution/PLACEHOLDER_art-encre.png'));
+  await p.waitForFunction(() => window.__atelier.etat.donnees.personnage?.nom === 'PLACEHOLDER_art-encre.png');
+  const kp = readFileSync(await dl('png')); ok(pngDims(kp).join('×') === '1080×1350', `Kiosque : fiche personnage avec image importée, export PNG ${pngDims(kp).join(' × ')}`);
+  // ---- Infographies : données JSON validées ----
+  await p.getByRole('button', { name: 'Infographies', exact: true }).click(); await p.waitForFunction(() => window.__atelier.etat.coll === 'infographies');
+  await p.locator('#familles button').nth(0).click(); await p.waitForSelector('#champ-donnees');
+  ok((await vb()) === '0 0 1920 1080' && !(await erreursAffichees()).length, 'Infographies : chronologie d’exemple, 1920 × 1080, sans erreur');
+  await p.fill('#champ-donnees', '{ "type": "chronologie", '); await p.waitForTimeout(60);
+  ok((await erreursAffichees()).some((t) => /JSON invalide/.test(t)) && /données invalides/i.test(await p.locator('#apercu').innerText()), 'Infographies : JSON mal formé signalé, aperçu d’erreur');
+  const un = JSON.stringify({ type: 'chronologie', titre: 'Test', periodes: [{ nom: 'Seule', debut: 1990, fin: 1980 }], couleur: 'x' });
+  await p.fill('#champ-donnees', un); await p.waitForTimeout(60); const eu = (await erreursAffichees()).join(' | ');
+  ok(/periodes : 1 élément/.test(eu) && /couleur : champ inconnu/.test(eu), `Infographies : erreurs de structure localisées (${(await erreursAffichees()).length} erreurs)`);
+  await p.setInputFiles('#fichier-donnees', join(ROOT, 'data/infographies/barres-records-ventes.json')); await p.waitForTimeout(80);
+  ok((await erreursAffichees()).some((t) => /attend le type « chronologie »/.test(t)), 'Infographies : fichier d’un autre type refusé par le gabarit');
+  await p.getByRole('button', { name: 'Exemple' }).click(); await p.waitForTimeout(60);
+  ok(!(await erreursAffichees()).length, 'Infographies : retour à l’exemple valide');
+  await p.locator('#familles button').nth(1).click(); await p.waitForSelector('#fichier-donnees', { state: 'attached' });
+  await p.setInputFiles('#fichier-donnees', join(ROOT, 'data/infographies/barres-records-ventes.json')); await p.waitForTimeout(80);
+  ok(!(await erreursAffichees()).length, 'Infographies : import d’un fichier .json valide (barres)');
+  const ij = readFileSync(await dl('jpg')); ok(jpgDims(ij).join('×') === '1920×1080', `Infographies : export JPG ${jpgDims(ij).join(' × ')}`);
+  const [dj] = await Promise.all([p.waitForEvent('download'), p.getByRole('button', { name: 'Exporter .json' }).click()]);
+  const fj = join(OUT, dj.suggestedFilename()); await dj.saveAs(fj);
+  ok(JSON.parse(readFileSync(fj, 'utf8')).barres.length === 3 && fj.endsWith('.json'), 'Infographies : export des données JSON');
+  // Retour aux miniatures : la dernière création de la collection est retrouvée
+  await p.getByRole('button', { name: 'Miniatures YouTube', exact: true }).click(); await p.waitForFunction(() => window.__atelier.etat.coll === 'miniatures');
+  const rm = await etat(p); ok(rm.fam === '01-analyse-personnage' && rm.donnees.titre === 'Héritage' && (await vb()) === '0 0 1280 720', 'retour aux miniatures : brouillon et format 16:9 retrouvés');
+  ok(!err.length, `aucune erreur JavaScript sur les trois supports${err.length ? ' · ' + err.join(' | ') : ''}`);
   // Hors ligne : après installation du service worker, l'Atelier se recharge sans réseau
   await p.evaluate(() => navigator.serviceWorker.ready); await p.reload(); await p.waitForSelector('#apercu svg');
   await ctx.setOffline(true); await p.reload(); await p.waitForSelector('#apercu svg', { timeout: 5000 }).catch(() => {});
@@ -102,6 +146,12 @@ for (const [nom, opt] of [
   ok(m.cibles === 0, `${nom} : cibles tactiles d'au moins 44 px`);
   const rz = await p.evaluate(() => { const r = document.querySelector('#resume').getBoundingClientRect(); return { b: r.bottom, ih: innerHeight, t: document.querySelector('#resume').textContent }; });
   ok(rz.b <= rz.ih, `${nom} : résumé des contrôles visible sans défiler (« ${rz.t} »)`);
+  if (nom === 'galaxy-s25' || nom === 'ipad-m2-portrait') {
+    await p.getByRole('button', { name: 'Kiosque', exact: true }).click(); await p.waitForFunction(() => window.__atelier.etat.coll === 'kiosque');
+    const k = await p.evaluate(() => ({ h: document.querySelector('#apercu').getBoundingClientRect().height, ih: innerHeight, sw: document.documentElement.scrollWidth, iw: innerWidth }));
+    ok(k.h <= k.ih * 0.5 + 1 && k.sw <= k.iw, `${nom} : diapositive Kiosque, aperçu limité à ${Math.round((k.h / k.ih) * 100)} % de la hauteur, sans défilement horizontal`);
+    await p.getByRole('button', { name: 'Miniatures YouTube', exact: true }).click(); await p.waitForFunction(() => window.__atelier.etat.coll === 'miniatures');
+  }
   if (nom === 'galaxy-s25') {
     // Photo de téléphone 600 × 400 avec orientation EXIF 6 (portrait) : doit arriver redressée en 400 × 600
     const f = join(OUT, 'photo-exif-6.jpg');

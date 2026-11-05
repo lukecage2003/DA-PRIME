@@ -11,7 +11,7 @@
 | `GRID` | grille de construction | `PS_GRID_miniature-1280x720.svg` |
 | `MIN` | miniature YouTube | `PS_MIN_01-analyse-personnage_v1.0.svg` (lot 2) |
 | `CAR`, `FICHE` | supports Kiosque 4:5 | `PS_CAR_car-recit_standard_NON-OFFICIEL.svg` (lot 3) |
-| `INFO` | infographies | à définir |
+| `INFO` | infographies 16:9 (données JSON) | `PS_INFO_info-chronologie_standard_NON-OFFICIEL.svg` |
 | `CLIP` | habillage vidéo rendu (WebM) | lot ultérieur |
 
 Minuscules, mots séparés par des tirets, sans accents ni espaces. Variantes de couleur : `jaune`, `noir`, `blanc`.

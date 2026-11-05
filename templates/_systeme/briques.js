@@ -5,11 +5,12 @@ import M from './metrics.js';
 import LOGO from './logo.js';
 export { T, M, LOGO };
 
-// Formats : la miniature YouTube (lot 2) et le carrousel Kiosque 4:5 (lot 3). W, H et G sont des liaisons vivantes :
+// Formats : miniature YouTube (lot 2), carrousel Kiosque 4:5 et infographie 16:9 (lot 3). W, H et G sont des liaisons vivantes :
 // le moteur appelle utiliserFormat() avant chaque rendu, les familles lisent toujours les valeurs du format courant.
 export const FORMATS = {
   miniature: { w: T['format.youtube-thumbnail.width'], h: T['format.youtube-thumbnail.height'], m: T['layout.thumbnail.margin'], seal: T['layout.thumbnail.seal-size'], capMin: T['layout.thumbnail.title-cap-min'], zoneMorte: true },
   carrousel: { w: T['format.carousel.width'], h: T['format.carousel.height'], m: T['layout.carousel.margin'], seal: 86, capMin: 48, zoneMorte: false },
+  infographie: { w: T['format.video-hd.width'], h: T['format.video-hd.height'], m: T['layout.video.safe-title'], seal: T['layout.video.bug-size'], capMin: 48, zoneMorte: false },
 };
 export let W, H, G;
 export function utiliserFormat(id = 'miniature') {

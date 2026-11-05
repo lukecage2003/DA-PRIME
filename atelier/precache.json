@@ -1,5 +1,5 @@
 {
- "version": "0.1.1-3bebb3dbaf",
+ "version": "0.1.1-ace9582e50",
  "fichiers": [
   "./",
   "index.html",
@@ -8,12 +8,16 @@
   "atelier.js",
   "manifest.webmanifest",
   "../templates/_systeme/briques.js",
+  "../templates/_systeme/editorial.js",
+  "../templates/_systeme/exemples.js",
   "../templates/_systeme/familles.js",
+  "../templates/_systeme/infographies.js",
   "../templates/_systeme/kiosque.js",
   "../templates/_systeme/logo.js",
   "../templates/_systeme/metrics.js",
   "../templates/_systeme/moteur.js",
   "../templates/_systeme/placeholders.js",
+  "../templates/_systeme/registre.js",
   "../templates/_systeme/tokens.js",
   "../brand/03_fonts/web/Anton-Regular.woff2",
   "../brand/03_fonts/web/Archivo-Bold.woff2",

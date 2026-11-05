@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://primestone.media/schemas/infographie/v1.json",
+  "title": "Primestone · données d’infographie",
+  "description": "Généré par templates/_systeme/infographies.js. Les règles croisées (ordre des périodes, échelle) sont vérifiées par le moteur.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/chronologie"
+    },
+    {
+      "$ref": "#/$defs/barres"
+    }
+  ],
+  "$defs": {
+    "chronologie": {
+      "description": "Périodes successives proportionnelles à leur durée, avec un repère par période.",
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {}
+      },
+      "required": [
+        "type",
+        "titre",
+        "periodes"
+      ],
+      "properties": {
+        "type": {
+          "const": "chronologie"
+        },
+        "titre": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 90
+        },
+        "rubrique": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "numero": {
+          "type": "string",
+          "maxLength": 12
+        },
+        "source": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "finEchelle": {
+          "description": "Année de fin de l’échelle, obligatoire si la dernière période n’a pas de fin.",
+          "type": "integer",
+          "minimum": 1800,
+          "maximum": 2100
+        },
+        "periodes": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^\\$": {}
+            },
+            "required": [
+              "nom",
+              "debut"
+            ],
+            "properties": {
+              "nom": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 30
+              },
+              "debut": {
+                "type": "integer",
+                "minimum": 1800,
+                "maximum": 2100
+              },
+              "fin": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1800,
+                "maximum": 2100
+              },
+              "evenement": {
+                "type": "string",
+                "maxLength": 48
+              },
+              "detail": {
+                "type": "string",
+                "maxLength": 130
+              }
+            }
+          }
+        }
+      }
+    },
+    "barres": {
+      "description": "Comparaison de valeurs en barres horizontales, toujours à l’échelle, source obligatoire.",
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {}
+      },
+      "required": [
+        "type",
+        "titre",
+        "source",
+        "barres"
+      ],
+      "properties": {
+        "type": {
+          "const": "barres"
+        },
+        "titre": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 90
+        },
+        "rubrique": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "numero": {
+          "type": "string",
+          "maxLength": 12
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "unite": {
+          "type": "string",
+          "maxLength": 12
+        },
+        "echelleMax": {
+          "description": "Valeur de la barre pleine (par défaut : la plus grande valeur).",
+          "type": "number",
+          "minimum": 0
+        },
+        "barres": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^\\$": {}
+            },
+            "required": [
+              "label",
+              "valeur"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40
+              },
+              "sous": {
+                "type": "string",
+                "maxLength": 40
+              },
+              "valeur": {
+                "type": "number",
+                "minimum": 0
+              },
+              "affichage": {
+                "type": "string",
+                "maxLength": 14
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

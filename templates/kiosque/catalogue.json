@@ -92,7 +92,7 @@
         },
         {
           "id": "accroche",
-          "type": "texte",
+          "type": "texte-long",
           "label": "Accroche"
         },
         {
@@ -146,12 +146,12 @@
         },
         {
           "id": "titre",
-          "type": "texte",
+          "type": "texte-long",
           "label": "Titre"
         },
         {
           "id": "corps",
-          "type": "texte",
+          "type": "texte-long",
           "label": "Texte"
         },
         {
@@ -264,17 +264,17 @@
         },
         {
           "id": "fait1",
-          "type": "texte",
+          "type": "texte-long",
           "label": "Fait 1"
         },
         {
           "id": "fait2",
-          "type": "texte",
+          "type": "texte-long",
           "label": "Fait 2"
         },
         {
           "id": "fait3",
-          "type": "texte",
+          "type": "texte-long",
           "label": "Fait 3"
         },
         {
@@ -323,7 +323,7 @@
         },
         {
           "id": "citation",
-          "type": "texte",
+          "type": "texte-long",
           "label": "Citation"
         },
         {

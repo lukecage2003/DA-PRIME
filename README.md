@@ -4,7 +4,7 @@ Dépôt de l'identité visuelle de **Primestone Media** : système graphique, de
 
 Direction artistique de référence : **Signal** (YouTube, accroches, communication) + **Kiosque** (éditorial, dossiers, carrousels, infographies, bibliothèque). Direction sombre et cinématographique en usage secondaire.
 
-## État : lot 3 (fondations Kiosque) · version 0.3.0 provisoire
+## État : lot 3 (Kiosque dans l'Atelier, infographies JSON) · version 0.4.0 provisoire
 
 | Élément | Emplacement | Statut |
 |---|---|---|
@@ -16,7 +16,8 @@ Direction artistique de référence : **Signal** (YouTube, accroches, communicat
 | Comparaison du jaune proposé aux jaunes d'origine | `docs/COULEUR_JAUNE.md` | à valider |
 | Gabarits SVG des miniatures : 8 familles, 19 variantes, exemples, planche 168 px | `templates/` | provisoire (sceau non officiel) |
 | Gabarits SVG Kiosque 4:5 : 6 diapositives de carrousel, fiche personnage (8 variantes) | `templates/kiosque/` | provisoire (logo non officiel) |
-| Atelier : saisie, recadrage, contrôles, exports PNG/JPG/SVG, partage, sauvegarde automatique, hors ligne | `atelier/` | prototype |
+| Infographies 16:9 pilotées par JSON : chronologie, barres ; validation et schéma | `templates/infographies/`, `data/infographies/`, `schemas/` | provisoire |
+| Atelier : 3 supports, saisie, recadrage, données JSON, contrôles, exports PNG/JPG/SVG, partage, sauvegarde automatique | `atelier/` | prototype |
 | Catalogue `brand-manifest.json` + schéma | `catalog/`, `schemas/` | généré |
 | Schéma Supabase | `supabase/` | **brouillon non appliqué** |
 | Présentations des missions 01 et 02 | `presentations/` | archive |
@@ -35,12 +36,14 @@ templates/
   _systeme/          moteur de gabarits (partagé avec l'Atelier)
   miniatures/        8 familles : SVG, exemples, planche, catalogue.json
   kiosque/           carrousels et fiche personnage 4:5
+  infographies/      chronologie et barres 16:9
+data/infographies/   données JSON des infographies (une création par fichier)
 atelier/             application web de saisie (PWA hors ligne)
 catalog/             catalog.config.json (règles) · brand-manifest.json (généré)
-schemas/             brand-manifest.schema.json
+schemas/             brand-manifest.schema.json · infographie.schema.json (généré)
 supabase/            migrations/ (brouillon)
 tools/               générateurs et contrôles
-docs/                architecture, conventions, logo, couleur jaune, gabarits, Atelier
+docs/                architecture, conventions, logo, couleur jaune, gabarits, infographies, Atelier
 presentations/       planches des missions 01 et 02
 ```
 
