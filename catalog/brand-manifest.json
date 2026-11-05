@@ -3,15 +3,15 @@
   "schemaVersion": 1,
   "name": "primestone-brand",
   "release": {
-    "version": "0.1.0",
+    "version": "0.1.1",
     "date": "2026-11-05",
     "channel": "provisoire"
   },
   "tokens": {
     "path": "brand/02_tokens/tokens.json",
     "format": "json",
-    "bytes": 13775,
-    "sha256": "6472e26cd7ef6dc13795b45df784fdd0d855442eb5572b1726ba63fad60c331f"
+    "bytes": 13623,
+    "sha256": "377066f9a7e4a09fb6d0c3c71e72b9af674cbeb011dba8d8f870c0cc76a0e04b"
   },
   "assets": [
     {
@@ -20,7 +20,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "case",
         "cadre",
@@ -50,7 +50,7 @@
           "path": "brand/04_elements/svg/PS_EL_case-cadre_2x3.svg",
           "format": "svg",
           "bytes": 319,
-          "sha256": "a73020ba31f8e411c50b8b0ff51312e45094c8a5c1fbdbbbb677cf8afccabe09",
+          "sha256": "107c447faa23777fde47b58a5f0273b5bfe06f175f1753790e18a4d9db994af1",
           "width": 600,
           "height": 900
         }
@@ -62,7 +62,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "filet",
         "incision",
@@ -92,7 +92,7 @@
           "path": "brand/04_elements/svg/PS_EL_filet-incision_jaune.svg",
           "format": "svg",
           "bytes": 284,
-          "sha256": "83f614644b71aac25c1d9f0202723038ae933980394c2c53f9605d9a20125387",
+          "sha256": "fdd85e3ce213d79ddb7c9c70614db12b83ac522f45dc7ff28fb05dc87f543625",
           "width": 257.97,
           "height": 14
         }
@@ -104,7 +104,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "filet",
         "incision",
@@ -134,7 +134,7 @@
           "path": "brand/04_elements/svg/PS_EL_filet-incision_noir.svg",
           "format": "svg",
           "bytes": 284,
-          "sha256": "4e463fd33fb8767ceeca4e8a4d3a5ea4db241355f611b26780f6b5b79e075c24",
+          "sha256": "314efab22ddb8d9e9f42500ba8ecd747070ea2a08de5e0aac7775338731bcc95",
           "width": 257.97,
           "height": 14
         }
@@ -146,7 +146,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "incision",
         "jaune"
@@ -175,7 +175,7 @@
           "path": "brand/04_elements/svg/PS_EL_incision_jaune.svg",
           "format": "svg",
           "bytes": 260,
-          "sha256": "9ae4fccbb56d6a3f171ce54d4b4e664027ebcdd9a22d9ec44348feefec165062",
+          "sha256": "e4ba2914f427413f1d149033f99ecd87d21d6231b86fffc7c76b0c0c61d0e3f1",
           "width": 84.22,
           "height": 400
         }
@@ -187,7 +187,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "incision",
         "noir"
@@ -216,7 +216,7 @@
           "path": "brand/04_elements/svg/PS_EL_incision_noir.svg",
           "format": "svg",
           "bytes": 260,
-          "sha256": "5eb428a088c44228d76d227469d90a098a24684358db50336e32238e75af89c6",
+          "sha256": "73d2786ba096ff3371d82812488ebd6d3f412966a2d33535794374628eaf6307",
           "width": 84.22,
           "height": 400
         }
@@ -228,7 +228,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "rubrique",
         "actu"
@@ -257,7 +257,7 @@
           "path": "brand/04_elements/svg/PS_EL_rubrique-actu.svg",
           "format": "svg",
           "bytes": 418,
-          "sha256": "c1bd2e9d765ed3c804b0aafbea51255b13693d9ec2d2f43f983d09a9e303b856",
+          "sha256": "bdbbc394c9dba343805d4d0a3dfbc41431aaaa6b5d799b25789196426a4486de",
           "width": 117,
           "height": 57
         }
@@ -269,7 +269,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "rubrique",
         "analyse",
@@ -299,7 +299,7 @@
           "path": "brand/04_elements/svg/PS_EL_rubrique-analyse-comic.svg",
           "format": "svg",
           "bytes": 442,
-          "sha256": "424efce2fe8d1b3b1b84448702fe66a5f8a64f2743861969c5996d996cbada77",
+          "sha256": "ac83fb4268969b87ca261f95307d78b4eb95f4b1af1ea9d4603358cc1e589e15",
           "width": 337,
           "height": 57
         }
@@ -311,7 +311,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "rubrique",
         "analyse",
@@ -341,7 +341,7 @@
           "path": "brand/04_elements/svg/PS_EL_rubrique-analyse-personnage.svg",
           "format": "svg",
           "bytes": 452,
-          "sha256": "c1341ac655cb55f2a9c6113aa25404395e1e1c156508c1a6c1424cf55bda48e1",
+          "sha256": "c964c84b7ff3d366d4cab5a90f0995fddde63439efea9b048a56820bb3b91fbd",
           "width": 437,
           "height": 57
         }
@@ -353,7 +353,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "rubrique",
         "cosmique"
@@ -382,7 +382,7 @@
           "path": "brand/04_elements/svg/PS_EL_rubrique-cosmique.svg",
           "format": "svg",
           "bytes": 442,
-          "sha256": "83d6aa92c39aa0e396a7016b85b282e6b464fc2872acadbf6505bed773ab89a1",
+          "sha256": "e6cb6148c5034ced879c5794ba90a58c5a0097f57be9098bdb1208919332d9d9",
           "width": 357,
           "height": 57
         }
@@ -394,7 +394,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "rubrique",
         "evenement"
@@ -423,7 +423,7 @@
           "path": "brand/04_elements/svg/PS_EL_rubrique-evenement.svg",
           "format": "svg",
           "bytes": 432,
-          "sha256": "eb67c6ec00c30a7b851d27c87e611408e975f942b3ccfae9e2825f4425fe1bbc",
+          "sha256": "16513f8ae9809e40d2a87ce443191e4d3a277a1ba3edd8d855041d866342fe49",
           "width": 217,
           "height": 57
         }
@@ -435,7 +435,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "rubrique",
         "guide"
@@ -464,7 +464,7 @@
           "path": "brand/04_elements/svg/PS_EL_rubrique-guide.svg",
           "format": "svg",
           "bytes": 442,
-          "sha256": "be1e1c8f372e378f05356299e34af984d7c856ef94af8f9c23a90b3b8f1551a2",
+          "sha256": "3daee31c8a0d571dddc4a1fd0588881c946759c723e8e3f0c2b45665e733b5f5",
           "width": 357,
           "height": 57
         }
@@ -476,7 +476,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "rubrique",
         "histoire"
@@ -505,7 +505,7 @@
           "path": "brand/04_elements/svg/PS_EL_rubrique-histoire.svg",
           "format": "svg",
           "bytes": 426,
-          "sha256": "a85b797a74f4c854f7d127f65d832041721a23990f4be38842fdc4723c5e99de",
+          "sha256": "a54298f411953a2258e5fa2524b475be1c4259aaf6a8d17ef1a6e91ecfdd3f67",
           "width": 197,
           "height": 57
         }
@@ -517,7 +517,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "rubrique",
         "theorie"
@@ -546,7 +546,7 @@
           "path": "brand/04_elements/svg/PS_EL_rubrique-theorie.svg",
           "format": "svg",
           "bytes": 426,
-          "sha256": "3bb4a3309088766d043e777831a0f8291a6cfb05604656b14d8a51602c44ed0c",
+          "sha256": "a047d1f23bb5176f843601a58a06ecf441d8896b867bfe1b57473eced4609281",
           "width": 177,
           "height": 57
         }
@@ -558,7 +558,7 @@
       "category": "elements",
       "kind": "element",
       "status": "non-officiel",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "sceau",
         "jaune",
@@ -589,7 +589,7 @@
           "path": "brand/04_elements/svg/PS_EL_sceau-P_jaune_NON-OFFICIEL.svg",
           "format": "svg",
           "bytes": 6907,
-          "sha256": "74f9c5d941d0a2b794b55eb1a3426fd22637d9397787bbfc9491dbd04a1fe6be",
+          "sha256": "10f5c6fc6c6818c90110e579586934b9d256edf476014af360ee059836f0b29a",
           "width": 512,
           "height": 512
         }
@@ -601,7 +601,7 @@
       "category": "elements",
       "kind": "element",
       "status": "non-officiel",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "sceau",
         "noir",
@@ -632,7 +632,7 @@
           "path": "brand/04_elements/svg/PS_EL_sceau-P_noir_NON-OFFICIEL.svg",
           "format": "svg",
           "bytes": 6907,
-          "sha256": "c761ba15817aec57335e77be5785ae0396db93b8aefe3aa17e29d8b50f216494",
+          "sha256": "071e809ed0a9b430552acbb57d2e2abbf4ff88e9ccb99377f8fa580a50e75f70",
           "width": 512,
           "height": 512
         }
@@ -644,7 +644,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "trame",
         "benday",
@@ -674,7 +674,7 @@
           "path": "brand/04_elements/svg/PS_EL_trame-benday_1280x720.svg",
           "format": "svg",
           "bytes": 434,
-          "sha256": "c04ea1d941d34956a08c79693490273ef20c8b846a266b5e7a7d20d1d3fba68d",
+          "sha256": "a2d620a98d8b7514491d156d2a0d94774c60b6f34fc5ce4840b8164a7f576d91",
           "width": 1280,
           "height": 720
         }
@@ -686,7 +686,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "volet",
         "transition",
@@ -716,7 +716,7 @@
           "path": "brand/04_elements/svg/PS_EL_volet-transition_jaune.svg",
           "format": "svg",
           "bytes": 384,
-          "sha256": "35c855893d2891111a87742a10fa21cef110828ab229a982abd14cb59723fb62",
+          "sha256": "225215a21530f56f051dde93d33982c7524918da6a98477747f0833e02ac8783",
           "width": 1031.78,
           "height": 1080
         }
@@ -728,7 +728,7 @@
       "category": "elements",
       "kind": "grille",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "grid",
         "carrousel",
@@ -758,7 +758,7 @@
           "path": "brand/04_elements/svg/PS_GRID_carrousel-1080x1350.svg",
           "format": "svg",
           "bytes": 578,
-          "sha256": "0baf8cc623409f316c2299ff36c3bbcc506f10a1a4d89e4eea654e1ef3963327",
+          "sha256": "cda229d51b1b19a527e3fb1a7ca1d08e98b98a37eb30954436f3a5b5f961e47f",
           "width": 1080,
           "height": 1350
         }
@@ -770,7 +770,7 @@
       "category": "elements",
       "kind": "grille",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "grid",
         "miniature",
@@ -800,7 +800,7 @@
           "path": "brand/04_elements/svg/PS_GRID_miniature-1280x720.svg",
           "format": "svg",
           "bytes": 851,
-          "sha256": "2ed69a4bce9cfa6cbd3b3a39b6b75c91afeaed08754b7306c65572096f8fe7eb",
+          "sha256": "6b14c6fd0cc86e6493cb9de4ea5c376c8a0f52014cc16364895baa2681e0b96b",
           "width": 1280,
           "height": 720
         }
@@ -812,7 +812,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "logo",
         "icone",
@@ -871,7 +871,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "logo",
         "icone",
@@ -930,7 +930,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "logo",
         "icone",
@@ -989,7 +989,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "logo",
         "logotype",
@@ -1048,7 +1048,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "logo",
         "logotype",
@@ -1107,7 +1107,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "logo",
         "logotype",
@@ -1166,7 +1166,7 @@
       "category": "originaux",
       "kind": "logo",
       "status": "reference",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "logo",
         "icone",
@@ -1191,7 +1191,7 @@
       "category": "originaux",
       "kind": "logo",
       "status": "reference",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "logo",
         "logotype",
@@ -1217,7 +1217,7 @@
       "category": "originaux",
       "kind": "miniature",
       "status": "reference",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "min",
         "superman",
@@ -1243,7 +1243,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "anton",
         "ofl"
@@ -1271,7 +1271,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "archivo",
         "bold"
@@ -1335,7 +1335,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "instrumentserif",
         "italic"
@@ -1369,7 +1369,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
         "jetbrainsmono",
         "bold"
@@ -1398,148 +1398,35 @@
       ]
     },
     {
-      "id": "ae-diagnostic",
-      "title": "AE diagnostic",
-      "category": "scripts-adobe",
-      "kind": "script",
-      "status": "provisoire",
-      "version": "0.1.0",
-      "tags": [
-        "diagnostic"
-      ],
-      "usage": "Scripts ExtendScript à lancer dans les applications Adobe.",
-      "preview": null,
-      "files": [
-        {
-          "path": "templates/after-effects/scripts/AE_diagnostic.jsx",
-          "format": "jsx",
-          "bytes": 1673,
-          "sha256": "397d3dca5e7354bf2ee99b753af320637f12ef09fe9c9cfd39f64761c773851a"
-        }
-      ]
-    },
-    {
-      "id": "ai-diagnostic",
-      "title": "AI diagnostic",
-      "category": "scripts-adobe",
-      "kind": "script",
-      "status": "provisoire",
-      "version": "0.1.0",
-      "tags": [
-        "diagnostic"
-      ],
-      "usage": "Scripts ExtendScript à lancer dans les applications Adobe.",
-      "preview": null,
-      "files": [
-        {
-          "path": "templates/illustrator/scripts/AI_diagnostic.jsx",
-          "format": "jsx",
-          "bytes": 794,
-          "sha256": "d9ee07a7fe4f1edbb4704f34503cbf71ff05270ad53f2d8a72a4ae74c4ffb68e"
-        }
-      ]
-    },
-    {
-      "id": "diagnostic",
-      "title": "PS diagnostic",
-      "category": "scripts-adobe",
-      "kind": "script",
-      "status": "provisoire",
-      "version": "0.1.0",
-      "tags": [
-        "diagnostic"
-      ],
-      "usage": "Scripts ExtendScript à lancer dans les applications Adobe.",
-      "preview": null,
-      "files": [
-        {
-          "path": "templates/photoshop/scripts/PS_diagnostic.jsx",
-          "format": "jsx",
-          "bytes": 873,
-          "sha256": "18fc7bc374c61785662f0a30db481c1797714fc4af132bdb12fedc7b0a683539"
-        }
-      ]
-    },
-    {
-      "id": "primestone-diagnostic",
-      "title": "Primestone diagnostic",
-      "category": "scripts-adobe",
-      "kind": "script",
-      "status": "provisoire",
-      "version": "0.1.0",
-      "tags": [
-        "primestone",
-        "diagnostic"
-      ],
-      "usage": "Scripts ExtendScript à lancer dans les applications Adobe.",
-      "preview": null,
-      "files": [
-        {
-          "path": "templates/common/primestone-diagnostic.jsxinc",
-          "format": "jsxinc",
-          "bytes": 1851,
-          "sha256": "e2370434d20c13fc2e92590b12ee74f7c328e41f1b6c702f1780703d857a458d"
-        }
-      ]
-    },
-    {
-      "id": "primestone-tokens",
-      "title": "Primestone tokens",
-      "category": "scripts-adobe",
-      "kind": "script",
-      "status": "provisoire",
-      "version": "0.1.0",
-      "tags": [
-        "primestone",
-        "tokens"
-      ],
-      "usage": "Scripts ExtendScript à lancer dans les applications Adobe.",
-      "preview": null,
-      "files": [
-        {
-          "path": "templates/common/primestone-tokens.jsxinc",
-          "format": "jsxinc",
-          "bytes": 2198,
-          "sha256": "762411142be37f4243d28dd6674b27513b80305c05b449e18886fab895d872be"
-        }
-      ]
-    },
-    {
       "id": "tokens",
       "title": "Design tokens",
       "category": "tokens",
       "kind": "tokens",
       "status": "provisoire",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "tags": [
-        "primestone"
+        "tokens"
       ],
-      "usage": "Couleurs, typographies, grilles et mouvement. Nuancier Adobe : Primestone.ase.",
+      "usage": "Couleurs, typographies, grilles et mouvement (JSON DTCG, CSS).",
       "preview": null,
       "files": [
         {
-          "path": "brand/02_tokens/build/Primestone.ase",
-          "format": "ase",
-          "bytes": 940,
-          "sha256": "c726367fe50014f2e1b64318d7b651c1b6fe52e41060d274cd9222243e506e8b"
-        },
-        {
           "path": "brand/02_tokens/build/tokens.css",
           "format": "css",
-          "bytes": 4577,
-          "sha256": "a5ca2febf719d14a44c6a17ef33ca9ac7d15543cbd2612e4905229cac9be785e"
+          "bytes": 4630,
+          "sha256": "6996e460bb94eab873274dfbab51d7d7b3494b75c4d8648027c7995fe18ab320"
         },
         {
           "path": "brand/02_tokens/build/tokens.flat.json",
           "format": "json",
-          "bytes": 12322,
-          "sha256": "50e942e37ed4906bc186448b31910088afbb2e5883331b51c0bcbeeff3dcae50"
+          "bytes": 12213,
+          "sha256": "f35783746addf0ef0c9f20b1dffe56488b4cac8e97f19cf15ca3b3eccd2de737"
         },
         {
           "path": "brand/02_tokens/tokens.json",
           "format": "json",
-          "bytes": 13775,
-          "sha256": "6472e26cd7ef6dc13795b45df784fdd0d855442eb5572b1726ba63fad60c331f"
+          "bytes": 13623,
+          "sha256": "377066f9a7e4a09fb6d0c3c71e72b9af674cbeb011dba8d8f870c0cc76a0e04b"
         }
       ]
     }

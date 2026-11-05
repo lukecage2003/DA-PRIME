@@ -1,4 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350" width="1080" height="1350">
-<!-- Primestone · grille carrousel 1080×1350 (guides) · généré par tools/gen-elements.mjs depuis tokens v0.1.0 -->
+<!-- Primestone · grille carrousel 1080×1350 (guides) · généré par tools/gen-elements.mjs depuis tokens v0.1.1 -->
 <g fill="none" stroke="#00C2FF" stroke-width="2"><rect x="65" y="65" width="950" height="1220" stroke-dasharray="10 8"/><line x1="65" y1="135" x2="1015" y2="135"/><rect x="855" y="1245" width="160" height="40"/></g><g font-family="JetBrains Mono" font-size="18" fill="#00C2FF"><text x="65" y="165">MASTHEAD</text><text x="855" y="1235">PAGINATION</text></g>
 </svg>

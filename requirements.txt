@@ -1,0 +1,5 @@
+fonttools==4.68.0
+potracer==0.0.4
+pillow==12.3.0
+numpy==2.5.3
+jsonschema==4.26.0

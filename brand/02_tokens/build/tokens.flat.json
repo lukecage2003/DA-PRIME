@@ -1,22 +1,11 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "statut": "provisoire",
-  "postscript": {
-    "display": "Anton-Regular",
-    "editorial": "InstrumentSerif-Italic",
-    "editorial-roman": "InstrumentSerif-Regular",
-    "text": "Archivo-Regular",
-    "text-medium": "Archivo-Medium",
-    "text-bold": "Archivo-Bold",
-    "text-condensed": "ArchivoCondensed-Bold",
-    "mono": "JetBrainsMono-Regular",
-    "mono-bold": "JetBrainsMono-Bold"
-  },
   "tokens": {
     "color.brand.yellow": {
       "type": "color",
       "value": "#FFE500",
-      "description": "Jaune Primestone de référence. Valeur proposée lors de l'audit, à confirmer. Seul jaune autorisé."
+      "description": "PROPOSITION non validée : reprend le jaune de la miniature d'origine. Comparaison : docs/COULEUR_JAUNE.md."
     },
     "color.brand.black": {
       "type": "color",
@@ -89,13 +78,20 @@
       "type": "color",
       "value": "#D9D7CF"
     },
-    "color.legacy.yellow-icon": {
+    "color.original.yellow-thumbnail": {
       "type": "color",
-      "value": "#E0DE06"
+      "value": "#FFE500",
+      "description": "Fond de la miniature « L'Espoir »."
     },
-    "color.legacy.yellow-wordmark": {
+    "color.original.yellow-wordmark": {
       "type": "color",
-      "value": "#FFF503"
+      "value": "#FFF503",
+      "description": "Logotype (fichier logotype + slogan)."
+    },
+    "color.original.yellow-icon": {
+      "type": "color",
+      "value": "#E0DE06",
+      "description": "Icône P."
     },
     "font.family.display": {
       "type": "fontFamily",

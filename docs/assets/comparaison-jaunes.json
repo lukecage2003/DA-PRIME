@@ -1,0 +1,48 @@
+{
+  "proposition": {
+    "hex": "#FFE500",
+    "contraste_sur_000000": 16.46,
+    "contraste_sur_111111": 14.8
+  },
+  "mesures_originales": {
+    "icone-P": {
+      "hex": "#E0DE06",
+      "part_des_pixels_jaunes_pct": 99.4,
+      "source": "PS_LOGO_icone-P_original.png"
+    },
+    "logotype": {
+      "hex": "#FFF503",
+      "part_des_pixels_jaunes_pct": 98.4,
+      "source": "PS_LOGO_logotype-slogan_original.png"
+    },
+    "miniature": {
+      "hex": "#FFE500",
+      "part_des_pixels_jaunes_pct": 98.3,
+      "source": "PS_MIN_superman-espoir_original.png"
+    }
+  },
+  "comparaison": [
+    {
+      "nom": "icone-P",
+      "hex": "#E0DE06",
+      "deltaE2000_vs_proposition": 6.01,
+      "contraste_sur_000000": 14.62,
+      "contraste_sur_111111": 13.15
+    },
+    {
+      "nom": "logotype",
+      "hex": "#FFF503",
+      "deltaE2000_vs_proposition": 4.58,
+      "contraste_sur_000000": 18.31,
+      "contraste_sur_111111": 16.47
+    },
+    {
+      "nom": "miniature",
+      "hex": "#FFE500",
+      "deltaE2000_vs_proposition": 0.0,
+      "contraste_sur_000000": 16.46,
+      "contraste_sur_111111": 14.8
+    }
+  ],
+  "lecture": "ΔE2000 < 1 : imperceptible ; 1-2 : visible de près ; 2-10 : visible d'un coup d'œil ; > 10 : couleurs différentes."
+}

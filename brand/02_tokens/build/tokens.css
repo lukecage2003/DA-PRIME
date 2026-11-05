@@ -1,4 +1,4 @@
-/* Primestone · design tokens v0.1.0 (provisoire) · généré, ne pas éditer */
+/* Primestone · design tokens v0.1.1 (provisoire) · généré, ne pas éditer */
 :root {
   --ps-color-brand-yellow: #FFE500;
   --ps-color-brand-black: #111111;
@@ -17,8 +17,9 @@
   --ps-color-data-3: #F5D9A8;
   --ps-color-data-4: #E8C08A;
   --ps-color-data-5: #D9D7CF;
-  --ps-color-legacy-yellow-icon: #E0DE06;
-  --ps-color-legacy-yellow-wordmark: #FFF503;
+  --ps-color-original-yellow-thumbnail: #FFE500;
+  --ps-color-original-yellow-wordmark: #FFF503;
+  --ps-color-original-yellow-icon: #E0DE06;
   --ps-font-family-display: Anton, Impact, "Arial Narrow", sans-serif;
   --ps-font-family-editorial: "Instrument Serif", "Times New Roman", serif;
   --ps-font-family-text: Archivo, "Helvetica Neue", Arial, sans-serif;

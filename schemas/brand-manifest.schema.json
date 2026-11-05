@@ -4,41 +4,156 @@
   "title": "Primestone Brand Manifest",
   "description": "Catalogue des ressources officielles de Primestone Media, lu par la Brand Library et par les applications clientes (dont Primestone Studio).",
   "type": "object",
-  "required": ["schemaVersion", "name", "release", "tokens", "assets"],
+  "required": [
+    "schemaVersion",
+    "name",
+    "release",
+    "tokens",
+    "assets"
+  ],
   "properties": {
-    "schemaVersion": { "const": 1 },
-    "name": { "const": "primestone-brand" },
-    "release": {
-      "type": "object", "required": ["version", "date", "channel"],
-      "properties": { "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" }, "date": { "type": "string", "format": "date" }, "channel": { "enum": ["officiel", "provisoire"] } }
+    "schemaVersion": {
+      "const": 1
     },
-    "tokens": { "$ref": "#/$defs/file" },
-    "assets": { "type": "array", "items": { "$ref": "#/$defs/asset" } }
+    "name": {
+      "const": "primestone-brand"
+    },
+    "release": {
+      "type": "object",
+      "required": [
+        "version",
+        "date",
+        "channel"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "channel": {
+          "enum": [
+            "officiel",
+            "provisoire"
+          ]
+        }
+      }
+    },
+    "tokens": {
+      "$ref": "#/$defs/file"
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/asset"
+      }
+    }
   },
   "$defs": {
     "asset": {
-      "type": "object", "required": ["id", "title", "category", "kind", "status", "version", "files"],
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "category",
+        "kind",
+        "status",
+        "version",
+        "files"
+      ],
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
-        "title": { "type": "string" },
-        "category": { "enum": ["originaux", "logo", "tokens", "polices", "elements", "scripts-adobe", "photoshop", "illustrator", "after-effects", "premiere", "video"] },
-        "kind": { "type": "string" },
-        "status": { "enum": ["officiel", "provisoire", "non-officiel", "reference"] },
-        "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
-        "tags": { "type": "array", "items": { "type": "string" } },
-        "usage": { "type": "string" },
-        "preview": { "type": ["string", "null"] },
-        "files": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/file" } }
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "title": {
+          "type": "string"
+        },
+        "category": {
+          "enum": [
+            "originaux",
+            "logo",
+            "tokens",
+            "polices",
+            "elements",
+            "video"
+          ]
+        },
+        "kind": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "officiel",
+            "provisoire",
+            "non-officiel",
+            "reference"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "usage": {
+          "type": "string"
+        },
+        "preview": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/file"
+          }
+        }
       }
     },
     "file": {
-      "type": "object", "required": ["path", "format", "bytes", "sha256"],
+      "type": "object",
+      "required": [
+        "path",
+        "format",
+        "bytes",
+        "sha256"
+      ],
       "properties": {
-        "path": { "type": "string", "description": "Chemin relatif à la racine du dépôt ; clé de stockage identique dans Supabase Storage." },
-        "format": { "type": "string" },
-        "bytes": { "type": "integer", "minimum": 0 },
-        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-        "width": { "type": "number" }, "height": { "type": "number" }, "scale": { "type": "number" }
+        "path": {
+          "type": "string",
+          "description": "Chemin relatif à la racine du dépôt ; clé de stockage identique dans Supabase Storage."
+        },
+        "format": {
+          "type": "string"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        },
+        "scale": {
+          "type": "number"
+        }
       }
     }
   }

@@ -38,7 +38,7 @@ for (const f of cfg.folders) {
       const fam = famOf(fonts.find((x) => x.family.replace(/\s/g, '').toLowerCase().startsWith(key)));
       id = `police-${slug(fam)}`; ttl = `Police ${fam}`; kind = 'police';
     } else if (f.groupAs === 'tokens') { id = 'tokens'; ttl = 'Design tokens'; kind = 'tokens'; }
-    else { id = slug(stem.replace(/^PS_/, '')); ttl = title(stem); kind = KIND[stem.split('_')[1]] || (abs.match(/\.jsx(inc)?$/) ? 'script' : 'fichier'); }
+    else { id = slug(stem.replace(/^PS_/, '')); ttl = title(stem); kind = KIND[stem.split('_')[1]] || 'fichier'; }
     const a = assets.get(id) ?? { id, title: ttl, category: f.category, kind, status: /NON-OFFICIEL/.test(rel) ? 'non-officiel' : f.status, version: cfg.release.version, tags: [...new Set(slug(stem.replace(/^PS_/, '')).split('-').filter((t) => t.length > 2))], usage: f.usage, preview: null, files: [] };
     const scale = (abs.match(/@(\d)x\.\w+$/) || [])[1];
     a.files.push({ path: rel, format: extname(abs).slice(1).toLowerCase(), bytes: buf.length, sha256: sha(abs), ...dims(abs, buf), ...(scale ? { scale: +scale } : {}) });

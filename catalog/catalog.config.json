@@ -1,6 +1,10 @@
 {
   "$comment": "Règles de catalogage lues par tools/build-manifest.mjs. Ajouter un dossier ici pour qu'il apparaisse dans la Brand Library.",
-  "release": { "version": "0.1.0", "date": "2026-11-05", "channel": "provisoire" },
+  "release": {
+    "version": "0.1.1",
+    "date": "2026-11-05",
+    "channel": "provisoire"
+  },
   "statuses": {
     "officiel": "Validé par Primestone, utilisable partout.",
     "provisoire": "Utilisable en production interne, peut évoluer.",
@@ -8,11 +12,43 @@
     "reference": "Fichier d'origine conservé intact, pour comparaison uniquement."
   },
   "folders": [
-    { "path": "brand/00_originaux", "category": "originaux", "status": "reference", "usage": "Fichiers d'origine fournis, conservés intacts." },
-    { "path": "brand/01_logo/NON-OFFICIEL", "category": "logo", "status": "non-officiel", "exclude": ["_reference/"], "usage": "Vectorisation provisoire du logo. En attente de validation." },
-    { "path": "brand/02_tokens", "category": "tokens", "status": "provisoire", "groupAs": "tokens", "usage": "Couleurs, typographies, grilles et mouvement. Nuancier Adobe : Primestone.ase." },
-    { "path": "brand/03_fonts", "category": "polices", "status": "provisoire", "groupBy": "fontFamily", "exclude": ["_variable/"], "usage": "Installer les fichiers statiques sur chaque poste. Licence SIL OFL 1.1." },
-    { "path": "brand/04_elements", "category": "elements", "status": "provisoire", "usage": "Éléments graphiques du langage Primestone." },
-    { "path": "templates", "category": "scripts-adobe", "status": "provisoire", "usage": "Scripts ExtendScript à lancer dans les applications Adobe." }
+    {
+      "path": "brand/00_originaux",
+      "category": "originaux",
+      "status": "reference",
+      "usage": "Fichiers d'origine fournis, conservés intacts."
+    },
+    {
+      "path": "brand/01_logo/NON-OFFICIEL",
+      "category": "logo",
+      "status": "non-officiel",
+      "exclude": [
+        "_reference/"
+      ],
+      "usage": "Vectorisation provisoire du logo. En attente de validation."
+    },
+    {
+      "path": "brand/02_tokens",
+      "category": "tokens",
+      "status": "provisoire",
+      "groupAs": "tokens",
+      "usage": "Couleurs, typographies, grilles et mouvement (JSON DTCG, CSS)."
+    },
+    {
+      "path": "brand/03_fonts",
+      "category": "polices",
+      "status": "provisoire",
+      "groupBy": "fontFamily",
+      "exclude": [
+        "_variable/"
+      ],
+      "usage": "Installer les fichiers statiques sur chaque poste. Licence SIL OFL 1.1."
+    },
+    {
+      "path": "brand/04_elements",
+      "category": "elements",
+      "status": "provisoire",
+      "usage": "Éléments graphiques du langage Primestone."
+    }
   ]
 }

@@ -6,7 +6,7 @@
 flowchart LR
   subgraph BRAND["Dépôt Primestone Brand (celui-ci)"]
     T[tokens.json] --> B[tools/build-*]
-    S[sources : logo, polices, éléments, templates] --> B
+    S[sources : logo, polices, éléments, gabarits] --> B
     B --> M[catalog/brand-manifest.json]
   end
   subgraph SUPA["Supabase (lot 6, après accord)"]
@@ -20,8 +20,8 @@ flowchart LR
   STUDIO[Primestone Studio<br/>dépôt séparé, .exe Windows] -. lecture optionnelle, plus tard .-> SUPA
 ```
 
-- **Git** : code, tokens, SVG et PNG légers (aujourd'hui 3,5 Mo au total). Aucun binaire Adobe ni vidéo.
-- **Supabase Storage** : tous les fichiers distribués, y compris PSD, AI, MOGRT et ProRes. La clé de chaque fichier est son chemin dans le dépôt (`brand/04_elements/svg/PS_EL_incision_jaune.svg`), ce qui rend la publication idempotente.
+- **Git** : code, tokens, SVG et PNG légers (environ 3,5 Mo au total). Aucun fichier lourd ni vidéo.
+- **Supabase Storage** : tous les fichiers distribués, y compris les plus lourds (exports haute définition, vidéos). La clé de chaque fichier est son chemin dans le dépôt (`brand/04_elements/svg/PS_EL_incision_jaune.svg`), ce qui rend la publication idempotente.
 - **Supabase Postgres** : catalogue, versions, favoris et collections. Schéma : `supabase/migrations/` (brouillon).
 
 ## Brand Library (lot 6)
