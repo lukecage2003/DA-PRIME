@@ -20,7 +20,7 @@
   <section class="scene" aria-label="Aperçu">
     <div id="apercu" class="apercu" aria-label="Aperçu de la miniature. Faire glisser pour déplacer l'image, pincer ou utiliser la molette pour zoomer."></div>
     <div class="sous-apercu">
-      <label class="bascule"><input type="checkbox" id="guides"> Guides</label>
+      <div class="outils-apercu"><label class="bascule"><input type="checkbox" id="guides"> Guides</label><a href="#controles" id="resume" class="resume" data-niveau="ok">Contrôles</a></div>
       <figure class="mini"><div id="mini"></div><figcaption>Taille smartphone · 168 px</figcaption></figure>
     </div>
   </section>
@@ -29,12 +29,13 @@
     <fieldset><legend>Variante</legend><div id="variantes" class="puces"></div></fieldset>
     <fieldset><legend>Textes</legend><div id="champs" class="champs"></div></fieldset>
     <fieldset><legend>Images</legend><div id="images" class="images"></div></fieldset>
-    <fieldset><legend>Contrôles</legend><ul id="alertes" class="alertes" aria-live="polite"></ul></fieldset>
+    <fieldset id="controles"><legend>Contrôles</legend><ul id="alertes" class="alertes" aria-live="polite"></ul></fieldset>
     <fieldset><legend>Exporter</legend>
       <div class="exports">
         <button type="button" data-export="png">PNG 1280 × 720</button>
         <button type="button" data-export="jpg">JPG (≤ 2 Mo)</button>
         <button type="button" data-export="svg">SVG autonome</button>
+        <button type="button" id="partager" hidden>Partager (JPG)</button>
       </div>
       <p id="export-info" class="info" aria-live="polite"></p>
       <button type="button" id="reinit" class="discret">Réinitialiser le brouillon</button>

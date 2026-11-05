@@ -1,5 +1,12 @@
 # Journal des versions
 
+## 0.3.0 · 2026-11-05 · audit mobile + fondations du lot 3 (Kiosque)
+
+- Atelier, corrections mobiles : orientation des photos de téléphone figée à l'import ; sélecteur de fichiers ouvert à toutes les images (galerie, appareil photo) ; sauvegarde automatique complète (images et recadrage compris) dans IndexedDB, un brouillon par famille ; résumé des contrôles à côté de l'aperçu ; bouton Partager (JPG) quand le système le permet ; familles et variantes sur une ligne défilante sous 600 px.
+- Moteur : système de formats (miniature 1280 × 720, carrousel 1080 × 1350) sans modification des miniatures existantes.
+- Gabarits Kiosque : 6 diapositives de carrousel et fiche personnage (8 variantes), exemples et planche 360 px.
+- Tests : 10 tests unitaires du moteur, 37 tests de bout en bout de l'Atelier.
+
 ## 0.2.0 · 2026-11-05 · lot 2 (gabarits + Atelier prototype)
 
 - Moteur de gabarits partagé (`templates/_systeme/`) : mesure du texte par métriques de police, ajustement automatique du titre, typographie française, contrôles de lisibilité et de débordement.

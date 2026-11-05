@@ -1,4 +1,4 @@
-# Gabarits de miniatures YouTube
+# Gabarits : miniatures YouTube et supports Kiosque
 
 **Statut : provisoire.** Tous les gabarits portent le sceau P issu de la vectorisation **NON OFFICIELLE** du logo, et le jaune `#FFE500` reste une proposition. Ils se régénèrent automatiquement (`npm run build:templates`) quand le logo ou les couleurs sont validés.
 
@@ -7,8 +7,9 @@
 ```
 templates/
   _systeme/
-    briques.js       couleurs, grille, mesure et ajustement du texte, formes, images, filtres
-    familles.js      les 8 familles et leurs variantes (seul fichier à modifier pour faire évoluer une mise en page)
+    briques.js       formats, couleurs, grille, mesure et ajustement du texte, formes, images, filtres
+    familles.js      les 8 familles de miniatures et leurs variantes
+    kiosque.js       les gabarits Kiosque 4:5 (lot 3)
     moteur.js        rendre(famille, variante, données) -> SVG + alertes de contrôle
     tokens.js, logo.js, placeholders.js, metrics.js   modules générés, ne pas éditer
   miniatures/
@@ -16,6 +17,9 @@ templates/
     <famille>/exemples/*.jpg                                 rendu avec images PLACEHOLDER
     PS_MIN_planche-168px_NON-OFFICIEL.png                    planche de lisibilité smartphone
     catalogue.json                                           familles, variantes, champs
+  kiosque/
+    <gabarit>/PS_CAR_… ou PS_FICHE_…_NON-OFFICIEL.svg        1080 × 1350
+    <gabarit>/exemples/*.jpg · PS_CAR_planche-360px_NON-OFFICIEL.png · catalogue.json
 ```
 
 Le même moteur sert à générer les fichiers et à faire fonctionner l'Atelier : un gabarit modifié dans `familles.js` change partout à la fois.
@@ -70,3 +74,19 @@ Les textes sont en majuscules dans le fichier (la casse est appliquée par le mo
 | Image de substitution utilisée | info |
 
 La taille du titre s'ajuste automatiquement (de 170 à 72 px selon la famille) à partir des métriques réelles des polices, avec la typographie française (espace insécable avant ? ! : ;).
+
+## Supports Kiosque (lot 3) · format 4:5, 1080 × 1350
+
+| Gabarit | Usage | Champs principaux |
+|---|---|---|
+| `car-couverture` | 1re diapositive d'un carrousel | titre serif, image en case-cadre, rubrique, n°, pied, pagination |
+| `car-presentation-comic` | un comic par diapositive (guides, critiques) | couverture, titre, éditeur · année, auteurs, parution, niveau 1 à 3, accroche |
+| `car-recit` | texte long (dossiers historiques) | surtitre daté, titre, texte, deux repères |
+| `car-chiffre-cle` | chiffre fort, à partager en story | surtitre, chiffre, phrase, source |
+| `car-faits` | actualité : ce qu'on sait | titre, trois faits numérotés |
+| `car-avis` | dernière diapositive : avis de la rédaction | surtitre, citation |
+| `fiche-personnage` (case jaune · case noire) | collection numérotée | nom, identité, 3 données, 3 lectures avec auteurs, personnage détouré |
+
+Règles Kiosque : fond papier avec trame Ben-Day à 7 %, masthead (logotype NON OFFICIEL, rubrique · n°, filet de 5 px), marge de 65 px, titres en Instrument Serif italique, textes en Archivo, repères en JetBrains Mono, pagination en bas à droite. Pas de contrôle de zone de durée (propre à YouTube) ; capitales minimales de 48 px pour les titres.
+
+Ces gabarits se modifient dans Inkscape ou Figma. Ils ne sont pas éditables dans l'Atelier (pas d'éditeur de carrousels à ce stade).

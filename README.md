@@ -4,7 +4,7 @@ Dépôt de l'identité visuelle de **Primestone Media** : système graphique, de
 
 Direction artistique de référence : **Signal** (YouTube, accroches, communication) + **Kiosque** (éditorial, dossiers, carrousels, infographies, bibliothèque). Direction sombre et cinématographique en usage secondaire.
 
-## État : lot 2 (gabarits + Atelier prototype) · version 0.2.0 provisoire
+## État : lot 3 (fondations Kiosque) · version 0.3.0 provisoire
 
 | Élément | Emplacement | Statut |
 |---|---|---|
@@ -15,7 +15,8 @@ Direction artistique de référence : **Signal** (YouTube, accroches, communicat
 | Éléments graphiques SVG + PNG 1x/2x | `brand/04_elements/` | provisoire (sceau P : non officiel) |
 | Comparaison du jaune proposé aux jaunes d'origine | `docs/COULEUR_JAUNE.md` | à valider |
 | Gabarits SVG des miniatures : 8 familles, 19 variantes, exemples, planche 168 px | `templates/` | provisoire (sceau non officiel) |
-| Atelier : saisie, recadrage, contrôles, exports PNG/JPG/SVG, hors ligne | `atelier/` | prototype |
+| Gabarits SVG Kiosque 4:5 : 6 diapositives de carrousel, fiche personnage (8 variantes) | `templates/kiosque/` | provisoire (logo non officiel) |
+| Atelier : saisie, recadrage, contrôles, exports PNG/JPG/SVG, partage, sauvegarde automatique, hors ligne | `atelier/` | prototype |
 | Catalogue `brand-manifest.json` + schéma | `catalog/`, `schemas/` | généré |
 | Schéma Supabase | `supabase/` | **brouillon non appliqué** |
 | Présentations des missions 01 et 02 | `presentations/` | archive |
@@ -33,6 +34,7 @@ brand/
 templates/
   _systeme/          moteur de gabarits (partagé avec l'Atelier)
   miniatures/        8 familles : SVG, exemples, planche, catalogue.json
+  kiosque/           carrousels et fiche personnage 4:5
 atelier/             application web de saisie (PWA hors ligne)
 catalog/             catalog.config.json (règles) · brand-manifest.json (généré)
 schemas/             brand-manifest.schema.json
@@ -49,7 +51,8 @@ Prérequis : Node 20+ (`npm ci` installe Playwright pour les rendus PNG), Python
 ```bash
 npm run build          # tokens -> éléments -> gabarits et exemples -> manifeste
 npm run atelier        # Atelier sur http://localhost:4173/atelier/
-npm run test:atelier   # tests de bout en bout (Chromium, appareils émulés)
+npm run atelier:reseau # Atelier accessible depuis le téléphone (même Wi-Fi)
+npm test               # tests du moteur + tests de bout en bout (Chromium, appareils émulés)
 npm run build:webfonts # polices web et métriques (si les polices changent)
 npm run build:logo     # re-vectorise le logo et refait la comparaison (≈ 1 min)
 npm run build:yellow   # recalcule la comparaison des jaunes

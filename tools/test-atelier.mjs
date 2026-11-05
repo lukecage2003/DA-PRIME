@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
+import { spawnSync } from 'node:child_process';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = process.argv[2] || join(tmpdir(), 'primestone-tests'); mkdirSync(OUT, { recursive: true });
 const { chromium } = createRequire(import.meta.url)('playwright');
@@ -71,6 +72,12 @@ async function grandeImage(p) {
   const jpgF = await dl('jpg'); const jpg = readFileSync(jpgF); ok(jpg[0] === 0xff && jpgDims(jpg).join('×') === '1280×720' && jpg.length <= 2 * 1024 * 1024, `export JPG : ${jpgDims(jpg).join(' × ')}, ${(jpg.length / 1024).toFixed(0)} Ko (≤ 2 Mo)`);
   const svgF = await dl('svg'); const svg = readFileSync(svgF, 'utf8');
   ok(svg.startsWith('<svg') && !/href="(?!data:)/.test(svg) && /@font-face/.test(svg), `export SVG autonome : aucune ressource externe, polices intégrées, ${(svg.length / 1024).toFixed(0)} Ko`);
+  // Sauvegarde : textes, image importée et recadrage retrouvés après rechargement
+  await p.fill('#champ-titre', 'Héritage'); await p.waitForTimeout(500);
+  const avantR = (await etat(p)).donnees.personnage; await p.reload(); await p.waitForSelector('#apercu svg');
+  const apresR = await etat(p);
+  ok(apresR.donnees.titre === 'Héritage' && apresR.donnees.personnage.nom === avantR.nom && Math.abs(apresR.donnees.personnage.zoom - avantR.zoom) < 1e-9 && apresR.donnees.personnage.href === 'data:…',
+    'brouillon retrouvé après rechargement (titre, image importée, zoom et position)');
   writeFileSync(join(OUT, 'fichiers-exportes.json'), JSON.stringify({ png: pngF, jpg: jpgF, svg: svgF }));
   await p.screenshot({ path: join(OUT, 'ecran-windows-1920.png') });
   ok(!err.length, `aucune erreur JavaScript${err.length ? ' · ' + err.join(' | ') : ''}`);
@@ -93,6 +100,15 @@ for (const [nom, opt] of [
   const m = await p.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth, ap: document.querySelector('#apercu').getBoundingClientRect().width, cibles: [...document.querySelectorAll('button, input[type=text]')].filter((e) => e.offsetParent && e.getBoundingClientRect().height < 44).length }));
   ok(m.sw <= m.iw && m.ap > 0, `${nom} : pas de défilement horizontal (${m.sw} ≤ ${m.iw} px), aperçu de ${Math.round(m.ap)} px`);
   ok(m.cibles === 0, `${nom} : cibles tactiles d'au moins 44 px`);
+  const rz = await p.evaluate(() => { const r = document.querySelector('#resume').getBoundingClientRect(); return { b: r.bottom, ih: innerHeight, t: document.querySelector('#resume').textContent }; });
+  ok(rz.b <= rz.ih, `${nom} : résumé des contrôles visible sans défiler (« ${rz.t} »)`);
+  if (nom === 'galaxy-s25') {
+    // Photo de téléphone 600 × 400 avec orientation EXIF 6 (portrait) : doit arriver redressée en 400 × 600
+    const f = join(OUT, 'photo-exif-6.jpg');
+    spawnSync('python3', ['-c', `from PIL import Image; im=Image.new('RGB',(600,400),(200,40,40)); ex=im.getexif(); ex[274]=6; im.save(r'${f}', exif=ex)`]);
+    await p.setInputFiles('#fichier-personnage', f); await p.waitForFunction(() => window.__atelier.etat.donnees.personnage.nom === 'photo-exif-6.jpg');
+    const ph = (await etat(p)).donnees.personnage; ok(ph.w === 400 && ph.h === 600, `${nom} : photo avec orientation EXIF importée redressée (${ph.w} × ${ph.h})`);
+  }
   if (opt.hasTouch) {
     const cdp = await ctx.newCDPSession(p); const b = await p.locator('#apercu').boundingBox();
     const t = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map(([x, y], i) => ({ x, y, id: i })) });

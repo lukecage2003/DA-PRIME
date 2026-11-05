@@ -1,5 +1,5 @@
 {
- "version": "0.1.1-2f8ed71543",
+ "version": "0.1.1-4653ab92e4",
  "fichiers": [
   "./",
   "index.html",
@@ -9,6 +9,7 @@
   "manifest.webmanifest",
   "../templates/_systeme/briques.js",
   "../templates/_systeme/familles.js",
+  "../templates/_systeme/kiosque.js",
   "../templates/_systeme/logo.js",
   "../templates/_systeme/metrics.js",
   "../templates/_systeme/moteur.js",

@@ -10,7 +10,8 @@
 | `EL` | élément graphique | `PS_EL_rubrique-actu@2x.png` |
 | `GRID` | grille de construction | `PS_GRID_miniature-1280x720.svg` |
 | `MIN` | miniature YouTube | `PS_MIN_01-analyse-personnage_v1.0.svg` (lot 2) |
-| `CAR`, `FICHE`, `INFO` | supports Kiosque | lots 2 et 3 |
+| `CAR`, `FICHE` | supports Kiosque 4:5 | `PS_CAR_car-recit_standard_NON-OFFICIEL.svg` (lot 3) |
+| `INFO` | infographies | à définir |
 | `CLIP` | habillage vidéo rendu (WebM) | lot ultérieur |
 
 Minuscules, mots séparés par des tirets, sans accents ni espaces. Variantes de couleur : `jaune`, `noir`, `blanc`.

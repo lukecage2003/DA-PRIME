@@ -5,15 +5,23 @@ import M from './metrics.js';
 import LOGO from './logo.js';
 export { T, M, LOGO };
 
-export const W = 1280, H = 720;
+// Formats : la miniature YouTube (lot 2) et le carrousel Kiosque 4:5 (lot 3). W, H et G sont des liaisons vivantes :
+// le moteur appelle utiliserFormat() avant chaque rendu, les familles lisent toujours les valeurs du format courant.
+export const FORMATS = {
+  miniature: { w: T['format.youtube-thumbnail.width'], h: T['format.youtube-thumbnail.height'], m: T['layout.thumbnail.margin'], seal: T['layout.thumbnail.seal-size'], capMin: T['layout.thumbnail.title-cap-min'], zoneMorte: true },
+  carrousel: { w: T['format.carousel.width'], h: T['format.carousel.height'], m: T['layout.carousel.margin'], seal: 86, capMin: 48, zoneMorte: false },
+};
+export let W, H, G;
+export function utiliserFormat(id = 'miniature') {
+  const f = FORMATS[id]; if (!f) throw new Error(`Format inconnu : ${id}`);
+  W = f.w; H = f.h;
+  G = { format: id, m: f.m, seal: f.seal, capMin: f.capMin, angle: T['motif.incision-angle'], ink: Math.round(W * T['motif.ink-outline-ratio'] * 10) / 10,
+    dead: f.zoneMorte ? { x: W - 16 - T['layout.thumbnail.dead-zone-width'], y: H - 16 - T['layout.thumbnail.dead-zone-height'], w: T['layout.thumbnail.dead-zone-width'], h: T['layout.thumbnail.dead-zone-height'] } : null };
+}
+utiliserFormat('miniature');
 export const C = {
   y: T['color.brand.yellow'], k: T['color.brand.black'], k0: T['color.brand.black-pure'], w: T['color.brand.white'],
   red: T['color.editorial.news-red'], paper: T['color.editorial.paper'], night: T['color.cinematic.night'], nightBlue: T['color.cinematic.night-blue'], silver: T['color.cinematic.silver'],
-};
-export const G = {
-  m: T['layout.thumbnail.margin'], seal: T['layout.thumbnail.seal-size'], capMin: T['layout.thumbnail.title-cap-min'],
-  dead: { x: W - 16 - T['layout.thumbnail.dead-zone-width'], y: H - 16 - T['layout.thumbnail.dead-zone-height'], w: T['layout.thumbnail.dead-zone-width'], h: T['layout.thumbnail.dead-zone-height'] },
-  angle: T['motif.incision-angle'], ink: Math.round(W * T['motif.ink-outline-ratio'] * 10) / 10,
 };
 const TAN = Math.tan((G.angle * Math.PI) / 180);
 const r1 = (n) => Math.round(n * 10) / 10;
@@ -103,14 +111,14 @@ export const DEFS = () => `<defs>
 export function hexN(hex, i) { return Math.round((parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16) / 255) * 1000) / 1000; }
 
 export const calque = (id, label, contenu, cache = false) => `<g id="calque-${id}" inkscape:groupmode="layer" inkscape:label="${label}"${cache ? ' style="display:none"' : ''}>${contenu}</g>`;
-export const guides = () => `<g fill="none" stroke="#00C2FF" stroke-width="2"><rect x="${G.m}" y="${G.m}" width="${W - 2 * G.m}" height="${H - 2 * G.m}" stroke-dasharray="10 8"/></g><rect x="${G.dead.x}" y="${G.dead.y}" width="${G.dead.w}" height="${G.dead.h}" fill="${C.red}" fill-opacity="0.35" stroke="${C.red}" stroke-width="2"/>`;
+export const guides = () => `<g fill="none" stroke="#00C2FF" stroke-width="2"><rect x="${G.m}" y="${G.m}" width="${W - 2 * G.m}" height="${H - 2 * G.m}" stroke-dasharray="10 8"/></g>${G.dead ? `<rect x="${G.dead.x}" y="${G.dead.y}" width="${G.dead.w}" height="${G.dead.h}" fill="${C.red}" fill-opacity="0.35" stroke="${C.red}" stroke-width="2"/>` : ''}`;
 export const inter = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 
 // Aide pour les familles : déclare et ajuste un texte, puis le dessine
-export function texte(ctx, d, id, label, opts, dessin, { titre = false, requis = false } = {}) {
+export function texte(ctx, d, id, label, opts, dessin, { titre = false, requis = false, mots = titre } = {}) {
   const f = ajuster(d[id] || '', opts);
   const pos = { police: opts.police, interligne: opts.interligne ?? 0.9, interlettre: opts.interlettre ?? 0, ...(typeof dessin === 'function' ? dessin(f) : dessin) };
-  ctx.textes.push({ id, label, f, titre, requis, boite: f.vide ? null : boite(f, pos) });
+  ctx.textes.push({ id, label, f, titre, requis, mots, boite: f.vide ? null : boite(f, pos) });
   return f.vide ? '' : blocTexte(id, f, pos);
 }
 export function zone(ctx, id, z) { ctx.zones[id] = z; return z; }

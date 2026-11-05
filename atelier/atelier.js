@@ -23,12 +23,29 @@ function initFamille(fam, garder = {}) {
   }
   etat.donnees = d; etat.actif = champsImages()[0]?.id ?? null;
 }
+// Brouillons : un par famille, avec images importées et recadrage, dans IndexedDB (sur l'appareil uniquement).
+const BASE = 'primestone-atelier', MAGASIN = 'brouillons';
+const ouvrir = () => new Promise((ok, ko) => { const r = indexedDB.open(BASE, 1); r.onupgradeneeded = () => r.result.createObjectStore(MAGASIN); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
+const idb = async (mode, fn) => { const db = await ouvrir(); return new Promise((ok, ko) => { const t = db.transaction(MAGASIN, mode); const r = fn(t.objectStore(MAGASIN)); t.oncomplete = () => { db.close(); ok(r?.result); }; t.onerror = () => ko(t.error); }); };
+let minuterie = null;
 function sauver() {
-  const textes = Object.fromEntries(FAMILLES[etat.fam].champs.filter((c) => c.type !== 'image').map((c) => [c.id, etat.donnees[c.id]]));
-  try { localStorage.setItem(CLE, JSON.stringify({ fam: etat.fam, vari: etat.vari, textes })); } catch { /* stockage indisponible : sans conséquence */ }
+  clearTimeout(minuterie);
+  minuterie = setTimeout(async () => {
+    const b = { fam: etat.fam, vari: etat.vari, donnees: etat.donnees, date: Date.now() };
+    try { await idb('readwrite', (s) => { s.put(b, etat.fam); s.put(etat.fam, '_derniere'); }); }
+    catch { try { localStorage.setItem(CLE, JSON.stringify({ ...b, donnees: undefined, textes: Object.fromEntries(Object.entries(etat.donnees).filter(([, v]) => typeof v === 'string')) })); } catch { /* stockage indisponible */ } }
+  }, 300);
 }
-function charger() {
-  try { const b = JSON.parse(localStorage.getItem(CLE) || 'null'); if (b && FAMILLES[b.fam]) return initFamille(b.fam, b); } catch { /* brouillon illisible : on repart du défaut */ }
+async function lireBrouillon(fam) { try { return await idb('readonly', (s) => s.get(fam)); } catch { return null; } }
+function appliquer(b) {
+  initFamille(b.fam, { vari: b.vari });
+  for (const c of FAMILLES[b.fam].champs) if (b.donnees?.[c.id] !== undefined) etat.donnees[c.id] = b.donnees[c.id];
+}
+async function charger() {
+  let fam = null; try { fam = await idb('readonly', (s) => s.get('_derniere')); } catch { /* pas d'IndexedDB */ }
+  const b = fam && FAMILLES[fam] ? await lireBrouillon(fam) : null;
+  if (b) return appliquer(b);
+  try { const l = JSON.parse(localStorage.getItem(CLE) || 'null'); if (l && FAMILLES[l.fam]) return initFamille(l.fam, l); } catch { /* brouillon illisible */ }
   initFamille(etat.fam);
 }
 
@@ -53,6 +70,9 @@ function afficherAlertes(al) {
     const b = document.createElement('b'); b.textContent = NIV[a.niveau]; li.append(b, a.message); ul.append(li);
   }
   if (!al.length) { const li = document.createElement('li'); li.textContent = 'Aucun problème détecté.'; ul.append(li); }
+  const n = (x) => al.filter((a) => a.niveau === x).length, e = n('erreur'), t = n('attention');
+  const r = $('#resume'); r.dataset.niveau = e ? 'erreur' : t ? 'attention' : 'ok';
+  r.textContent = e || t ? [e && `${e} erreur${e > 1 ? 's' : ''}`, t && `${t} point${t > 1 ? 's' : ''} d'attention`].filter(Boolean).join(' · ') : 'Contrôles OK';
   for (const i of document.querySelectorAll('#champs input, #champs select')) i.setAttribute('aria-invalid', al.some((a) => a.champ === i.dataset.champ && a.niveau === 'erreur'));
 }
 
@@ -66,7 +86,7 @@ function puces(conteneur, items, actif, choisir) {
 function construirePanneau() {
   const f = FAMILLES[etat.fam];
   puces($('#familles'), Object.entries(FAMILLES).map(([id, x]) => [id, `${id.slice(0, 2)} · ${x.nom}`]), etat.fam, (id) => {
-    const textes = {}; initFamille(id, { textes }); sauver(); construirePanneau(); dessiner();
+    lireBrouillon(id).then((b) => { if (b) appliquer(b); else initFamille(id); sauver(); construirePanneau(); dessiner(); });
   });
   puces($('#variantes'), Object.entries(f.variantes).map(([id, v]) => [id, v.nom]), etat.vari, (id) => { etat.vari = id; if (!champsImages().some((c) => c.id === etat.actif)) etat.actif = champsImages()[0]?.id ?? null; sauver(); construirePanneau(); dessiner(); });
   $('#champs').replaceChildren(...f.champs.filter((c) => c.type !== 'image').map((c) => {
@@ -86,18 +106,18 @@ function blocImage(c) {
   const vign = document.createElement('img'); vign.src = img.href; vign.alt = '';
   const col = document.createElement('div'); col.className = 'rangee';
   const titre = document.createElement('div'); titre.style.cssText = 'width:100%;font-size:13px'; titre.textContent = `${c.label} · ${img.placeholder ? 'image de substitution' : img.nom}`;
-  const fichier = document.createElement('input'); fichier.type = 'file'; fichier.accept = 'image/png,image/jpeg,image/webp,image/avif'; fichier.hidden = true; fichier.id = `fichier-${c.id}`;
+  const fichier = document.createElement('input'); fichier.type = 'file'; fichier.accept = 'image/*'; fichier.hidden = true; fichier.id = `fichier-${c.id}`;
   fichier.addEventListener('change', async () => {
     const f = fichier.files?.[0]; if (!f) return;
-    try { etat.donnees[c.id] = await importer(f); etat.actif = c.id; construirePanneau(); dessiner(); }
-    catch { $('#export-info').textContent = `Impossible de lire « ${f.name} ». Formats acceptés : PNG, JPG, WebP, AVIF.`; }
+    try { etat.donnees[c.id] = await importer(f); etat.actif = c.id; construirePanneau(); dessiner(); sauver(); }
+    catch { $('#export-info').textContent = `Impossible de lire « ${f.name} ». Formats acceptés : PNG, JPG, WebP, AVIF. Les photos HEIC/HEIF sont à convertir en JPG (réglage de l'appareil photo).`; }
   });
   const btn = (txt, fn) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = txt; b.addEventListener('click', fn); return b; };
   const zoom = document.createElement('input'); zoom.type = 'range'; zoom.min = '0.3'; zoom.max = '4'; zoom.step = '0.01'; zoom.value = img.zoom ?? 1; zoom.id = `zoom-${c.id}`;
   zoom.setAttribute('aria-label', `Zoom ${c.label}`);
-  zoom.addEventListener('input', () => { etat.donnees[c.id].zoom = +zoom.value; etat.actif = c.id; dessiner(); });
-  col.append(titre, btn('Importer', () => fichier.click()), btn('Recentrer', () => { Object.assign(etat.donnees[c.id], { zoom: 1, dx: 0, dy: 0 }); zoom.value = 1; dessiner(); }),
-    btn('Substitution', () => { etat.donnees[c.id] = imagePlaceholder(c); construirePanneau(); dessiner(); }), btn(etat.actif === c.id ? 'Recadrage actif' : 'Recadrer', () => { etat.actif = c.id; construirePanneau(); }), zoom, fichier);
+  zoom.addEventListener('input', () => { etat.donnees[c.id].zoom = +zoom.value; etat.actif = c.id; dessiner(); sauver(); });
+  col.append(titre, btn('Importer', () => fichier.click()), btn('Recentrer', () => { Object.assign(etat.donnees[c.id], { zoom: 1, dx: 0, dy: 0 }); zoom.value = 1; dessiner(); sauver(); }),
+    btn('Substitution', () => { etat.donnees[c.id] = imagePlaceholder(c); construirePanneau(); dessiner(); sauver(); }), btn(etat.actif === c.id ? 'Recadrage actif' : 'Recadrer', () => { etat.actif = c.id; construirePanneau(); }), zoom, fichier);
   box.append(vign, col); return box;
 }
 
@@ -106,14 +126,12 @@ async function importer(file) {
   const url = URL.createObjectURL(file);
   try {
     const im = new Image(); im.src = url; await im.decode();
-    let w = im.naturalWidth, h = im.naturalHeight, href;
-    const k = Math.min(1, MAX_SOURCE / Math.max(w, h));
-    if (k < 1 || !/^image\/(png|jpeg|webp)$/.test(file.type)) {
-      w = Math.round(w * k); h = Math.round(h * k);
-      const cv = Object.assign(document.createElement('canvas'), { width: w, height: h }); cv.getContext('2d').drawImage(im, 0, 0, w, h);
-      href = cv.toDataURL(file.type === 'image/jpeg' ? 'image/jpeg' : 'image/png', 0.92);
-    } else href = await new Promise((ok, ko) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = ko; r.readAsDataURL(file); });
-    return { href, w, h, nom: file.name, zoom: 1, dx: 0, dy: 0 };
+    // Toujours ré-encodé : l'orientation EXIF des photos de téléphone est appliquée au décodage puis figée dans les pixels
+    const k = Math.min(1, MAX_SOURCE / Math.max(im.naturalWidth, im.naturalHeight));
+    const w = Math.round(im.naturalWidth * k), h = Math.round(im.naturalHeight * k);
+    const cv = Object.assign(document.createElement('canvas'), { width: w, height: h }); cv.getContext('2d').drawImage(im, 0, 0, w, h);
+    const alpha = /^image\/(png|webp|avif|gif)$/.test(file.type);
+    return { href: cv.toDataURL(alpha ? 'image/png' : 'image/jpeg', 0.92), w, h, nom: file.name, zoom: 1, dx: 0, dy: 0 };
   } finally { URL.revokeObjectURL(url); }
 }
 
@@ -142,14 +160,14 @@ $('#apercu').addEventListener('pointermove', (e) => {
     if (geste) img.zoom = Math.min(4, Math.max(0.3, (img.zoom ?? 1) * (dist / geste)));
     geste = dist; const r = $(`#zoom-${etat.actif}`); if (r) r.value = img.zoom;
   }
-  dessiner();
+  dessiner(); sauver();
 });
 const fin = (e) => { pointeurs.delete(e.pointerId); if (pointeurs.size < 2) geste = null; };
 for (const t of ['pointerup', 'pointercancel', 'lostpointercapture']) $('#apercu').addEventListener(t, fin);
 $('#apercu').addEventListener('wheel', (e) => {
   if (!etat.actif) return; e.preventDefault();
   const img = etat.donnees[etat.actif]; img.zoom = Math.min(4, Math.max(0.3, (img.zoom ?? 1) * Math.exp(-e.deltaY * 0.0015)));
-  const r = $(`#zoom-${etat.actif}`); if (r) r.value = img.zoom; dessiner();
+  const r = $(`#zoom-${etat.actif}`); if (r) r.value = img.zoom; dessiner(); sauver();
 }, { passive: false });
 
 // ---------- Exports ----------
@@ -176,11 +194,14 @@ async function versCanvas(svg) {
   } finally { URL.revokeObjectURL(url); }
 }
 const versBlob = (cv, type, q) => new Promise((ok) => cv.toBlob(ok, type, q));
-function telecharger(blob, ext) {
+async function telecharger(blob, ext) {
   const slug = (etat.donnees.titre || 'miniature').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'miniature';
-  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: `primestone_${etat.fam.slice(0, 2)}-${etat.vari}_${slug}.${ext}` });
+  const nom = `primestone_${etat.fam.slice(0, 2)}-${etat.vari}_${slug}.${ext}`;
+  if (partager) { partager = false; const f = new File([blob], nom, { type: blob.type }); if (navigator.canShare?.({ files: [f] })) { try { await navigator.share({ files: [f], title: nom }); return; } catch (e) { if (e.name === 'AbortError') return; } } }
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: nom });
   document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 }
+let partager = false;
 async function exporter(type) {
   const info = $('#export-info'); info.textContent = 'Export en cours…';
   try {
@@ -195,11 +216,12 @@ async function exporter(type) {
   } catch (e) { info.textContent = `Export impossible : ${e.message || e}.`; }
 }
 for (const b of document.querySelectorAll('[data-export]')) b.addEventListener('click', () => exporter(b.dataset.export));
+try { if (navigator.canShare?.({ files: [new File([new Blob(['x'])], 'x.jpg', { type: 'image/jpeg' })] })) { const b = $('#partager'); b.hidden = false; b.addEventListener('click', () => { partager = true; exporter('jpg'); }); } } catch { /* partage indisponible */ }
 $('#guides').addEventListener('change', dessiner);
-$('#reinit').addEventListener('click', () => { try { localStorage.removeItem(CLE); } catch { /* rien */ } initFamille(etat.fam); construirePanneau(); dessiner(); });
+$('#reinit').addEventListener('click', async () => { try { localStorage.removeItem(CLE); await idb('readwrite', (s) => s.delete(etat.fam)); } catch { /* rien */ } initFamille(etat.fam); construirePanneau(); dessiner(); });
 
 // ---------- Démarrage ----------
-charger(); construirePanneau();
+await charger(); construirePanneau();
 document.fonts.ready.then(dessiner);
 document.documentElement.dataset.version = T.$version;
 if ('serviceWorker' in navigator && window.isSecureContext) navigator.serviceWorker.register('sw.js').catch(() => {});

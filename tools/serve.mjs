@@ -24,5 +24,6 @@ export function demarrer(port = 4173, host = '127.0.0.1') {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const port = +(process.argv[2] || 4173), host = process.argv.includes('--reseau') ? '0.0.0.0' : '127.0.0.1';
   await demarrer(port, host);
-  console.log(`Atelier : http://localhost:${port}/atelier/${host === '0.0.0.0' ? '  (accessible sur le réseau local)' : ''}`);
+  console.log(`Atelier : http://localhost:${port}/atelier/`);
+  if (host === '0.0.0.0') { const { networkInterfaces } = await import('node:os'); for (const l of Object.values(networkInterfaces()).flat()) if (l && l.family === 'IPv4' && !l.internal) console.log(`Sur le téléphone ou la tablette (même Wi-Fi) : http://${l.address}:${port}/atelier/`); }
 }

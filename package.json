@@ -1,6 +1,6 @@
 {
   "name": "primestone-brand",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Primestone Media · identité, système graphique et Brand Library",
   "type": "module",
@@ -19,7 +19,10 @@
     "build:webfonts": "python3 tools/build-webfonts.py",
     "build:templates": "node tools/build-templates.mjs",
     "atelier": "node tools/serve.mjs",
-    "test:atelier": "node tools/test-atelier.mjs"
+    "test:atelier": "node tools/test-atelier.mjs",
+    "test:moteur": "node tools/test-moteur.mjs",
+    "test": "node tools/test-moteur.mjs && node tools/test-atelier.mjs",
+    "atelier:reseau": "node tools/serve.mjs 4173 --reseau"
   },
   "devDependencies": {
     "playwright": "1.63.0"

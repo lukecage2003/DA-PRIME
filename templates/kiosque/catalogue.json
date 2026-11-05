@@ -1,0 +1,453 @@
+{
+  "version": "0.1.1",
+  "statut": "provisoire · logo NON OFFICIEL · jaune non validé",
+  "format": {
+    "largeur": 1080,
+    "hauteur": 1350
+  },
+  "familles": [
+    {
+      "id": "car-couverture",
+      "nom": "Carrousel · couverture",
+      "description": "Première diapositive : titre-question en serif, image en case-cadre.",
+      "champs": [
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Titre"
+        },
+        {
+          "id": "image",
+          "type": "image",
+          "label": "Image"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "numero",
+          "type": "texte",
+          "label": "Numéro"
+        },
+        {
+          "id": "page",
+          "type": "texte",
+          "label": "Pagination"
+        },
+        {
+          "id": "pied",
+          "type": "texte",
+          "label": "Pied de page"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "standard",
+          "nom": "Papier",
+          "fichier": "car-couverture/PS_CAR_car-couverture_standard_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "car-presentation-comic",
+      "nom": "Carrousel · présentation d’un comic",
+      "description": "Couverture à gauche, fiche technique à droite, accroche en bas.",
+      "champs": [
+        {
+          "id": "surtitre",
+          "type": "texte",
+          "label": "Surtitre"
+        },
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Titre du comic"
+        },
+        {
+          "id": "editeur",
+          "type": "texte",
+          "label": "Éditeur · année"
+        },
+        {
+          "id": "auteurs",
+          "type": "texte",
+          "label": "Auteurs"
+        },
+        {
+          "id": "parution",
+          "type": "texte",
+          "label": "Parution"
+        },
+        {
+          "id": "niveau",
+          "type": "choix",
+          "label": "Niveau (1 à 3)"
+        },
+        {
+          "id": "accroche",
+          "type": "texte",
+          "label": "Accroche"
+        },
+        {
+          "id": "couverture",
+          "type": "image",
+          "label": "Couverture"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "numero",
+          "type": "texte",
+          "label": "Numéro"
+        },
+        {
+          "id": "page",
+          "type": "texte",
+          "label": "Pagination"
+        },
+        {
+          "id": "pied",
+          "type": "texte",
+          "label": "Pied de page"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "standard",
+          "nom": "Papier",
+          "fichier": "car-presentation-comic/PS_CAR_car-presentation-comic_standard_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "car-recit",
+      "nom": "Carrousel · récit",
+      "description": "Texte long : surtitre daté, titre serif, corps de texte.",
+      "champs": [
+        {
+          "id": "surtitre",
+          "type": "texte",
+          "label": "Surtitre (date · lieu)"
+        },
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Titre"
+        },
+        {
+          "id": "corps",
+          "type": "texte",
+          "label": "Texte"
+        },
+        {
+          "id": "gauche",
+          "type": "texte",
+          "label": "Repère gauche"
+        },
+        {
+          "id": "droite",
+          "type": "texte",
+          "label": "Repère droit"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "numero",
+          "type": "texte",
+          "label": "Numéro"
+        },
+        {
+          "id": "page",
+          "type": "texte",
+          "label": "Pagination"
+        },
+        {
+          "id": "pied",
+          "type": "texte",
+          "label": "Pied de page"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "standard",
+          "nom": "Papier",
+          "fichier": "car-recit/PS_CAR_car-recit_standard_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "car-chiffre-cle",
+      "nom": "Carrousel · chiffre clé",
+      "description": "Diapositive inversée pour un chiffre fort, à partager en story.",
+      "champs": [
+        {
+          "id": "surtitre",
+          "type": "texte",
+          "label": "Surtitre"
+        },
+        {
+          "id": "chiffre",
+          "type": "texte",
+          "label": "Chiffre"
+        },
+        {
+          "id": "phrase",
+          "type": "texte",
+          "label": "Phrase"
+        },
+        {
+          "id": "source",
+          "type": "texte",
+          "label": "Source"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "numero",
+          "type": "texte",
+          "label": "Numéro"
+        },
+        {
+          "id": "page",
+          "type": "texte",
+          "label": "Pagination"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "standard",
+          "nom": "Noir",
+          "fichier": "car-chiffre-cle/PS_CAR_car-chiffre-cle_standard_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "car-faits",
+      "nom": "Carrousel · faits",
+      "description": "Actualité : trois faits numérotés.",
+      "champs": [
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Titre"
+        },
+        {
+          "id": "fait1",
+          "type": "texte",
+          "label": "Fait 1"
+        },
+        {
+          "id": "fait2",
+          "type": "texte",
+          "label": "Fait 2"
+        },
+        {
+          "id": "fait3",
+          "type": "texte",
+          "label": "Fait 3"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "numero",
+          "type": "texte",
+          "label": "Numéro"
+        },
+        {
+          "id": "page",
+          "type": "texte",
+          "label": "Pagination"
+        },
+        {
+          "id": "pied",
+          "type": "texte",
+          "label": "Pied de page"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "standard",
+          "nom": "Papier",
+          "fichier": "car-faits/PS_CAR_car-faits_standard_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "car-avis",
+      "nom": "Carrousel · avis",
+      "description": "Dernière diapositive : l’avis de la rédaction.",
+      "champs": [
+        {
+          "id": "surtitre",
+          "type": "texte",
+          "label": "Surtitre"
+        },
+        {
+          "id": "citation",
+          "type": "texte",
+          "label": "Citation"
+        },
+        {
+          "id": "page",
+          "type": "texte",
+          "label": "Pagination"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "standard",
+          "nom": "Noir",
+          "fichier": "car-avis/PS_CAR_car-avis_standard_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "fiche-personnage",
+      "nom": "Fiche personnage",
+      "description": "Collection numérotée : identité, trois données, trois lectures.",
+      "champs": [
+        {
+          "id": "nom",
+          "type": "texte",
+          "label": "Nom"
+        },
+        {
+          "id": "identite",
+          "type": "texte",
+          "label": "Identité"
+        },
+        {
+          "id": "apparition",
+          "type": "texte",
+          "label": "Première apparition"
+        },
+        {
+          "id": "createurs",
+          "type": "texte",
+          "label": "Créateurs"
+        },
+        {
+          "id": "origine",
+          "type": "texte",
+          "label": "Origine"
+        },
+        {
+          "id": "lecture1",
+          "type": "texte",
+          "label": "Lecture 1"
+        },
+        {
+          "id": "auteurs1",
+          "type": "texte",
+          "label": "Auteurs 1"
+        },
+        {
+          "id": "lecture2",
+          "type": "texte",
+          "label": "Lecture 2"
+        },
+        {
+          "id": "auteurs2",
+          "type": "texte",
+          "label": "Auteurs 2"
+        },
+        {
+          "id": "lecture3",
+          "type": "texte",
+          "label": "Lecture 3"
+        },
+        {
+          "id": "auteurs3",
+          "type": "texte",
+          "label": "Auteurs 3"
+        },
+        {
+          "id": "personnage",
+          "type": "image",
+          "label": "Personnage détouré"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "numero",
+          "type": "texte",
+          "label": "Numéro"
+        },
+        {
+          "id": "page",
+          "type": "texte",
+          "label": "Pagination"
+        },
+        {
+          "id": "pied",
+          "type": "texte",
+          "label": "Pied de page"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "jaune",
+          "nom": "Case jaune",
+          "fichier": "fiche-personnage/PS_FICHE_fiche-personnage_jaune_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "noire",
+          "nom": "Case noire",
+          "fichier": "fiche-personnage/PS_FICHE_fiche-personnage_noire_NON-OFFICIEL.svg"
+        }
+      ]
+    }
+  ]
+}

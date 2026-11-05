@@ -16,7 +16,7 @@ const tok = { $version: flat.version };
 for (const [k, t] of Object.entries(flat.tokens)) tok[k] = t.type === 'dimension' || t.type === 'duration' ? t.value.value : t.value;
 gen('tokens.js', `export default ${JSON.stringify(tok, null, 1)};\n`);
 const svgP = (f) => { const s = readFileSync(join(ROOT, 'brand/01_logo/NON-OFFICIEL', f), 'utf8'); const [, w, h] = s.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/); return { w: +w, h: +h, d: s.match(/ d="([^"]+)"/)[1] }; };
-gen('logo.js', `// VECTORISATION NON OFFICIELLE du logo (brand/01_logo/NON-OFFICIEL) : ne pas diffuser comme logo officiel.\nexport default ${JSON.stringify({ statut: 'NON-OFFICIEL', P: svgP('PS_LOGO_icone-P_noir_NON-OFFICIEL.svg') })};\n`);
+gen('logo.js', `// VECTORISATION NON OFFICIELLE du logo (brand/01_logo/NON-OFFICIEL) : ne pas diffuser comme logo officiel.\nexport default ${JSON.stringify({ statut: 'NON-OFFICIEL', P: svgP('PS_LOGO_icone-P_noir_NON-OFFICIEL.svg'), logotype: svgP('PS_LOGO_logotype_noir_NON-OFFICIEL.svg') })};\n`);
 const dims = (buf) => {
   if (buf[0] === 0x89) return [buf.readUInt32BE(16), buf.readUInt32BE(20)];
   for (let i = 2; i < buf.length;) { const m = buf[i + 1], len = buf.readUInt16BE(i + 2); if (m >= 0xc0 && m <= 0xc3) return [buf.readUInt16BE(i + 7), buf.readUInt16BE(i + 5)]; i += 2 + len; }
@@ -29,26 +29,31 @@ for (const f of readdirSync(join(ROOT, 'brand/99_tests/substitution')).filter((x
 gen('placeholders.js', `// Images de substitution (PLACEHOLDER) : aucune valeur de marque. Chemins relatifs à la racine du dépôt.\nexport default ${JSON.stringify(PH, null, 1)};\n`);
 
 // 2. Gabarits SVG
-const { rendre, FAMILLES } = await import(pathToFileURL(join(SYS, 'moteur.js')) + `?t=${Date.now()}`);
-rmSync(MIN, { recursive: true, force: true });
-const catalogue = { version: flat.version, statut: 'provisoire · sceau NON OFFICIEL · jaune non validé', format: { largeur: 1280, hauteur: 720 }, familles: [] };
-const rapports = [];
-for (const [fid, fam] of Object.entries(FAMILLES)) {
-  const dir = join(MIN, fid); mkdirSync(dir, { recursive: true });
+const { rendre, FAMILLES, KIOSQUE, FORMATS } = await import(pathToFileURL(join(SYS, 'moteur.js')) + `?t=${Date.now()}`);
+const KIO = join(ROOT, 'templates/kiosque');
+const rapports = [], collections = [];
+for (const [racine, gabarits, nomColl] of [[MIN, FAMILLES, 'miniatures'], [KIO, KIOSQUE, 'kiosque']]) {
+rmSync(racine, { recursive: true, force: true });
+const fmt = FORMATS[Object.values(gabarits)[0].format || 'miniature'];
+const catalogue = { version: flat.version, statut: 'provisoire · logo NON OFFICIEL · jaune non validé', format: { largeur: fmt.w, hauteur: fmt.h }, familles: [] };
+collections.push({ racine, nomColl, catalogue });
+for (const [fid, fam] of Object.entries(gabarits)) {
+  const dir = join(racine, fid); mkdirSync(dir, { recursive: true });
   const donnees = { credit: 'Image de substitution · placeholder' };
   for (const c of fam.champs.filter((c) => c.type === 'image')) { const p = PH[c.placeholder]; donnees[c.id] = { href: relative(dir, join(ROOT, p.src)).split('\\').join('/'), w: p.w, h: p.h, placeholder: true }; }
   const vs = [];
   for (const vid of Object.keys(fam.variantes)) {
     const { svg, alertes } = rendre(fid, vid, donnees);
-    const nom = `PS_MIN_${fid}_${vid}_NON-OFFICIEL.svg`; writeFileSync(join(dir, nom), svg);
+    const nom = `PS_${fam.prefixe || 'MIN'}_${fid}_${vid}_NON-OFFICIEL.svg`; writeFileSync(join(dir, nom), svg);
     vs.push({ id: vid, nom: fam.variantes[vid].nom, fichier: `${fid}/${nom}` });
     rapports.push({ fid, vid, alertes: alertes.filter((a) => a.niveau !== 'info') });
   }
   catalogue.familles.push({ id: fid, nom: fam.nom, description: fam.description, champs: fam.champs.map(({ id, type, label, conseil }) => ({ id, type, label, ...(conseil ? { conseil } : {}) })), variantes: vs });
 }
-writeFileSync(join(MIN, 'catalogue.json'), JSON.stringify(catalogue, null, 2) + '\n');
+writeFileSync(join(racine, 'catalogue.json'), JSON.stringify(catalogue, null, 2) + '\n');
 const nbV = catalogue.familles.reduce((n, f) => n + f.variantes.length, 0);
-console.log(`${catalogue.familles.length} familles, ${nbV} variantes -> templates/miniatures`);
+console.log(`${catalogue.familles.length} gabarits, ${nbV} variantes -> templates/${nomColl}`);
+}
 const bad = rapports.filter((r) => r.alertes.length);
 for (const r of bad) console.log(`  alerte ${r.fid}/${r.vid} : ${r.alertes.map((a) => a.message).join(' | ')}`);
 
@@ -70,18 +75,23 @@ if (!process.argv.includes('--no-render')) {
   const { demarrer } = await import(pathToFileURL(join(ROOT, 'tools/serve.mjs')));
   const srv = await demarrer(4199);
   const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1280, height: 720 } });
-  const fichiers = catalogue.familles.flatMap((f) => f.variantes.map((v) => v.fichier));
-  for (const f of fichiers) {
-    await p.goto(`http://127.0.0.1:4199/tools/rendu.html?f=${encodeURIComponent('templates/miniatures/' + f)}`);
+  for (const { racine, nomColl, catalogue } of collections) {
+    const fichiers = catalogue.familles.flatMap((f) => f.variantes.map((v) => v.fichier));
+    await p.setViewportSize({ width: catalogue.format.largeur, height: catalogue.format.hauteur });
+    for (const f of fichiers) {
+      await p.goto(`http://127.0.0.1:4199/tools/rendu.html?f=${encodeURIComponent(`templates/${nomColl}/${f}`)}`);
+      await p.waitForFunction(() => window.pret === true);
+      const ex = join(racine, dirname(f), 'exemples'); mkdirSync(ex, { recursive: true });
+      await p.locator('svg').screenshot({ path: join(ex, f.split('/')[1].replace('.svg', '.jpg')), type: 'jpeg', quality: 85 });
+    }
+    // Planche de lisibilité à la taille d'affichage réelle sur téléphone : 168 px (suggestions YouTube), 360 px (fil Instagram)
+    const lp = nomColl === 'miniatures' ? 168 : 360;
+    await p.setViewportSize({ width: 1280, height: 720 });
+    await p.goto(`http://127.0.0.1:4199/tools/rendu.html?l=${lp}&planche=${encodeURIComponent(fichiers.map((f) => `templates/${nomColl}/${f}`).join(','))}`);
     await p.waitForFunction(() => window.pret === true);
-    const ex = join(MIN, dirname(f), 'exemples'); mkdirSync(ex, { recursive: true });
-    await p.locator('svg').screenshot({ path: join(ex, f.split('/')[1].replace('.svg', '.jpg')), type: 'jpeg', quality: 85 });
+    await p.locator('#planche').screenshot({ path: join(racine, `PS_${nomColl === 'miniatures' ? 'MIN' : 'CAR'}_planche-${lp}px_NON-OFFICIEL.png`) });
+    console.log(`${fichiers.length} exemples JPG + planche ${lp} px (${nomColl})`);
   }
-  // Planche de lisibilité : toutes les variantes à 168 px de large (taille des suggestions YouTube sur mobile)
-  await p.goto(`http://127.0.0.1:4199/tools/rendu.html?planche=${encodeURIComponent(fichiers.map((f) => 'templates/miniatures/' + f).join(','))}`);
-  await p.waitForFunction(() => window.pret === true);
-  await p.locator('#planche').screenshot({ path: join(MIN, 'PS_MIN_planche-168px_NON-OFFICIEL.png') });
   await b.close(); srv.close();
-  console.log(`${fichiers.length} exemples JPG + planche 168 px`);
 }
 if (bad.length) process.exitCode = 1;

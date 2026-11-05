@@ -34,8 +34,18 @@ button:focus-visible, input:focus-visible { outline:2px solid var(--jaune); outl
 .alertes li { padding:8px 10px; border-left:4px solid var(--doux); background:var(--fond); }
 .alertes li[data-niveau="erreur"] { border-color:var(--rouge); } .alertes li[data-niveau="attention"] { border-color:var(--ambre); }
 .alertes li b { font:700 11px "JetBrains Mono", monospace; text-transform:uppercase; letter-spacing:.06em; margin-right:6px; }
-.exports { display:flex; flex-wrap:wrap; gap:6px; } .exports button { background:var(--jaune); color:#111; border-color:var(--jaune); font-weight:700; }
+.exports { display:flex; flex-wrap:wrap; gap:6px; } .exports button { background:var(--jaune); color:#111; border-color:var(--jaune); font-weight:700; } .exports button[hidden] { display:none; }
 .info { font-size:13px; color:var(--doux); margin:8px 0 0; min-height:1.4em; }
 .discret { margin-top:8px; background:none; border:0; color:var(--doux); text-decoration:underline; padding:8px 0; min-height:44px; cursor:pointer; font:inherit; }
 .bascule { display:flex; gap:8px; align-items:center; min-height:44px; font-size:14px; }
 @media (prefers-reduced-motion: reduce) { * { transition:none !important; } }
+.outils-apercu { display:flex; flex-wrap:wrap; align-items:center; gap:4px 16px; }
+.resume { display:inline-flex; align-items:center; min-height:44px; padding:0 12px; font:700 12px/1 "JetBrains Mono", monospace; letter-spacing:.06em; text-transform:uppercase; color:var(--texte); text-decoration:none; border-left:4px solid var(--doux); background:var(--surface); }
+.resume[data-niveau="erreur"] { border-color:var(--rouge); } .resume[data-niveau="attention"] { border-color:var(--ambre); } .resume[data-niveau="ok"] { border-color:#3FB37F; }
+#controles { scroll-margin-top:calc(56vw + 90px); }
+@media (min-width: 1001px) { #controles { scroll-margin-top:16px; } }
+/* Téléphone : familles et variantes en bandeau défilant (une ligne), pour garder les réglages près de l'aperçu */
+@media (max-width: 600px) {
+  .puces { flex-wrap:nowrap; overflow-x:auto; scroll-snap-type:x proximity; padding-bottom:6px; -webkit-overflow-scrolling:touch; }
+  .puces button { flex:0 0 auto; white-space:nowrap; scroll-snap-align:start; }
+}
