@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Motion Studio · Atelier Primestone</title>
+<meta name="theme-color" content="#111111">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png">
+<link rel="stylesheet" href="../polices.css">
+<link rel="stylesheet" href="../atelier.css">
+<link rel="stylesheet" href="motion.css">
+</head>
+<body>
+<header class="barre">
+  <a class="retour" href="../">← Atelier</a>
+  <strong>Motion Studio</strong><span class="sous">Créations animées · comics et pop culture</span>
+  <span class="statut" title="Logo et jaune provisoires">Sceau P NON OFFICIEL · jaune provisoire</span>
+</header>
+<main class="atelier">
+  <section class="scene" aria-label="Aperçu">
+    <div class="cadre-apercu"><canvas id="apercu" class="apercu" aria-label="Aperçu de la création. Toucher un élément pour le sélectionner, glisser pour le déplacer ou recadrer l'image, pincer ou utiliser la molette pour l'agrandir."></canvas></div>
+    <div class="transport" role="group" aria-label="Lecture">
+      <button type="button" id="lecture" aria-pressed="false">▶ Lecture</button>
+      <button type="button" id="rejouer">↺ Rejouer</button>
+      <input type="range" id="temps" min="0" max="6" step="0.01" value="0" aria-label="Position dans l'animation">
+      <output id="temps-lu" for="temps">0,0 s</output>
+      <label class="bascule"><input type="checkbox" id="boucle" checked> Boucle</label>
+    </div>
+    <div class="outils-apercu"><a href="#controles" id="resume" class="resume" data-niveau="ok">Contrôles</a><span id="calque-actif" class="info"></span></div>
+  </section>
+  <section class="panneau" aria-label="Réglages">
+    <fieldset><legend>Création</legend>
+      <div class="champs"><label>Nom de la création<input type="text" id="nom" autocomplete="off"></label></div>
+      <div class="rangee"><button type="button" id="nouvelle">Nouvelle création</button><button type="button" id="dupliquer">Dupliquer</button><button type="button" id="ouvrir-fichier">Ouvrir un fichier</button><button type="button" id="enregistrer-fichier">Enregistrer en fichier</button><input type="file" id="fichier-projet" accept=".json,application/json" hidden></div>
+      <details id="mes-creations"><summary>Mes créations (<span id="nb-creations">0</span>)</summary><ul id="liste-creations" class="liste"></ul></details>
+      <p id="sauvegarde" class="info" aria-live="polite"></p>
+    </fieldset>
+    <fieldset><legend>Famille</legend><div id="familles" class="puces"></div><p id="famille-desc" class="info"></p></fieldset>
+    <fieldset><legend>Direction visuelle</legend><div id="directions" class="puces"></div></fieldset>
+    <fieldset><legend>Format</legend><div id="formats" class="puces"></div></fieldset>
+    <fieldset><legend>Textes</legend><div id="champs" class="champs"></div></fieldset>
+    <fieldset><legend>Illustrations</legend><div id="images" class="images"></div>
+      <label class="bascule"><input type="checkbox" id="deplacer-images"> Glisser déplace aussi les illustrations (au lieu de les recadrer)</label></fieldset>
+    <fieldset><legend>Animation</legend><div id="presets" class="puces"></div>
+      <div class="reglages">
+        <label>Durée <select id="duree"><option value="4">4 s</option><option value="6">6 s</option><option value="8">8 s</option><option value="10">10 s</option><option value="12">12 s</option></select></label>
+        <label>Vitesse <input type="range" id="vitesse" min="0.5" max="2" step="0.1"></label>
+        <label class="bascule"><input type="checkbox" id="lettres"> Titres lettre à lettre</label>
+        <label class="bascule"><input type="checkbox" id="sortie"> Volets de fin</label>
+      </div></fieldset>
+    <fieldset><legend>Effets</legend><div id="effets" class="reglages"></div>
+      <label class="bascule"><input type="checkbox" id="trame-image"> Trame aussi sur les illustrations</label>
+      <label class="bascule"><input type="checkbox" id="sceau"> Sceau P (non officiel)</label>
+      <button type="button" id="effets-defaut" class="discret">Effets de la direction</button></fieldset>
+    <fieldset><legend>Couleurs</legend><div id="couleurs" class="couleurs"></div><button type="button" id="couleurs-defaut" class="discret">Couleurs de la direction</button></fieldset>
+    <fieldset><legend>Calques</legend><ul id="calques" class="calques"></ul><div id="reglage-calque" class="reglages"></div></fieldset>
+    <fieldset id="controles"><legend>Contrôles</legend><ul id="alertes" class="alertes" aria-live="polite"></ul></fieldset>
+    <fieldset><legend>Exporter</legend>
+      <p class="info">Image fixe : composition complète (fin des entrées).</p>
+      <div class="exports">
+        <button type="button" data-export="png">PNG</button>
+        <button type="button" data-export="jpg">JPG</button>
+        <button type="button" data-export="svg">SVG</button>
+      </div>
+      <div class="reglages">
+        <label>Vidéo <select id="video-def"><option value="1">Pleine définition</option><option value="0.5">Demi-définition (plus léger)</option></select></label>
+        <label>GIF <select id="gif-def"><option value="480">480 px · 12 i/s</option><option value="720">720 px · 15 i/s</option></select></label>
+      </div>
+      <div class="exports">
+        <button type="button" data-export="video" id="export-video">Vidéo</button>
+        <button type="button" data-export="gif">GIF animé</button>
+      </div>
+      <p id="export-info" class="info" aria-live="polite"></p>
+    </fieldset>
+  </section>
+</main>
+<script type="module" src="motion.js"></script>
+</body>
+</html>

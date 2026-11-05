@@ -1,5 +1,14 @@
 # Journal des versions
 
+## 0.5.0 · 2026-11-05 · lot 4 : Motion Studio
+
+- Motion Studio dans l'Atelier (`atelier/motion/`, bouton dans l'en-tête de l'Atelier) : 8 familles de créations (annonce de série, couverture, personnage, équipe, crossover, dossier, hiérarchie cosmique, chronologie), 6 directions visuelles éditoriales et cinématographiques, 4 formats (16:9, 1:1, 4:5, 9:16).
+- Textes, illustrations (import, recadrage, zoom), couleurs, effets réglables (trame, encrage, vitesse, lumière, particules, cosmique, grain), calques (sélection, masquage, ordre, position, échelle, opacité).
+- 8 presets d'animation, durée, vitesse, titres lettre à lettre, volets de fin ; lecture, curseur, boucle.
+- Sauvegarde automatique sur l'appareil, liste des créations, fichier `.motion.json` ; exports PNG, JPG, SVG, MP4 ou WebM selon le navigateur, GIF.
+- Moteur sans dépendance (liste d'affichage, rendus canvas et SVG), encodeur GIF intégré ; évaluation des dépôts de référence dans `docs/MOTION_STUDIO.md`.
+- Tests : 51 tests Motion Studio (`npm run test:motion`) ; 15 tests du moteur et 54 de l'Atelier inchangés et réussis.
+
 ## 0.4.0 · 2026-11-05 · lot 3 : Kiosque dans l'Atelier, infographies JSON
 
 - Architecture commune des supports : registre unique (`templates/_systeme/registre.js`), format 16:9 1920 × 1080 ajouté, briques éditoriales partagées (`editorial.js`).

@@ -4,7 +4,7 @@ Dépôt de l'identité visuelle de **Primestone Media** : système graphique, de
 
 Direction artistique de référence : **Signal** (YouTube, accroches, communication) + **Kiosque** (éditorial, dossiers, carrousels, infographies, bibliothèque). Direction sombre et cinématographique en usage secondaire.
 
-## État : lot 3 (Kiosque dans l'Atelier, infographies JSON) · version 0.4.0 provisoire
+## État : lot 4 (Motion Studio dans l'Atelier) · version 0.5.0 provisoire
 
 | Élément | Emplacement | Statut |
 |---|---|---|
@@ -18,6 +18,7 @@ Direction artistique de référence : **Signal** (YouTube, accroches, communicat
 | Gabarits SVG Kiosque 4:5 : 6 diapositives de carrousel, fiche personnage (8 variantes) | `templates/kiosque/` | provisoire (logo non officiel) |
 | Infographies 16:9 pilotées par JSON : chronologie, barres ; validation et schéma | `templates/infographies/`, `data/infographies/`, `schemas/` | provisoire |
 | Atelier : 3 supports, saisie, recadrage, données JSON, contrôles, exports PNG/JPG/SVG, partage, sauvegarde automatique | `atelier/` | prototype |
+| Motion Studio : 8 familles de créations animées, 6 directions visuelles, calques, effets comics, 8 presets d'animation, exports PNG/JPG/SVG/MP4 ou WebM/GIF, créations enregistrées sur l'appareil | `atelier/motion/`, `templates/_systeme/motion*.js` | MVP |
 | Catalogue `brand-manifest.json` + schéma | `catalog/`, `schemas/` | généré |
 | Schéma Supabase | `supabase/` | **brouillon non appliqué** |
 | Présentations des missions 01 et 02 | `presentations/` | archive |
@@ -43,7 +44,7 @@ catalog/             catalog.config.json (règles) · brand-manifest.json (gén�
 schemas/             brand-manifest.schema.json · infographie.schema.json (généré)
 supabase/            migrations/ (brouillon)
 tools/               générateurs et contrôles
-docs/                architecture, conventions, logo, couleur jaune, gabarits, infographies, Atelier
+docs/                architecture, conventions, logo, couleur jaune, gabarits, infographies, Atelier, Motion Studio
 presentations/       planches des missions 01 et 02
 ```
 
@@ -55,7 +56,8 @@ Prérequis : Node 20+ (`npm ci` installe Playwright pour les rendus PNG), Python
 npm run build          # tokens -> éléments -> gabarits et exemples -> manifeste
 npm run atelier        # Atelier sur http://localhost:4173/atelier/
 npm run atelier:reseau # Atelier accessible depuis le téléphone (même Wi-Fi)
-npm test               # tests du moteur + tests de bout en bout (Chromium, appareils émulés)
+npm test               # tests du moteur, de l'Atelier et de Motion Studio (Chromium, appareils émulés)
+npm run test:motion    # Motion Studio seul (moteur dans Node, puis interface dans Chromium)
 npm run build:webfonts # polices web et métriques (si les polices changent)
 npm run build:logo     # re-vectorise le logo et refait la comparaison (≈ 1 min)
 npm run build:yellow   # recalcule la comparaison des jaunes

@@ -53,3 +53,4 @@ button:focus-visible, input:focus-visible { outline:2px solid var(--jaune); outl
 .champs textarea.json { font:14px/1.45 "JetBrains Mono", ui-monospace, monospace; white-space:pre; overflow:auto; }
 .champs .rangee { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
 .champs .rangee button { font:inherit; color:var(--texte); background:var(--fond); border:1px solid var(--ligne); padding:9px 12px; min-height:44px; cursor:pointer; }
+.lien-motion { display:inline-flex; align-items:center; min-height:44px; padding:0 14px; background:var(--jaune); color:#111; font:700 14px/1 Archivo, sans-serif; text-decoration:none; }

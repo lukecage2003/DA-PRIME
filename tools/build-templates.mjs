@@ -73,12 +73,13 @@ for (const r of bad) console.log(`  alerte ${r.fid}/${r.vid} : ${r.alertes.map((
 // Précache hors ligne de l'Atelier (chemins relatifs à atelier/)
 {
   const liste = ['./', 'index.html', 'atelier.css', 'polices.css', 'atelier.js', 'manifest.webmanifest',
+    'motion/', ...readdirSync(join(ROOT, 'atelier/motion')).sort().map((f) => `motion/${f}`),
     ...readdirSync(SYS).filter((f) => f.endsWith('.js')).sort().map((f) => `../templates/_systeme/${f}`),
     ...readdirSync(join(ROOT, 'brand/03_fonts/web')).map((f) => `../brand/03_fonts/web/${f}`),
     ...Object.values(PH).map((p) => `../${p.src}`),
     '../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png', '../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL@2x.png'];
   const { createHash } = await import('node:crypto');
-  const h = createHash('sha256'); for (const f of liste.filter((x) => x !== './')) h.update(readFileSync(join(ROOT, 'atelier', f)));
+  const h = createHash('sha256'); for (const f of liste.filter((x) => !x.endsWith('/'))) h.update(readFileSync(join(ROOT, 'atelier', f)));
   writeFileSync(join(ROOT, 'atelier/precache.json'), JSON.stringify({ version: `${flat.version}-${h.digest('hex').slice(0, 10)}`, fichiers: liste }, null, 1) + '\n');
 }
 

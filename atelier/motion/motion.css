@@ -1,0 +1,29 @@
+/* Motion Studio · compléments à atelier.css (même thème) */
+.retour { display:inline-flex; align-items:center; min-height:44px; padding:0 12px; color:var(--texte); text-decoration:none; border:1px solid var(--ligne); font:700 13px/1 Archivo, sans-serif; }
+.cadre-apercu { width:100%; }
+canvas.apercu { display:block; height:auto; cursor:grab; }
+.transport { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin-top:10px; }
+.transport button, .rangee button, .calques button, .liste button { font:inherit; color:var(--texte); background:var(--fond); border:1px solid var(--ligne); padding:9px 12px; min-height:44px; cursor:pointer; }
+.transport button[aria-pressed="true"] { background:var(--jaune); color:#111; border-color:var(--jaune); font-weight:700; }
+.transport input[type=range] { flex:1 1 160px; min-height:44px; accent-color:var(--jaune); }
+.transport output { font:700 13px "JetBrains Mono", monospace; min-width:7.5em; }
+.rangee { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.reglages { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+.reglages label { display:flex; flex-direction:column; gap:2px; font-size:13px; color:var(--doux); }
+.reglages label.bascule { flex-direction:row; color:var(--texte); }
+.reglages input[type=range] { width:100%; min-height:44px; accent-color:var(--jaune); }
+.reglages select { font:16px Archivo, sans-serif; color:var(--texte); background:var(--fond); border:1px solid var(--ligne); padding:10px; min-height:44px; }
+.couleurs { display:flex; flex-wrap:wrap; gap:12px; }
+.couleurs label { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--doux); }
+.couleurs input[type=color] { width:52px; height:44px; padding:2px; background:var(--fond); border:1px solid var(--ligne); }
+.calques, .liste { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
+.calques li, .liste li { display:flex; gap:4px; align-items:center; }
+.calques li .nom, .liste li .nom { flex:1 1 auto; text-align:left; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.calques li[data-actif="true"] .nom { border-color:var(--jaune); color:var(--jaune); font-weight:700; }
+.calques li[data-visible="false"] .nom { opacity:.5; text-decoration:line-through; }
+.calques .oeil { min-width:44px; }
+details summary { min-height:44px; display:flex; align-items:center; cursor:pointer; color:var(--texte); }
+.liste li small { color:var(--doux); }
+.exports + .reglages, .reglages + .exports { margin-top:10px; }
+.image .absent { font-size:12px; color:var(--doux); }
+@media (max-width: 1000px) { canvas.apercu { --hmax:44vh; } }
