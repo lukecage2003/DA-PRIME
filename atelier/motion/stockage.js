@@ -2,7 +2,7 @@
 // Magasins : créations, ressources (images, polices), versions, modèles, composants, préréglages d'animation.
 import { parcourir, convertirV1, estV1, normaliserDoc, nouvelId, plansDe, synchroniserPlans } from '../../templates/_systeme/studio.js';
 
-const BASE = 'primestone-motion', VERSION = 2, MAGASINS = ['creations', 'ressources', 'versions', 'modeles', 'composants', 'presets'];
+const BASE = 'primestone-motion', VERSION = 3, MAGASINS = ['creations', 'ressources', 'versions', 'modeles', 'composants', 'presets', 'campagnes', 'profils'];
 let base = null;
 const ouvrir = () => base || (base = new Promise((ok, ko) => {
   const r = indexedDB.open(BASE, VERSION);

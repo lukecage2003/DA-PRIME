@@ -163,6 +163,36 @@ const nonInfo = (sc) => sc.alertes.filter((a) => a.niveau !== 'info');
   const e = JSON.parse(JSON.stringify(d)); St.ajouterPlan(e, { dupliquer: true }); const ids = new Set(St.plansDe(e).flatMap((p) => p.elements.map((x) => x.id))); St.supprimerPlan(e);
   ok(ids.size === St.plansDe(d).reduce((s, p) => s + p.elements.length, 0) + d.elements.length && e.plans.length === 3, 'plans : duplication (nouveaux identifiants) et suppression');
 }
+// ---------- Production éditoriale : assistant, compositeur, campagnes, profils DA, ZIP ----------
+console.log('Production éditoriale (Node)');
+{
+  const As = await imp('templates/_systeme/studio-assistant.js'), Co = await imp('templates/_systeme/studio-compositeur.js'), { zip, crc32 } = await imp('atelier/motion/zip.js'), Da = await imp('atelier/production/analyse-da.js');
+  const ref = new Date('2026-11-06T10:00:00Z'), a = (t) => As.analyser(t, { ref });
+  const vs = a('Fais-moi un VS entre Black Panther et Batman.'), ga = a('Prépare une miniature YouTube sur les origines de Galactus.'), su = a('Fais-moi une affiche cinématographique consacrée à Superman.'), ca = a('Transforme cette miniature en carrousel Instagram.');
+  ok(vs.type === 'versus' && vs.personnages.join() === 'Black Panther,Batman' && vs.formats[0] === 'miniature' && ga.type === 'origine' && ga.personnages[0] === 'Galactus' && ga.univers === 'cosmique' && ga.verifier.length > 0
+    && su.formats.includes('affiche') && su.personnages[0] === 'Superman' && ca.declinaison && ca.formats[0] === 'carrousel', 'assistant : intention, personnages, formats, univers, déclinaison et faits signalés à vérifier');
+  const fe = a('Prépare tout le mois de février avec un super-héros noir différent chaque jour.'), pubs = fe.campagne?.publications || [];
+  ok(pubs.length === 28 && new Set(pubs.map((x) => x.personnage)).size === 28 && pubs[0].date === '2027-02-01' && pubs.at(-1).date === '2027-02-28' && new Set(pubs.map((x) => x.type)).size >= 4 && pubs.every((x) => x.statut === 'idee' && x.verifier),
+    `campagne de février : 28 publications, 28 personnages différents, ${new Set(pubs.map((x) => x.type)).size} angles, statut « idée », à vérifier`);
+  const dc = a('Fais une campagne éditoriale autour de la prochaine grande série DC.'); ok(dc.campagne && dc.campagne.publications.every((x) => !x.personnage || As.PERSONNAGES.find((q) => q.nom === x.personnage)?.editeur === 'DC'), 'campagne DC : personnages de l\'éditeur demandé uniquement');
+  const fmts = ['miniature', '16:9', '4:5', '9:16', '1:1', 'affiche', 'carrousel'], alertes = [], P3 = ['Black Panther', 'Batman', 'Storm'];
+  for (const ty of Object.keys(As.TYPES)) for (const f of fmts) { const d = Co.composer({ type: ty, titre: 'Titre de test', sousTitre: 'Une accroche', personnages: P3 }, f);
+    for (const k of St.plansDe(d).keys()) { const c = JSON.parse(JSON.stringify(d)); St.changerPlan(c, k); nonInfo(rs(c, null)).forEach((x) => alertes.push(`${ty}/${f}/${k} ${x.message}`)); } }
+  ok(!alertes.length, `compositeur : ${Object.keys(As.TYPES).length} types × ${fmts.length} formats sans alerte${alertes.length ? ' · ' + alertes.slice(0, 3).join(' | ') : ''}`);
+  const sig = (d) => d.elements.map((e) => `${e.type}:${e.nom}`).join('|'), mises = new Set(['versus', 'portrait', 'origine', 'analyse', 'annonce', 'evenement', 'classement', 'quiz', 'citation', 'equipes'].map((t) => sig(Co.composer({ type: t, titre: 'T', personnages: P3 }, '4:5'))));
+  ok(mises.size === 10, `compositions distinctes par type de contenu (${mises.size} mises en scène)`);
+  const b = { type: 'versus', personnages: ['Black Panther', 'Batman'] }, m = Co.composer(b, 'miniature'), st = Co.composer(b, '9:16'), bp = (d) => d.elements.find((e) => e.nom === 'Black Panther');
+  ok(bp(m).w <= m.format.w * 0.52 && bp(m).h > m.format.h * 0.8 && bp(st).h <= st.format.h * 0.5 && bp(st).w > st.format.w * 0.8 && bp(st).y < st.format.h / 2, 'recomposition multiformat : duel côte à côte en paysage, superposé en vertical');
+  const car = Co.composer({ type: 'classement', titre: 'Top', items: ['Un', 'Deux', 'Trois'] }, 'carrousel'), n = St.normaliserDoc(JSON.parse(JSON.stringify(car)));
+  ok(car.format.w === 1080 && car.format.h === 1350 && car.plans.length === 4 && n.brief?.titre === 'Top', `carrousel : couverture + ${car.plans.length - 1} diapositives en plans, intention conservée par la normalisation`);
+  const pr = Co.composer(b, '4:5', { profil: { systeme: 'minimal', palette: 'noir', couleurs: { accent: '#12AB34' } } }); ok(pr.systeme === 'minimal' && pr.couleurs.accent === '#12AB34', 'profil DA : système et couleurs de l\'utilisateur appliqués sans les remplacer');
+  const z = zip([{ nom: 'a.png', data: new Uint8Array([1, 2, 3]) }, { nom: 'calendrier.csv', data: 'date;titre' }]), dv = new DataView(z.buffer), e = z.length - 22;
+  ok(dv.getUint32(e, true) === 0x06054b50 && dv.getUint16(e + 10, true) === 2 && dv.getUint32(14, true) === crc32(new Uint8Array([1, 2, 3])), 'archive ZIP : en-têtes, répertoire central et CRC32 valides');
+  const W = 64, H = 64, px = new Uint8ClampedArray(W * H * 4); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const i = (y * W + x) * 4, sujet = (x - 44) ** 2 + (y - 32) ** 2 < 180; px.set(sujet ? [255, 200, 0, 255] : [12, 14, 40, 255], i); }
+  const an = Da.analyserPixels(px, W, H), pf = Da.proposerProfil(an);
+  ok(an.luminosite < 0.4 && an.sujet.cx > 0.6 && pf.couleurs.accent === '#FFC800' && Da.contrasteWCAG([255, 255, 255], [12, 14, 40]) > 4.5 && ['cinema', 'cosmique', 'comics'].includes(pf.systeme),
+    `profil DA mesuré : fond sombre, sujet à droite (${an.sujet.cx}), accent ${pf.couleurs.accent}, système ${pf.systeme}`);
+}
 if (process.argv.includes('--moteur')) fin();
 
 // ---------- 2. Éditeur (Chromium, appareils ÉMULÉS) ----------
@@ -365,6 +395,34 @@ let fichierBiblio = null, fichierProjetV2 = null;
   ok(!err.length, `modèles et plans : aucune erreur JavaScript${err.length ? ' · ' + err.slice(0, 2).join(' | ') : ''}`); await ctx.close();
 }
 // Appareils émulés : mise en page, cibles tactiles, gestes
+// Production éditoriale : assistant → Motion Studio, campagne → production → export ZIP, profil DA → application
+{
+  const ctx = await browser.newContext({ viewport: { width: 1400, height: 1000 }, acceptDownloads: true }), p = await ctx.newPage(), err = erreurs(p); p.on('dialog', (x) => x.accept());
+  await p.goto(URL0 + 'production/'); await p.waitForFunction(() => window.__production);
+  await p.fill('#demande-texte', 'Fais-moi un VS entre Black Panther et Batman.'); await p.click('#analyser'); await p.waitForSelector('#apercus figure canvas');
+  await p.locator('.formats label', { hasText: 'Story' }).locator('input').check(); await p.waitForFunction(() => document.querySelectorAll('#apercus figure').length === 2);
+  await p.click('#creer-ouvrir'); await prets(p); let d = await docJ(p);
+  ok(p.url().includes('/motion/?creation=') && d.brief?.type === 'versus' && d.format.w === 1280 && d.elements.some((e) => e.nom === 'Batman'), 'assistant : « VS Black Panther / Batman » → composition ouverte dans Motion Studio, intention conservée');
+  await p.goto(URL0 + 'production/#bibliotheque'); await p.waitForSelector('.carte'); ok(await p.locator('.carte').count() === 2, 'bibliothèque : les deux formats demandés sont enregistrés');
+  await p.click('[data-onglet=assistant]'); await p.click('#exemples button:nth-child(7)'); await p.waitForSelector('#creer-campagne'); await p.click('#creer-campagne'); await p.waitForSelector('.calendrier .carte-pub');
+  ok(await p.locator('.calendrier .carte-pub').count() === 28 && (await p.textContent('.mois')).includes('février'), 'campagne : 28 publications placées dans le calendrier de février');
+  await p.locator('.carte-pub').first().click(); await p.waitForSelector('#editeur-pub[open]'); await p.fill('#form-pub input[type=text] >> nth=1', 'Titre retouché'); await p.click('#form-pub button:has-text("Valider")'); await attendre(p, 300);
+  ok((await p.locator('.carte-pub').first().getAttribute('data-statut')) === 'valide' && (await p.textContent('.carte-pub >> nth=0')).includes('Titre retouché'), 'publication : texte modifié et validée individuellement');
+  for (let i = 1; i < 4; i++) await p.locator('.carte-pub input').nth(i).check();
+  await p.click('#lot-produire'); await p.waitForFunction(() => /produite/.test(document.querySelector('#etat').textContent), null, { timeout: 90000 });
+  const statuts = await p.locator('.carte-pub').evaluateAll((l) => l.slice(0, 5).map((x) => x.dataset.statut)); ok(statuts.join() === 'valide,a-valider,a-valider,a-valider,idee', `production par lot : statuts ${statuts.join(', ')}`);
+  await p.locator('.carte-pub input').nth(0).check(); const [z] = await Promise.all([p.waitForEvent('download', { timeout: 90000 }), p.click('#lot-exporter')]); const zf = join(OUT, z.suggestedFilename()); await z.saveAs(zf);
+  const zb = readFileSync(zf), nb = zb.readUInt16LE(zb.length - 12); ok(nb === 5 && zb.readUInt32LE(0) === 0x04034b50, `export par lot : archive ZIP de ${nb} fichiers (4 PNG + calendrier)`);
+  await p.click('#lot-annuler'); await attendre(p, 300); ok((await p.locator('.carte-pub').evaluateAll((l) => l.filter((x) => x.dataset.statut === 'exporte').length)) === 0, 'opération par lot réversible (annuler l\'export)');
+  await p.click('[data-onglet=profils]'); await p.setInputFiles('#profil-image', join(ROOT, 'accueil/signature-affiche.jpg')); await p.waitForSelector('#pr-enregistrer'); await p.fill('#pr-nom', 'DA test');
+  await p.click('#pr-enregistrer'); await attendre(p, 300); const prof = await D(p, async () => (await window.__production.db.tous('profils'))[0]);
+  ok(prof?.nom === 'DA test' && /^#[0-9A-F]{6}$/.test(prof.couleurs.accent) && prof.mesures.luminosite >= 0, `profil DA analysé sur l'appareil (accent ${prof?.couleurs.accent}, système ${prof?.systeme})`);
+  const id = await D(p, async () => (await window.__production.db.tous('creations')).find((c) => c.brief?.type === 'versus').id);
+  await p.goto(URL0 + `motion/?creation=${id}`); await prets(p); await p.click('button[data-onglet="document"]'); await deplier(p);
+  await p.waitForFunction(() => document.querySelectorAll('#doc-profil option').length > 1); await p.selectOption('#doc-profil', prof.id); await p.click('#doc-appliquer-profil'); await attendre(p, 200); d = await docJ(p);
+  ok(d.profil === prof.id && d.couleurs.accent === prof.couleurs.accent && d.systeme === prof.systeme, 'Motion Studio : profil DA appliqué depuis le panneau Document');
+  ok(!err.length, `production : aucune erreur JavaScript${err.length ? ' · ' + err.slice(0, 2).join(' | ') : ''}`); await ctx.close();
+}
 for (const [nom, opt] of [
   ['galaxy-s25', { viewport: { width: 384, height: 832 }, deviceScaleFactor: 2.8125, isMobile: true, hasTouch: true }],
   ['ipad-m2-portrait', { viewport: { width: 820, height: 1180 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true }],

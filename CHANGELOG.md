@@ -1,5 +1,18 @@
 # Journal des versions
 
+## 0.8.0 · 2026-11-06 · studio créatif éditorial : assistant, compositeur, campagnes, profils DA
+
+- Production éditoriale (`atelier/production/`), quatre espaces : Assistant, Campagnes, Profils DA, Bibliothèque ; accessible depuis l'accueil (« Exprimer une idée »), l'Atelier et Motion Studio.
+- Assistant local (règles, aucune IA externe) : reconnaît 27 types de contenus (versus, comparaison de pouvoirs, versions alternatives, affrontement hypothétique, équipes, portrait, présentation, origine, première apparition, évolution, rétrospective, analyse, critique, actualité, créateur, annonce de série, recommandation, événement, crossover, chronologie, classement, sélection, hiérarchie cosmique, faction, quiz, débat, citation), les personnages de sa base locale, les formats, les périodes et les demandes de déclinaison ; signale ce qui manque et ce qui doit être vérifié, sans jamais inventer de faits.
+- Compositeur (`studio-compositeur.js`) : 10 mises en scène distinctes (duel, équipes, héros, héros avec repère, une éditoriale, annonce, événement, liste, question, citation), ambiances d'univers (cosmique, urbain nocturne, mystique, technologique), recomposition réelle par format (paysage, portrait, carré) et carrousel en plans ; profil DA de l'utilisateur appliqué tel quel ; compositions entièrement éditables dans Motion Studio.
+- Campagnes : planification (ex. « tout le mois de février, un super-héros noir différent chaque jour » → 28 publications, 28 personnages, 7 angles), calendrier mensuel avec glisser-déposer, vue liste, édition d'une publication (date, personnage, type, titre, accroche, format, statut, note), remplacement de personnage, ordre, duplication, suppression, validation ou refus individuel ; statuts idée, à produire, en cours, à valider, validé, exporté ; validation de la campagne ; calendrier CSV.
+- Production par lot : produire, changer statut, format ou profil, décaler les dates, dupliquer, supprimer, exporter en ZIP (PNG pleine définition, une image par diapositive de carrousel, calendrier joint) ; dernière opération annulable ; un profil appliqué à des créations déjà produites ne change que leurs couleurs et leur système.
+- Profils de direction artistique : analyse sur l'appareil d'une image de référence (palette médiane, luminosité, contraste, saturation, température, texture, masse et position du sujet, répartition de la lumière) → jetons de couleur et système graphique proposés, contraste texte/fond vérifié ; niveaux marque, campagne, création ; enregistrer, modifier, dupliquer, supprimer ; aperçu sur trois compositions. Polices et intention ne sont pas devinées : elles restent déclaratives.
+- Motion Studio : ouverture d'une création par lien (`?creation=`), section « Direction artistique » du panneau Document (appliquer un profil), « Décliner dans ce format » recompose réellement une création issue de l'assistant.
+- Bibliothèque centralisée : recherche (titre, personnage, dossier), filtres (format, origine, campagne), ouvrir, dupliquer, exporter, supprimer, export ZIP d'une sélection.
+- Stockage : base locale version 3 (magasins `campagnes` et `profils` ajoutés, données existantes conservées) ; archive ZIP sans dépendance (`atelier/motion/zip.js`).
+- Tests : 129 tests Motion Studio (dont 10 Node et 9 Chromium pour la production) ; 15 tests du moteur et 54 de l'Atelier inchangés.
+
 ## 0.7.0 · 2026-11-06 · studio créatif : finition, plans, modèles signature, vitrine
 
 - Accueil : vitrine avec démonstration animée en direct (moteur de Motion Studio dans la page), trois points de départ, galerie, exports, confidentialité ; liens retour vers l'accueil depuis les deux outils.

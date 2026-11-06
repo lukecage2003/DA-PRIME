@@ -190,6 +190,15 @@ export function initPanneaux(ctx) {
       bIco('monter', '', () => { selectionner(e.id); ordre('avant'); }, { className: 'ico', label: `Monter ${e.nom}` }), bIco('descendre', '', () => { selectionner(e.id); ordre('arriere'); }, { className: 'ico', label: `Descendre ${e.nom}` }));
   }
   // ---------- Document ----------
+  // Profil de direction artistique : applique les couleurs et le système enregistrés (Production › Profils DA)
+  function profilsDA(d) {
+    const sel = el('select', { id: 'doc-profil' }, el('option', { value: '', textContent: 'Aucun profil' })), corps = details('Direction artistique', !!d.profil, champ('Profil enregistré', sel),
+      bouton('Appliquer le profil', async () => { const p = (await ctx.profils()).find((x) => x.id === sel.value); if (p) ctx.appliquerProfil(p); }, { id: 'doc-appliquer-profil' }),
+      el('p', { className: 'info', textContent: d.brief ? 'Création issue d\'une intention : « Décliner dans ce format » la recompose réellement pour le nouveau support, avec cette direction artistique.' : 'Les profils se créent dans Production › Profils DA, à partir d\'une image de référence.' }),
+      el('a', { href: '../production/#profils', textContent: 'Gérer les profils →' }));
+    ctx.profils().then((ps) => { sel.append(...ps.map((p) => el('option', { value: p.id, textContent: `${p.nom} · ${p.niveau === 'marque' ? 'marque' : p.niveau === 'campagne' ? 'campagne' : 'création'}` }))); sel.value = d.profil || ''; });
+    return corps;
+  }
   function documentP() {
     const d = S.doc, p = $('#onglet-document'), sy = SYSTEMES[d.systeme], groupes = {};
     for (const [id, f] of Object.entries(FORMATS_STUDIO)) (groupes[f.groupe] ||= {})[id] = `${f.nom} · ${f.w} × ${f.h}`;
@@ -207,6 +216,7 @@ export function initPanneaux(ctx) {
         el('p', { className: 'info', textContent: sy.principe }), choix('Palette', palettes, () => d.palette, (v) => { d.palette = v; d.couleurs = {}; setTimeout(documentP); }, { id: 'doc-palette' }),
         el('div', { className: 'grille3' }, ...Object.entries(JETONS).map(([k, n]) => { const i = el('input', { type: 'color', value: palette(d)[k] }); i.addEventListener('input', () => modifier(() => { d.couleurs[k] = i.value.toUpperCase(); }, 'pal' + k)); i.setAttribute('aria-label', n); return el('label', { className: 'champ' }, n, i); })),
         bouton('Couleurs de la palette', () => { modifier(() => { d.couleurs = {}; }); documentP(); })),
+      profilsDA(d),
       details('Fond', true, choix('Type', { couleur: 'Couleur unie', degrade: 'Dégradé linéaire', radial: 'Dégradé radial', transparent: 'Transparent' }, () => d.fond.type, (v) => { d.fond.type = v; }, { id: 'doc-fond' }), g2(couleur('Couleur 1', () => d.fond.c1, (v) => { d.fond.c1 = v; }), couleur('Couleur 2', () => d.fond.c2, (v) => { d.fond.c2 = v; })), num('Angle', () => d.fond.angle, (v) => { d.fond.angle = v; }, { cle: 'fa' })),
       details('Animation de la composition', true, g2(num('Durée (s)', () => d.duree, (v) => { d.duree = Math.min(60, Math.max(1, v)); }, { pas: 0.5, min: 1, max: 60, id: 'doc-duree' }), bascule('Lecture en boucle', () => d.boucle, (v) => { d.boucle = v; })),
         g2(choix('Caméra', CAMERAS, () => d.camera.type, (v) => { d.camera.type = v; }, { id: 'doc-camera' }), plage('Intensité', () => d.camera.intensite, (v) => { d.camera.intensite = v; }, { cle: 'ci' })),

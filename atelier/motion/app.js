@@ -40,7 +40,7 @@ const ctx = {
   apresGeste: () => panneaux.rafraichir(), telecharger, importerImages: () => { cible = null; $('#fichier-image').click(); }, importerPolice, remplacerImage: (e) => { cible = e.id; $('#fichier-image').removeAttribute('multiple'); $('#fichier-image').click(); },
   insererImage: (id) => { const r = S.ressources.get(id); ajouter(elementImage(r, id)); }, enregistrerComposant, insererComposant, enregistrerModele, depuisModelePerso, enregistrerPreset, presets: () => presets,
   enregistrerVersion: async () => { const n = prompt('Nom de la version', `Version du ${new Date().toLocaleString('fr-FR')}`); if (n === null) return; await sauverMaintenant(); await enregistrerVersion(S.doc, n || 'Version'); ctx.listerVersions(); info('Version enregistrée.'); },
-  listerVersions, declinaison, nouvelle, ouvrir, depuisModele, depuisSignature, dupliquerCreation, supprimerCreation, enregistrerProjet, ouvrirProjet: () => $('#fichier-projet').click(), exporterBibliotheque,
+  listerVersions, declinaison, profils: () => db.tous('profils').catch(() => []), appliquerProfil: (p) => { modifier(() => { S.doc.systeme = p.systeme || S.doc.systeme; if (p.palette) S.doc.palette = p.palette; S.doc.couleurs = { ...(p.couleurs || {}) }; S.doc.profil = p.id; }); panneaux.documentP?.(); info(`Profil « ${p.nom} » appliqué : couleurs et système de la composition.`); }, nouvelle, ouvrir, depuisModele, depuisSignature, dupliquerCreation, supprimerCreation, enregistrerProjet, ouvrirProjet: () => $('#fichier-projet').click(), exporterBibliotheque,
 };
 let presets = [], cible = null;
 const vue = initScene(ctx), panneaux = initPanneaux(ctx), seq = initSequenceur(ctx), biblio = initBibliotheque(ctx), exp = initExports(ctx);
@@ -139,7 +139,13 @@ async function depuisSignature(id, format) { await sauverMaintenant(); const { d
 async function depuisModele(id, direction, format) { await sauverMaintenant(); const f = format && (await import('../../templates/_systeme/studio-systemes.js')).format(format); await ouvrirDoc(docDepuisModele(id, { direction, w: f?.w || 1920, h: f?.h || 1080, placeholder })); }
 async function dupliquerCreation(id) { const d = await db.lire('creations', id); if (!d) return; await db.ecrire('creations', { ...JSON.parse(JSON.stringify(d)), id: nouvelId('c'), nom: `${d.nom} (copie)`, modifie: Date.now() }); }
 async function supprimerCreation(id) { await db.suppr('creations', id); for (const v of await versionsDe(id)) await db.suppr('versions', v.id); if (id === S.doc.id) await nouvelle({ format: S.doc.format.id, systeme: S.doc.systeme }); }
-async function declinaison(nf) { await sauverMaintenant(); const d = adapter(S.doc, nf); d.id = nouvelId('c'); d.nom = `${S.doc.nom} · ${nf.nom}`; d.cree = Date.now(); await ouvrirDoc(normaliserDoc(d)); info(`Déclinaison ${nf.w} × ${nf.h} créée : corriger les placements si besoin.`); }
+// Déclinaison : recomposition complète quand la création vient d'une intention (brief), sinon adaptation par ancrages ; la DA du document est conservée
+async function declinaison(nf) { await sauverMaintenant();
+  if (S.doc.brief) { const C = await import('../../templates/_systeme/studio-compositeur.js'), cible = Object.entries(C.FORMATS_COMPOSITEUR).find(([, v]) => v === nf.id)?.[0] || nf.id;
+    const d = C.composer(S.doc.brief, cible, { profil: { systeme: S.doc.systeme, palette: S.doc.palette, couleurs: S.doc.couleurs, id: S.doc.profil } }); d.nom = `${S.doc.nom} · ${nf.nom || cible}`; if (S.doc.campagne) d.campagne = S.doc.campagne;
+    if (nf.w !== d.format.w || nf.h !== d.format.h) { const a = adapter(d, nf); d.elements = a.elements; d.format = nf; }
+    await ouvrirDoc(normaliserDoc(d)); return info(`Déclinaison ${nf.w} × ${nf.h} recomposée pour ce format.`); }
+  const d = adapter(S.doc, nf); d.id = nouvelId('c'); d.nom = `${S.doc.nom} · ${nf.nom}`; d.cree = Date.now(); await ouvrirDoc(normaliserDoc(d)); info(`Déclinaison ${nf.w} × ${nf.h} créée : corriger les placements si besoin.`); }
 async function listerVersions() {
   const ul = $('#liste-versions'); if (!ul) return; const vs = await versionsDe(S.doc.id).catch(() => []);
   ul.replaceChildren(...vs.slice(0, 30).map((v) => el('li', {}, el('span', { className: 'nom-calque', textContent: `${v.nom} · ${new Date(v.date).toLocaleString('fr-FR')}` }), bouton('Restaurer', async () => { if (!confirm('Restaurer cette version ? L\'état actuel est d\'abord enregistré comme version.')) return; await enregistrerVersion(S.doc, 'Avant restauration', true); await ouvrirDoc({ ...v.doc, id: S.doc.id }); }))));
@@ -229,7 +235,7 @@ document.addEventListener('keydown', (ev) => {
 $('#ouvrir-export').disabled = false;
 await Promise.all(Object.values(M).map((m) => document.fonts.load(`${m.style === 'italic' ? 'italic ' : ''}${m.weight} 40px "${m.family}"`).catch(() => {})));
 await chargerRessources(); presets = await db.tous('presets').catch(() => []);
-let premierDoc = null; try { const id = localStorage.getItem(DERNIERE); if (id) premierDoc = await db.lire('creations', id); } catch { /* stockage indisponible */ }
+let premierDoc = null; try { const id = new URLSearchParams(location.search).get('creation') || localStorage.getItem(DERNIERE); if (id) premierDoc = await db.lire('creations', id); } catch { /* stockage indisponible */ }
 try { if (premierDoc) { const { doc, ressources } = migrer(premierDoc, placeholder); await ouvrirDoc(doc, ressources); } else throw 0; }
 catch { await ouvrirDoc(docDepuisModele('annonce', { direction: 'pop', placeholder })); }
 persister();
