@@ -18,3 +18,8 @@ brand/99_tests/client/
 .env
 .env.*
 supabase/.temp/
+
+# Documents personnels : jamais dans le dépôt
+*.cbz
+*.cbr
+*.cb7

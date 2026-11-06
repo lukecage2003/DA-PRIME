@@ -1,5 +1,14 @@
 # Journal des versions
 
+## 0.10.0 · 2026-11-06 · Script Studio ; fin de la 0.9.1
+
+- **Script Studio** (`atelier/script/`, voir `docs/SCRIPT_STUDIO.md`) : projets éditoriaux en 8 étapes ; architecte éditorial (angles et suggestions à accepter ou rejeter) ; plan narratif selon la durée (15 s à plusieurs heures : court, intermédiaire, long avec chapitres, très long avec parties et rappels) et la plateforme (8), budget de mots selon le profil, aucun remplissage ; éditeur par séquences (métadonnées, sources, notes de montage, commentaires, réorganisation), sauvegarde automatique, annulation, versions et comparaison mot à mot ; analyse critique par règles avec corrections acceptées une par une ; courbe de rythme indicative ; adaptations à une autre plateforme ; profils d'écriture ; 9 exports (Markdown, TXT, CSV de montage, SRT, JSON).
+- **Comics** : import CBZ, ZIP, PDF (pdf.js, Apache-2.0, intégré) et images ; empreintes, doublons, doubles pages ; lecteur, réordonnancement, exclusion ; détection géométrique des cases et tracé manuel ; transcription par case avec statut (lu, incertain, illisible) ; analyse par numéro avec provenance (dialogue, visuel, interprétation, incertain) ; validation humaine ; arcs de plusieurs numéros, chronologie et personnages récurrents ; reprise des événements validés dans un script avec références numéro, page, case ; vue de correspondance script ↔ pages. OCR et compréhension des images : non installés, signalés comme tels, point d'extension prévu.
+- **Prompt Studio** : 9 modèles, versions compacte et détaillée, variables du projet, modèles personnels, favoris, historique, import/export ; jamais d'envoi.
+- **Bibliothèque visuelle (fin de la 0.9.1)** : Motion Studio charge les images à la demande (seules celles de la création ouverte sont en mémoire) ; détourage local (baguette magique, retrait du fond, gomme, restauration) enregistré comme nouvelle image transparente ; sauvegarde et restauration de la bibliothèque visuelle ; la sauvegarde complète inclut campagnes, profils, visuels, personnages, scripts et prompts.
+- Base locale version 5 (`scripts`, `redaction`, `prompts`, `comics`, `pages`) ; données existantes conservées.
+- Tests : 39 tests Script Studio (17 Node, 22 Chromium), Motion Studio, Atelier et moteur.
+
 ## 0.9.2 · 2026-11-06 · son et vraies images
 
 - Son dans Motion Studio : 8 effets synthétisés sur l'appareil, libres de droits (passage rapide, souffle grave, impact, boom cinéma, montée de tension, scintillement, tic, nappe d'ambiance) ; import d'une musique ou d'un son personnel (fichier local, inclus dans le projet) ; panneau Document › Son : volume général, coupure, effets placés à la seconde, volume par effet, écoute, placement à la tête de lecture.

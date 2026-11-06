@@ -1,0 +1,1 @@
+pdf.js 6.5.438 (pdfjs-dist, Apache-2.0) — https://github.com/mozilla/pdf.js — fichiers build/pdf.min.mjs et build/pdf.worker.min.mjs non modifiés.

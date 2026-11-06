@@ -348,7 +348,7 @@ let fichierBiblio = null, fichierProjetV2 = null;
   // Sauvegarde automatique et réouverture
   await p.fill('#nom', 'Collision finale'); await attendre(p, 900); const id0 = (await docJ(p)).id, n0 = (await docJ(p)).elements.length;
   await p.reload(); await prets(p); d = await docJ(p);
-  ok(d.id === id0 && d.nom === 'Collision finale' && d.elements.length === n0 && (await D(p, () => window.__studio.S.ressources.size)) >= 3, 'sauvegarde automatique : création, illustrations et police retrouvées après rechargement');
+  ok(d.id === id0 && d.nom === 'Collision finale' && d.elements.length === n0 && (await D(p, () => { const S = window.__studio.S, ids = (JSON.stringify(S.doc.elements).match(/"src":"[^"]+"|"police":"f:[^"]+"/g) || []).map((x) => x.split(':"')[1].replace(/^f:/, '').replace(/"$/, '')); return ids.length >= 2 && ids.every((i) => S.ressources.has(i)); })), 'sauvegarde automatique : création, illustrations et police retrouvées après rechargement');
   await p.click('#ouvrir-bibliotheque'); await attendre(p, 300); const nCre = await p.locator('#liste-creations .carte').count();
   await p.fill('#filtre-nom', 'Collision'); await p.locator('#filtre-nom').dispatchEvent('change'); await attendre(p, 300);
   ok(nCre >= 3 && (await p.locator('#liste-creations .carte').count()) === 1, `bibliothèque : ${nCre} créations, recherche par nom`);
@@ -504,6 +504,18 @@ let fichierBiblio = null, fichierProjetV2 = null;
   await p.goto(URL0); await p.waitForSelector('#apercu svg'); await p.locator('button', { hasText: 'Bibliothèque' }).first().click(); await p.waitForSelector('.grille-choix button');
   await p.locator(`.grille-choix [data-visuel="${ids.ESSAI_personnage}"]`).click(); await attendre(p, 400);
   ok((await p.innerHTML('#apercu')).includes('data:image/png'), 'Atelier : image choisie dans la bibliothèque visuelle et posée dans le gabarit');
+  // 0.9.1 (suite) : chargement à la demande, détourage local, sauvegarde et restauration de la bibliothèque visuelle
+  await p.goto(URL0 + 'motion/'); await prets(p); const charges = await D(p, () => [...window.__studio.S.ressources.values()].filter((r) => r.type === 'image').length);
+  ok(charges <= 1, `Motion Studio ne charge plus toute la bibliothèque au démarrage (${charges} image(s) en mémoire : celles de la création ouverte)`);
+  await p.goto(URL0 + 'production/#visuels'); await p.waitForSelector('.carte-visuel'); const avantDet = await p.locator('.carte-visuel').count();
+  await p.locator(`[data-visuel="${ids.ESSAI_portrait}"] .vignette-visuel`).click(); await p.click('#fv-detourer'); await p.waitForSelector('.detourage[open]'); await p.click('#det-fond'); await p.click('#det-enregistrer');
+  await p.waitForFunction((n) => document.querySelectorAll('.carte-visuel').length === n + 1, avantDet, { timeout: 30000 });
+  const det = await D(p, async () => (await window.__production.db.tous('visuels')).find((v) => /détouré/.test(v.nom)));
+  ok(det?.alpha && det.categorie === 'transparente' && await D(p, async (id) => !!(await window.__production.db.lire('ressources', id)), ids.ESSAI_portrait), 'détourage local : fond retiré, nouvelle image transparente, original conservé');
+  const [sv] = await Promise.all([p.waitForEvent('download'), p.click('#exporter-visuels')]); const fsv = join(OUT, 'bibliotheque-visuelle.json'); await sv.saveAs(fsv); const jsv = JSON.parse(readFileSync(fsv, 'utf8'));
+  const ctx2 = await browser.newContext(), p2 = await ctx2.newPage(); await p2.goto(URL0 + 'production/#visuels'); await p2.waitForFunction(() => window.__production);
+  await p2.setInputFiles('#importer-visuels', fsv); await p2.waitForFunction(() => /restaurée/.test(document.querySelector('#etat').textContent), null, { timeout: 30000 });
+  ok(jsv.visuels.length === avantDet + 1 && jsv.personnages.length === 1 && await p2.locator('.carte-visuel').count() === avantDet + 1, `bibliothèque visuelle sauvegardée (${jsv.visuels.length} images, ${jsv.personnages.length} fiche) et restaurée sur un autre navigateur`); await ctx2.close();
   ok(!err.length, `bibliothèque visuelle : aucune erreur JavaScript${err.length ? ' · ' + err.slice(0, 2).join(' | ') : ''}`); await ctx.close();
 }
 // Son dans Motion Studio : synthèse, panneau, export WAV et WebM avec piste Opus

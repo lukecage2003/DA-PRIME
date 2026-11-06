@@ -116,3 +116,5 @@ h3 { font:700 12px/1.2 "JetBrains Mono", monospace; text-transform:uppercase; le
 .ligne-comparer figure { margin:0; background:var(--surface2); border:1px solid var(--ligne); } .ligne-comparer canvas { width:100%; height:auto; display:block; max-height:220px; object-fit:contain; }
 .ligne-comparer figcaption { display:flex; justify-content:space-between; align-items:center; padding:4px 6px; font-size:12px; }
 @media (max-width:900px) { .ligne-comparer { grid-template-columns:1fr 1fr; } .ligne-comparer h3 { grid-column:1 / -1; } }
+
+.cadre-detourage { max-height:60vh; overflow:auto; background:repeating-conic-gradient(#222 0 25%, #2c2c2c 0 50%) 0 0 / 20px 20px; } .toile-detourage { display:block; max-width:100%; height:auto; cursor:crosshair; touch-action:none; margin:0 auto; }

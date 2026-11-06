@@ -360,5 +360,6 @@ await rafraichirVisuels();
 persister();
 const visuelsUI = initVisuels({ el, bouton, champ, choix, info, image, enregistrer, ouvrirStudio, rafraichirVisuels, telecharger });
 onglet(['campagnes', 'profils', 'bibliotheque', 'visuels'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'assistant');
+{ const idee = new URLSearchParams(location.search).get('idee'); if (idee) { $('#demande-texte').value = idee; $('#demande').requestSubmit(); } }
 if ('serviceWorker' in navigator && window.isSecureContext) navigator.serviceWorker.register('../sw.js').catch(() => {});
 window.__production = { analyser, composer, planifierCampagne, db, zip, STATUTS };   // utilisé par les tests automatisés

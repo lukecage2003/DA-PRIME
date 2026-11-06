@@ -102,10 +102,10 @@ export function initPanneaux(ctx) {
     details('Déformation', t.deformation.type !== 'aucune', choix('Type', DEFORMATIONS, () => t.deformation.type, (v) => { t.deformation.type = v; }, { id: 'prop-deformation' }), plage('Force', () => t.deformation.force, (v) => { t.deformation.force = v; }, { min: -1, max: 1, cle: 'df' }))];
   }
   function panneauImage(e) {
-    const im = e.image, images = [...S.ressources.values()].filter((r) => r.type === 'image'), tr = im.traitement;
+    const im = e.image, images = ctx.visuels().length ? ctx.visuels() : [...S.ressources.values()].filter((r) => r.type === 'image'), tr = im.traitement;
     return [details('Illustration', true,
       el('div', { className: 'rangee' }, bouton('Remplacer l\'illustration…', () => ctx.remplacerImage(e)), bouton(S.recadrage ? 'Terminer le recadrage' : 'Recadrer dans la scène', () => { S.recadrage = !S.recadrage; notifier('sel'); }, { id: 'recadrer' }), bouton('Recentrer', () => modifier(() => Object.assign(im, { zoom: 1, dx: 0, dy: 0 })))),
-      images.length ? choix('Image de la bibliothèque (réglages conservés)', { '': '— image de substitution —', ...Object.fromEntries(images.map((r) => [r.id, r.nom])) }, () => im.src || '', (v) => { im.src = v || null; if (v) im.placeholder = null; ctx.majBriefImage?.(e, v); }, { id: 'prop-ressource' }) : null,
+      images.length ? choix('Image de la bibliothèque (réglages conservés)', { '': '— image de substitution —', ...Object.fromEntries(images.map((r) => [r.id, r.nom])) }, () => im.src || '', (v) => { im.src = v || null; if (v) { im.placeholder = null; ctx.chargerRessource(v); } ctx.majBriefImage?.(e, v); }, { id: 'prop-ressource' }) : null,
       !im.src ? choix('Image de substitution', { pop: 'Pop', noir: 'Ville de nuit', cosmos: 'Cosmos', encre: 'Personnage détouré' }, () => im.placeholder, (v) => { im.placeholder = v; }) : null,
       g2(choix('Ajustement', { couvrir: 'Remplir le cadre', contenir: 'Image entière' }, () => im.ajustement, (v) => { im.ajustement = v; }), choix('Masque', MASQUES, () => im.masque.forme, (v) => { im.masque.forme = v; }, { id: 'prop-masque' })),
       plage('Zoom', () => im.zoom, (v) => { im.zoom = v; }, { min: 0.2, max: 6, id: 'prop-zoom' }),

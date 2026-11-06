@@ -40,7 +40,7 @@ const ctx = {
   duree: total, debut, local: () => S.t - debut(), vignette: (d) => vignette(d),
   editerTexte: () => { panneaux.onglet('proprietes'); setTimeout(() => { const z = $('#champ-contenu'); z?.focus(); z?.select(); }, 30); },
   apresGeste: () => panneaux.rafraichir(), telecharger, importerImages: () => { cible = null; $('#fichier-image').click(); }, importerPolice, remplacerImage: (e) => { cible = e.id; $('#fichier-image').removeAttribute('multiple'); $('#fichier-image').click(); },
-  insererImage: (id) => { const r = S.ressources.get(id); ajouter(elementImage(r, id)); }, enregistrerComposant, insererComposant, enregistrerModele, depuisModelePerso, enregistrerPreset, presets: () => presets,
+  insererImage: async (id) => { const r = await chargerRessource(id); if (r) ajouter(elementImage(r, id)); }, chargerRessource, visuels: () => S.visuels || [], enregistrerComposant, insererComposant, enregistrerModele, depuisModelePerso, enregistrerPreset, presets: () => presets,
   enregistrerVersion: async () => { const n = prompt('Nom de la version', `Version du ${new Date().toLocaleString('fr-FR')}`); if (n === null) return; await sauverMaintenant(); await enregistrerVersion(S.doc, n || 'Version'); ctx.listerVersions(); info('Version enregistrée.'); },
   // Remplacement d'image : l'intention (brief) suit, pour que les déclinaisons recomposées utilisent la nouvelle image
   majBriefImage: async (e, id) => { const ps = S.doc.brief?.personnages; const p = ps?.find((x) => x.nom === e.nom); if (!p) return; const v = id ? await db.lire('visuels', id).catch(() => null) : null;
@@ -148,7 +148,7 @@ addEventListener('pagehide', () => sauverMaintenant());
 document.addEventListener('visibilitychange', () => document.visibilityState === 'hidden' && sauverMaintenant());
 async function ouvrirDoc(doc, ressources = {}) {
   for (const [id, r] of Object.entries(ressources)) if (r && !S.ressources.has(id)) { const o = { ...r, id }; S.ressources.set(id, o); await db.ecrire('ressources', o).catch(() => {}); await enregistrerPolice(o); }
-  arreter(); charger(doc); S.auto = true; derniereVersion = Date.now(); await sauverMaintenant(true); info(''); vue.dessiner();
+  await assurerRessources(doc); arreter(); charger(doc); S.auto = true; derniereVersion = Date.now(); await sauverMaintenant(true); info(''); vue.dessiner();
 }
 async function ouvrir(id) { await sauverMaintenant(); const d = await db.lire('creations', id); if (!d) return info('Création introuvable.'); try { const { doc, ressources } = migrer(d, placeholder); await ouvrirDoc(doc, ressources); } catch (e) { info(`Création illisible (${e.message}). Ses versions restent disponibles.`); } }
 async function nouvelle({ format = '16:9', systeme = 'comics' } = {}) { await sauverMaintenant(); await ouvrirDoc(nouveauDocument({ format, systeme })); }
@@ -172,7 +172,7 @@ async function listerVersions() {
 // ---------- Illustrations et polices ----------
 function elementImage(r, id) { const { w: W, h: H } = S.doc.format, k = Math.min((W * 0.6) / r.w, (H * 0.7) / r.h); const e = creerElement('image', S.doc); Object.assign(e, { w: r.w * k, h: r.h * k, x: (W - r.w * k) / 2, y: (H - r.h * k) / 2, nom: r.nom.replace(/\.[a-z0-9]+$/i, '') }); e.image.src = id; e.image.placeholder = null; return e; }
 // Import : passe par la bibliothèque visuelle (fiche, vignette, transparence, doublons) ; l'original reste intact jusqu'à 4096 px
-async function lireImage(f) { const { ressource: r } = await importerVisuel(f, { source: 'motion' }); S.ressources.set(r.id, r); return r; }
+async function lireImage(f) { const { ressource: r, visuel: v } = await importerVisuel(f, { source: 'motion' }); S.ressources.set(r.id, r); if (!(S.visuels ||= []).some((x) => x.id === v.id)) S.visuels.push(v); return r; }
 $('#fichier-image').addEventListener('change', async () => {
   const fs = [...($('#fichier-image').files || [])]; $('#fichier-image').value = ''; $('#fichier-image').setAttribute('multiple', ''); const ids = [];
   for (const [i, f] of fs.entries()) {
@@ -232,7 +232,18 @@ fichierProjet.addEventListener('change', async () => {
     await sauverMaintenant(); if (await db.lire('creations', p.doc.id)) p.doc.id = nouvelId('c'); await ouvrirDoc(p.doc, p.ressources); $('#bibliotheque').open && $('#bibliotheque').close(); info(`Projet « ${f.name} » ouvert.`);
   } catch (e) { info(`« ${f.name} » n'est pas un projet Motion Studio lisible (${e.message}).`); }
 });
-async function chargerRessources() { for (const r of await db.tous('ressources').catch(() => [])) { S.ressources.set(r.id, r); await enregistrerPolice(r); } }
+// Ressources chargées à la demande : polices, sons et images non indexées au démarrage ; les images de la bibliothèque visuelle
+// (fiches légères) ne sont lues qu'au moment où une composition les utilise — la mémoire ne grossit plus avec la bibliothèque
+async function chargerRessources() {
+  const [cles, fiches] = await Promise.all([db.cles('ressources').catch(() => []), db.tous('visuels').catch(() => [])]), indexees = new Set(fiches.map((v) => v.id));
+  S.visuels = fiches.sort((a, b) => a.nom.localeCompare(b.nom));
+  for (const id of cles) { if (indexees.has(id) || S.ressources.has(id)) continue; const r = await db.lire('ressources', id).catch(() => null); if (r) { S.ressources.set(r.id, r); await enregistrerPolice(r); } }
+}
+async function assurerRessources(doc) {
+  const ids = new Set([...(JSON.stringify(doc.plans || doc.elements).match(/"src":"[^"]+"|"police":"f:[^"]+"/g) || []).map((x) => x.split(':"')[1].replace(/^f:/, '').replace(/"$/, '')), ...(doc.audio?.pistes || []).map((p) => p.ressource).filter(Boolean)]);
+  for (const id of ids) if (!S.ressources.has(id)) { const r = await db.lire('ressources', id).catch(() => null); if (r) { S.ressources.set(id, r); await enregistrerPolice(r); } }
+}
+async function chargerRessource(id) { if (!S.ressources.has(id)) { const r = await db.lire('ressources', id).catch(() => null); if (r) S.ressources.set(id, r); } dessiner(); return S.ressources.get(id); }
 
 // ---------- Clavier ----------
 document.addEventListener('keydown', (ev) => {

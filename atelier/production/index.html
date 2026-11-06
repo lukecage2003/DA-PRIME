@@ -21,6 +21,7 @@
     <button type="button" role="tab" id="t-profils" data-onglet="profils" aria-selected="false" aria-controls="profils">Profils DA</button>
     <button type="button" role="tab" id="t-bibliotheque" data-onglet="bibliotheque" aria-selected="false" aria-controls="bibliotheque">Bibliothèque</button>
   </nav>
+  <a class="retour" href="../script/">Script Studio</a>
   <a class="retour" href="../motion/">Motion Studio →</a>
   <span id="etat" class="etat" role="status" aria-live="polite"></span>
 </header>
@@ -46,6 +47,7 @@
       <input type="file" id="visuel-fichiers" accept="image/*" multiple class="masque">
       <select id="import-categorie" aria-label="Catégorie des images importées"></select>
       <p id="stockage" class="note"></p>
+      <div class="rangee"><button type="button" id="exporter-visuels">Sauvegarder la bibliothèque</button><label class="bouton" for="importer-visuels">Restaurer…</label><input type="file" id="importer-visuels" accept=".json,application/json" class="masque"></div>
       <h3>Collections</h3><ul id="liste-collections" class="liste"></ul>
       <h3>Personnages</h3><button type="button" id="nouvelle-fiche">Nouvelle fiche de personnage</button><ul id="liste-personnages" class="liste"></ul>
     </aside>

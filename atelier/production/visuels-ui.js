@@ -4,13 +4,24 @@ import { db } from '../motion/stockage.js';
 import { CATEGORIES, ROLES, importerVisuel, synchroniser, supprimerVisuel, utilisations, choisirImage, infoImage, etatStockage } from '../motion/visuels.js';
 import { composer, TRAITEMENTS } from '../../templates/_systeme/studio-compositeur.js';
 import { UNIVERS } from '../../templates/_systeme/studio-personnages.js';
+import { initDetourage } from './detourage.js';
 
 const PAGE = 60, sansA = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 const mo = (o) => (o > 1048576 ? `${(o / 1048576).toFixed(1)} Mo` : `${Math.max(1, Math.round(o / 1024))} Ko`);
 const liste = (s) => [...new Set(String(s || '').split(/[,;]+/).map((x) => x.trim()).filter(Boolean))];
 
-export function initVisuels({ el, bouton, champ, choix, info, image, enregistrer, ouvrirStudio, rafraichirVisuels }) {
-  const $ = (s) => document.querySelector(s);
+export function initVisuels({ el, bouton, champ, choix, info, image, enregistrer, ouvrirStudio, rafraichirVisuels, telecharger }) {
+  const $ = (s) => document.querySelector(s), detourage = initDetourage({ el, bouton, info });
+  // Sauvegarde de la bibliothèque visuelle seule (images, fiches, personnages) dans un fichier local, et restauration sans écrasement
+  $('#exporter-visuels').addEventListener('click', async () => { const [vs, ps] = await Promise.all([db.tous('visuels'), db.tous('personnages')]), rs = [];
+    for (const v of vs) { const r = await db.lire('ressources', v.id); if (r) rs.push(r); }
+    telecharger(new Blob([JSON.stringify({ format: 'primestone-motion-bibliotheque', version: 3, contenu: 'visuels', exporte: new Date().toISOString(), visuels: vs, personnages: ps, ressources: rs })], { type: 'application/json' }), `bibliotheque-visuelle-${new Date().toISOString().slice(0, 10)}.json`, 'application/json');
+    info(`${vs.length} image(s) et ${ps.length} fiche(s) sauvegardées dans un fichier local.`); });
+  $('#importer-visuels').addEventListener('change', async (ev) => { const f = ev.target.files[0]; ev.target.value = ''; if (!f) return;
+    try { const j = JSON.parse(await f.text()); if (j.format !== 'primestone-motion-bibliotheque') throw new Error('format'); let n = 0;
+      for (const m of ['ressources', 'visuels', 'personnages']) for (const o of j[m] || []) { if (!o?.id || await db.lire(m, o.id)) continue; await db.ecrire(m, o); n++; }
+      await charger(); grille(); collections(); personnages(); stockage(); info(`Bibliothèque restaurée : ${n} élément(s) ajouté(s), aucun écrasé.`); }
+    catch { info('Fichier non reconnu : choisir une sauvegarde de bibliothèque DA-PRIME (.json).'); } });
   let visuels = [], fiches = [], choisis = new Set(), page = 1, filtreCollection = '', pret = false;
   $('#import-categorie').append(el('option', { value: '', textContent: 'Catégorie : automatique' }), ...Object.entries(CATEGORIES).map(([v, t]) => el('option', { value: v, textContent: t })));
   $('#v-categorie').append(...Object.entries(CATEGORIES).map(([v, t]) => el('option', { value: v, textContent: t })));
@@ -85,6 +96,7 @@ export function initVisuels({ el, bouton, champ, choix, info, image, enregistrer
       el('p', { className: 'note', textContent: 'L\'identité d\'un personnage n\'est jamais déduite de l\'image : l\'association est toujours la vôtre.' }),
       el('div', { className: 'rangee' }, bouton('Enregistrer', async () => { await sauver(); dlg.close(); await charger(); grille(); personnages(); info('Fiche enregistrée.'); }, { className: 'accent', id: 'fv-enregistrer' }),
         bouton('Comparer les traitements', async () => { await sauver(); dlg.close(); await charger(); const p = fiches.find((x) => x.id === fsel.value); comparer(p ? { nom: p.nom, univers: p.univers, image: v.id, role: rsel.value, imageInfo: infoImage(v, rsel.value) } : { nom: '', image: v.id, role: rsel.value, imageInfo: infoImage(v, rsel.value) }, p?.nom || v.nom); }, { id: 'fv-comparer' }),
+        bouton('Détourer…', async () => { const r = await db.lire('ressources', v.id); if (!r) return; dlg.close(); detourage.ouvrir(r, { nom: v.nom, enregistrer: async (fic) => { const res = await importerVisuel(fic, { categorie: 'transparente', tags: v.tags, collections: v.collections }); await charger(); grille(); info(`Image détourée enregistrée : « ${res.visuel.nom} » (l'original est conservé).`); } }); }, { id: 'fv-detourer' }),
         bouton('Supprimer', async () => { if (!confirm(`Supprimer « ${v.nom} » ?${util.length ? ` Elle est utilisée dans ${util.length} création(s) : ${util.slice(0, 3).join(', ')}.` : ''}`)) return; await supprimerVisuel(v.id); dlg.close(); await charger(); grille(); personnages(); stockage(); info('Image supprimée.'); }, { className: 'danger' }),
         bouton('Fermer', () => dlg.close())));
     dlg.showModal();

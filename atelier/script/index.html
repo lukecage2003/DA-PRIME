@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Script Studio · DA-PRIME</title>
+<meta name="theme-color" content="#111111">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png">
+<link rel="stylesheet" href="../polices.css">
+<link rel="stylesheet" href="script.css">
+</head>
+<body>
+<header class="entete">
+  <a class="retour" href="../">← Atelier</a>
+  <a href="../../" class="marque" title="Accueil">Script Studio</a>
+  <nav class="onglets" role="tablist" aria-label="Espaces de Script Studio">
+    <button type="button" role="tab" data-espace="projets" aria-selected="true">Projets</button>
+    <button type="button" role="tab" data-espace="comics" aria-selected="false">Comics</button>
+    <button type="button" role="tab" data-espace="profils" aria-selected="false">Profils d'écriture</button>
+    <button type="button" role="tab" data-espace="prompts" aria-selected="false">Prompt Studio</button>
+  </nav>
+  <a class="retour" href="../production/">Production →</a>
+  <span id="etat" class="etat" role="status" aria-live="polite"></span>
+</header>
+<main>
+  <section id="projets" class="espace" aria-label="Projets">
+    <aside class="cote">
+      <button type="button" id="nouveau-projet" class="accent">Nouveau projet</button>
+      <input type="search" id="recherche-projets" placeholder="Rechercher un projet…" aria-label="Rechercher un projet">
+      <label class="bascule"><input type="checkbox" id="voir-archives"> Afficher les archives</label>
+      <ul id="liste-projets" class="liste"></ul>
+    </aside>
+    <div id="projet" class="projet"><p class="vide">Créer un projet, ou en ouvrir un. Parcours : Projet → Sources → Analyse → Angle → Plan → Script → Critique → Export.</p></div>
+  </section>
+  <section id="comics" class="espace" aria-label="Comics" hidden>
+    <aside class="cote">
+      <label class="bouton accent" for="import-comics">Importer des comics…</label>
+      <input type="file" id="import-comics" multiple class="masque">
+      <p class="note">CBZ, ZIP d'images, PDF, ou plusieurs images d'un même numéro. Les fichiers restent sur l'appareil et ne sont jamais modifiés.</p>
+      <input type="search" id="recherche-comics" placeholder="Rechercher : série, personnage, réplique…" aria-label="Rechercher dans les comics">
+      <ul id="resultats-comics" class="liste"></ul>
+      <h3>Numéros</h3><ul id="liste-comics" class="liste"></ul>
+      <h3>Arcs</h3><button type="button" id="nouvel-arc">Nouvel arc narratif</button><ul id="liste-arcs" class="liste"></ul>
+      <p id="moteurs" class="note"></p>
+    </aside>
+    <div id="comic" class="projet"><p class="vide">Importer un ou plusieurs numéros, puis analyser chaque numéro : pages, cases, transcription, personnages, événements, validation.</p></div>
+  </section>
+  <section id="profils" class="espace" aria-label="Profils d'écriture" hidden>
+    <aside class="cote"><button type="button" id="nouveau-profil" class="accent">Nouveau profil</button><ul id="liste-profils" class="liste"></ul></aside>
+    <div id="profil" class="projet"></div>
+  </section>
+  <section id="prompts" class="espace" aria-label="Prompt Studio" hidden>
+    <aside class="cote">
+      <input type="search" id="recherche-prompts" placeholder="Rechercher un modèle…" aria-label="Rechercher un modèle de prompt">
+      <select id="categorie-prompts" aria-label="Catégorie"></select>
+      <label class="bascule"><input type="checkbox" id="favoris-prompts"> Favoris</label>
+      <ul id="liste-prompts" class="liste"></ul>
+      <div class="rangee"><button type="button" id="exporter-prompts">Exporter mes modèles</button><label class="bouton" for="importer-prompts">Importer…</label><input type="file" id="importer-prompts" accept=".json" class="masque"></div>
+      <h3>Historique</h3><ul id="historique-prompts" class="liste"></ul>
+    </aside>
+    <div id="prompt" class="projet"></div>
+  </section>
+</main>
+<script type="module" src="script.js"></script>
+</body>
+</html>
