@@ -149,6 +149,20 @@ const nonInfo = (sc) => sc.alertes.filter((a) => a.niveau !== 'info');
   const { muxerWebM } = await imp('atelier/motion/webm.js'), wb = new Uint8Array(await muxerWebM({ codec: 'vp9', largeur: 64, hauteur: 32, duree: 1, images: [{ data: new Uint8Array([1, 2, 3]), temps: 0, cle: true }, { data: new Uint8Array([4]), temps: 40000, cle: false }] }).arrayBuffer());
   ok(wb[0] === 0x1a && wb[1] === 0x45 && Buffer.from(wb).includes(Buffer.from('V_VP9')) && Buffer.from(wb).includes(Buffer.from('webm')), 'multiplexeur WebM : en-tête EBML, piste VP9');
 }
+{ // Plans, transitions et modèles signature
+  const G = await imp('templates/_systeme/studio-signatures.js');
+  const bad = [];
+  for (const id of Object.keys(G.SIGNATURES)) for (const f of [null, '9:16', '1:1']) { const d = G.docDepuisSignature(id, { format: f || undefined }); for (const t of [0.5, null]) { const sc = St.rendreSequence(d, t, { placeholder: ph2 }), svg = versSVG(sc); if (nonInfo(sc).length || !balance(svg)) bad.push(`${id}/${f}@${t} ${nonInfo(sc).map((a) => a.message).join(';').slice(0, 160)}`); } }
+  ok(Object.keys(G.SIGNATURES).length === 4 && !bad.length, `4 modèles signature × 3 formats : rendus sans alerte, SVG bien formés${bad.length ? ' · ' + bad.slice(0, 2).join(' | ') : ''}`);
+  const d = G.docDepuisSignature('annonce-plans'), T = St.dureeTotale(d);
+  ok(d.plans.length === 3 && Math.abs(T - 9.4) < 1e-9 && St.planA(d, 2.7).i === 1 && St.planA(d, 9).i === 2 && St.debutPlan(d, 2) === 6.2, `plans : 3 plans, ${T} s au total, plan à l'instant et début de plan`);
+  const types = Object.keys(St.TRANSITIONS).filter((x) => x !== 'coupe'), diff = types.filter((ty) => { d.plans[1].transition = { type: ty, duree: 0.6 }; const a = JSON.stringify(St.rendreSequence(d, 2.85, { placeholder: ph2 }).nodes), b = JSON.stringify(St.rendreSequence(d, 3.4, { placeholder: ph2 }).nodes); return a !== b && St.rendreSequence(d, 2.85, { placeholder: ph2 }).plan === 1; });
+  ok(diff.length === types.length, `transitions entre plans : ${diff.join(', ')}`);
+  const c = JSON.parse(JSON.stringify(d)); St.changerPlan(c, 2); c.elements.push(St.creerElement('texte', c, { role: 'legende' })); St.synchroniserPlans(c); const n = St.normaliserDoc(JSON.parse(JSON.stringify(c)));
+  ok(n.plans.length === 3 && n.planActif === 2 && n.plans[2].elements.length === c.elements.length && n.elements.length === c.elements.length, 'plans : changement, synchronisation et normalisation conservent les calques');
+  const e = JSON.parse(JSON.stringify(d)); St.ajouterPlan(e, { dupliquer: true }); const ids = new Set(St.plansDe(e).flatMap((p) => p.elements.map((x) => x.id))); St.supprimerPlan(e);
+  ok(ids.size === St.plansDe(d).reduce((s, p) => s + p.elements.length, 0) + d.elements.length && e.plans.length === 3, 'plans : duplication (nouveaux identifiants) et suppression');
+}
 if (process.argv.includes('--moteur')) fin();
 
 // ---------- 2. Éditeur (Chromium, appareils ÉMULÉS) ----------
@@ -324,6 +338,31 @@ let fichierBiblio = null, fichierProjetV2 = null;
   const fv1 = join(OUT, 'ancien.motion.json'); writeFileSync(fv1, JSON.stringify(v1)); await p.setInputFiles('#fichier-projet', fv1); await attendre(p, 600); d = await docJ(p);
   ok(d.v === 2 && d.nom === 'Ancienne création' && noms(d).some((e) => e.type === 'image' && e.image.src) && noms(d).some((e) => e.texte?.contenu === 'FUSION'), 'projet du MVP (version 1) ouvert et converti : illustration et textes conservés');
   ok(!err.length, `import et migration sans erreur JavaScript${err.length ? ' · ' + err.slice(0, 2).join(' | ') : ''}`); await ctx.close();
+}
+// Modèles signature, plans et page d'accueil
+{
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, acceptDownloads: true }), p = await ctx.newPage(), err = erreurs(p);
+  await p.goto(`http://localhost:${PORT}/`); await p.waitForFunction(() => { const c = document.querySelector('#demo'); if (!c) return false; const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 0; i < d.length; i += 4000) if (d[i] + d[i + 1] + d[i + 2] > 60) n++; return n > 3; }, null, { timeout: 15000 }).catch(() => {});
+  const accueil = await D(p, () => ({ t: document.title, l: [...document.querySelectorAll('a[href]')].map((a) => a.getAttribute('href')) }));
+  ok(/Atelier Primestone/.test(accueil.t) && accueil.l.includes('atelier/') && accueil.l.includes('atelier/motion/#modeles'), 'accueil : démonstration animée en direct et accès aux deux outils');
+  await p.click('header .bouton'); await p.waitForFunction(() => window.__studio?.S?.derniere); await p.waitForSelector('#bibliotheque[open] [data-signature]');
+  ok(await p.locator('#modeles-signature .carte').count() === 4, 'Motion Studio ouvert depuis l\'accueil sur les modèles (4 modèles signature)');
+  await p.waitForFunction(() => [...document.querySelectorAll('.apercu-modele')].filter((i) => i.src).length >= 8, null, { timeout: 20000 }).catch(() => {});
+  ok(await D(p, () => [...document.querySelectorAll('.apercu-modele')].filter((i) => i.naturalWidth > 0).length) >= 8, 'vignettes des modèles rendues par le moteur');
+  await p.click('[data-signature="annonce-plans"]'); await attendre(p, 600);
+  let d = await docJ(p); ok(d.plans?.length === 3 && (await p.locator('#plans .plan').count()) === 3, 'modèle « Annonce en trois plans » : barre des plans');
+  await p.click('[data-plan="2"]'); await attendre(p, 200); ok((await D(p, () => window.__studio.S.doc.planActif)) === 2 && (await D(p, () => window.__studio.S.derniere.nodes.some((n) => n.nom === 'Explosion'))), 'changement de plan : la scène affiche le plan choisi');
+  await p.selectOption('#plan-transition', 'iris'); await p.click('#plan-dupliquer'); await attendre(p, 200); d = await docJ(p);
+  ok(d.plans.length === 4 && d.plans[2].transition.type === 'iris' && Math.abs((await D(p, () => window.__studio.total())) - 12.6) < 0.01, 'transition choisie, plan dupliqué (durée totale 12,6 s)');
+  await D(p, () => document.activeElement?.blur()); await p.keyboard.press('Control+z'); await attendre(p, 200); ok((await docJ(p)).plans.length === 3, 'annuler la duplication du plan');
+  await p.click('#lecture'); await attendre(p, 2600); const pl = await D(p, () => [window.__studio.S.t, window.__studio.S.doc.planActif]); await p.click('#lecture');
+  ok(pl[0] > 6.2 ? pl[1] === 2 : pl[0] > 2.6 ? pl[1] >= 1 : true, `lecture enchaînée des plans (t ${pl[0].toFixed(1)} s, plan ${pl[1] + 1})`);
+  await p.click('#ouvrir-export'); await attendre(p, 200); await p.selectOption('#export-gif-fps', '10');
+  const [dl] = await Promise.all([p.waitForEvent('download', { timeout: 90000 }), p.click('[data-export="gif"]')]); const fg = join(OUT, 'sequence.gif'); await dl.saveAs(fg); const gd = decoderGIF(new Uint8Array(readFileSync(fg)));
+  const tot = await D(p, () => window.__studio.total()); ok(gd.frames.length === Math.round(tot * 10), `GIF de toute la séquence : ${gd.frames.length} images pour ${tot.toFixed(1)} s`);
+  await p.keyboard.press('Escape'); await attendre(p, 600); await p.reload(); await prets(p); d = await docJ(p);
+  ok(d.plans?.length >= 3 && d.nom === 'Annonce en trois plans', 'plans retrouvés après rechargement');
+  ok(!err.length, `modèles et plans : aucune erreur JavaScript${err.length ? ' · ' + err.slice(0, 2).join(' | ') : ''}`); await ctx.close();
 }
 // Appareils émulés : mise en page, cibles tactiles, gestes
 for (const [nom, opt] of [

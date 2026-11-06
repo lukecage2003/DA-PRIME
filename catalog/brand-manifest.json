@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "name": "primestone-brand",
   "release": {
-    "version": "0.6.0",
+    "version": "0.7.0",
     "date": "2026-11-05",
     "channel": "provisoire"
   },
@@ -20,7 +20,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "case",
         "cadre",
@@ -62,7 +62,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "filet",
         "incision",
@@ -104,7 +104,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "filet",
         "incision",
@@ -146,7 +146,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "incision",
         "jaune"
@@ -187,7 +187,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "incision",
         "noir"
@@ -228,7 +228,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "rubrique",
         "actu"
@@ -269,7 +269,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "rubrique",
         "analyse",
@@ -311,7 +311,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "rubrique",
         "analyse",
@@ -353,7 +353,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "rubrique",
         "cosmique"
@@ -394,7 +394,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "rubrique",
         "evenement"
@@ -435,7 +435,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "rubrique",
         "guide"
@@ -476,7 +476,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "rubrique",
         "histoire"
@@ -517,7 +517,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "rubrique",
         "theorie"
@@ -558,7 +558,7 @@
       "category": "elements",
       "kind": "element",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "sceau",
         "jaune",
@@ -601,7 +601,7 @@
       "category": "elements",
       "kind": "element",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "sceau",
         "noir",
@@ -644,7 +644,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "trame",
         "benday",
@@ -686,7 +686,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "volet",
         "transition",
@@ -728,7 +728,7 @@
       "category": "elements",
       "kind": "grille",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "grid",
         "carrousel",
@@ -770,7 +770,7 @@
       "category": "elements",
       "kind": "grille",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "grid",
         "miniature",
@@ -812,7 +812,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "car",
         "avis",
@@ -847,7 +847,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "car",
         "chiffre",
@@ -883,7 +883,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "car",
         "couverture",
@@ -918,7 +918,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "car",
         "faits",
@@ -953,7 +953,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "car",
         "presentation",
@@ -989,7 +989,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "car",
         "recit",
@@ -1024,7 +1024,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "car",
         "planche",
@@ -1051,7 +1051,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "fiche",
         "personnage",
@@ -1086,7 +1086,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "fiche",
         "personnage",
@@ -1121,7 +1121,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "info",
         "barres",
@@ -1156,7 +1156,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "info",
         "chronologie",
@@ -1191,7 +1191,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "analyse",
@@ -1227,7 +1227,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "analyse",
@@ -1263,7 +1263,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "analyse",
@@ -1299,7 +1299,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "analyse",
@@ -1335,7 +1335,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "analyse",
@@ -1371,7 +1371,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "analyse",
@@ -1407,7 +1407,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "actualites",
@@ -1443,7 +1443,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "actualites",
@@ -1479,7 +1479,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "theories",
@@ -1514,7 +1514,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "theories",
@@ -1549,7 +1549,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "guides",
@@ -1584,7 +1584,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "guides",
@@ -1619,7 +1619,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "guides",
@@ -1654,7 +1654,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "evenements",
@@ -1690,7 +1690,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "evenements",
@@ -1726,7 +1726,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "histoire",
@@ -1761,7 +1761,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "histoire",
@@ -1796,7 +1796,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "cosmique",
@@ -1831,7 +1831,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "cosmique",
@@ -1866,7 +1866,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "affiche",
@@ -1876,8 +1876,16 @@
         "officiel"
       ],
       "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
-      "preview": "templates/miniatures/09-affiche-cinema/PS_MIN_09-affiche-cinema_ambre_NON-OFFICIEL.svg",
+      "preview": "templates/miniatures/09-affiche-cinema/exemples/PS_MIN_09-affiche-cinema_ambre_NON-OFFICIEL.jpg",
       "files": [
+        {
+          "path": "templates/miniatures/09-affiche-cinema/exemples/PS_MIN_09-affiche-cinema_ambre_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 75644,
+          "sha256": "ecb6d90605046177cf691dc54f731c077870db449b23553d62c5de160cf4e6f2",
+          "width": 1280,
+          "height": 720
+        },
         {
           "path": "templates/miniatures/09-affiche-cinema/PS_MIN_09-affiche-cinema_ambre_NON-OFFICIEL.svg",
           "format": "svg",
@@ -1894,7 +1902,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "affiche",
@@ -1904,8 +1912,16 @@
         "officiel"
       ],
       "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
-      "preview": "templates/miniatures/09-affiche-cinema/PS_MIN_09-affiche-cinema_nuit_NON-OFFICIEL.svg",
+      "preview": "templates/miniatures/09-affiche-cinema/exemples/PS_MIN_09-affiche-cinema_nuit_NON-OFFICIEL.jpg",
       "files": [
+        {
+          "path": "templates/miniatures/09-affiche-cinema/exemples/PS_MIN_09-affiche-cinema_nuit_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 69391,
+          "sha256": "0ccaa19894b2fca8e63e461644f5fbf3ec0750f8d51e88469486c991150b2c54",
+          "width": 1280,
+          "height": 720
+        },
         {
           "path": "templates/miniatures/09-affiche-cinema/PS_MIN_09-affiche-cinema_nuit_NON-OFFICIEL.svg",
           "format": "svg",
@@ -1922,7 +1938,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "duel",
@@ -1931,8 +1947,16 @@
         "officiel"
       ],
       "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
-      "preview": "templates/miniatures/10-duel/PS_MIN_10-duel_jaune_NON-OFFICIEL.svg",
+      "preview": "templates/miniatures/10-duel/exemples/PS_MIN_10-duel_jaune_NON-OFFICIEL.jpg",
       "files": [
+        {
+          "path": "templates/miniatures/10-duel/exemples/PS_MIN_10-duel_jaune_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 181698,
+          "sha256": "d974fe7363ff5b862947d3df43b2f423029ba5a7d56745d79d5603fb5ac7651c",
+          "width": 1280,
+          "height": 720
+        },
         {
           "path": "templates/miniatures/10-duel/PS_MIN_10-duel_jaune_NON-OFFICIEL.svg",
           "format": "svg",
@@ -1949,7 +1973,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "duel",
@@ -1958,8 +1982,16 @@
         "officiel"
       ],
       "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
-      "preview": "templates/miniatures/10-duel/PS_MIN_10-duel_rouge_NON-OFFICIEL.svg",
+      "preview": "templates/miniatures/10-duel/exemples/PS_MIN_10-duel_rouge_NON-OFFICIEL.jpg",
       "files": [
+        {
+          "path": "templates/miniatures/10-duel/exemples/PS_MIN_10-duel_rouge_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 178803,
+          "sha256": "0a7d11d5145ceae2ab009cf62546e40530f4ef7c24eb6c5fae06d345dba143fe",
+          "width": 1280,
+          "height": 720
+        },
         {
           "path": "templates/miniatures/10-duel/PS_MIN_10-duel_rouge_NON-OFFICIEL.svg",
           "format": "svg",
@@ -1976,7 +2008,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "une",
@@ -1986,8 +2018,16 @@
         "officiel"
       ],
       "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
-      "preview": "templates/miniatures/11-une-editoriale/PS_MIN_11-une-editoriale_encre_NON-OFFICIEL.svg",
+      "preview": "templates/miniatures/11-une-editoriale/exemples/PS_MIN_11-une-editoriale_encre_NON-OFFICIEL.jpg",
       "files": [
+        {
+          "path": "templates/miniatures/11-une-editoriale/exemples/PS_MIN_11-une-editoriale_encre_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 79398,
+          "sha256": "19a57803b5b9b60908c64ce2dc779c07bc34e75e82c7c06f16d3f78a3c476e03",
+          "width": 1280,
+          "height": 720
+        },
         {
           "path": "templates/miniatures/11-une-editoriale/PS_MIN_11-une-editoriale_encre_NON-OFFICIEL.svg",
           "format": "svg",
@@ -2004,7 +2044,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "une",
@@ -2014,8 +2054,16 @@
         "officiel"
       ],
       "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
-      "preview": "templates/miniatures/11-une-editoriale/PS_MIN_11-une-editoriale_papier_NON-OFFICIEL.svg",
+      "preview": "templates/miniatures/11-une-editoriale/exemples/PS_MIN_11-une-editoriale_papier_NON-OFFICIEL.jpg",
       "files": [
+        {
+          "path": "templates/miniatures/11-une-editoriale/exemples/PS_MIN_11-une-editoriale_papier_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 79424,
+          "sha256": "f8cd611a63a5d126c5e2c481336db38512f9d9b4e85c790a1ccaa128019eee05",
+          "width": 1280,
+          "height": 720
+        },
         {
           "path": "templates/miniatures/11-une-editoriale/PS_MIN_11-une-editoriale_papier_NON-OFFICIEL.svg",
           "format": "svg",
@@ -2032,7 +2080,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "planche",
@@ -2046,10 +2094,10 @@
         {
           "path": "templates/miniatures/PS_MIN_planche-168px_NON-OFFICIEL.png",
           "format": "png",
-          "bytes": 308727,
-          "sha256": "c72c35c029124b1556de5ce9768a715fd5a4b61db7acc23c0d0d712c2f9c4e1c",
+          "bytes": 435602,
+          "sha256": "5f2bd71ad89de26743cd75778c877ce94fa65991da0523d7b8e619d360685a13",
           "width": 912,
-          "height": 512
+          "height": 637
         }
       ]
     },
@@ -2059,7 +2107,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "logo",
         "icone",
@@ -2118,7 +2166,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "logo",
         "icone",
@@ -2177,7 +2225,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "logo",
         "icone",
@@ -2236,7 +2284,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "logo",
         "logotype",
@@ -2295,7 +2343,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "logo",
         "logotype",
@@ -2354,7 +2402,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "logo",
         "logotype",
@@ -2413,7 +2461,7 @@
       "category": "originaux",
       "kind": "logo",
       "status": "reference",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "logo",
         "icone",
@@ -2438,7 +2486,7 @@
       "category": "originaux",
       "kind": "logo",
       "status": "reference",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "logo",
         "logotype",
@@ -2464,7 +2512,7 @@
       "category": "originaux",
       "kind": "gabarit-miniature",
       "status": "reference",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "min",
         "superman",
@@ -2490,7 +2538,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "anton",
         "ofl"
@@ -2524,7 +2572,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "archivo",
         "bold"
@@ -2600,7 +2648,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "instrumentserif",
         "italic"
@@ -2640,7 +2688,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "jetbrainsmono",
         "bold"
@@ -2680,7 +2728,7 @@
       "category": "tokens",
       "kind": "tokens",
       "status": "provisoire",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "tags": [
         "tokens"
       ],

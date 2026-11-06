@@ -21,4 +21,11 @@ for (const [nom, modele, direction, w, h] of [['motion-personnage', 'personnage'
   }, [modele, direction, w, h]);
   writeFileSync(join(OUT, `${nom}.jpg`), Buffer.from(b64, 'base64')); console.log(`accueil/${nom}.jpg`);
 }
+// Modèles signature (format natif)
+for (const [nom, id] of [['signature-affiche', 'affiche-cinema'], ['signature-magazine', 'une-magazine'], ['signature-manifeste', 'manifeste']]) {
+  const b64 = await p.evaluate(async (id) => { const G = await import('../../templates/_systeme/studio-signatures.js'); await window.__studio.charger(G.docDepuisSignature(id));
+    const sc = await window.__studio.scenePrete(null, { final: true }), k = Math.min(1, 1200 / Math.max(sc.w, sc.h)), c = Object.assign(document.createElement('canvas'), { width: Math.round(sc.w * k), height: Math.round(sc.h * k) });
+    await window.__studio.ctx.rendu.precharger(sc); window.__studio.ctx.rendu.dessiner(c.getContext('2d'), sc, k); return c.toDataURL('image/jpeg', 0.84).split(',')[1]; }, id);
+  writeFileSync(join(OUT, `${nom}.jpg`), Buffer.from(b64, 'base64')); console.log(`accueil/${nom}.jpg`);
+}
 await b.close(); srv.close();

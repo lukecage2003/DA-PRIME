@@ -1,5 +1,15 @@
 # Journal des versions
 
+## 0.7.0 · 2026-11-06 · studio créatif : finition, plans, modèles signature, vitrine
+
+- Accueil : vitrine avec démonstration animée en direct (moteur de Motion Studio dans la page), trois points de départ, galerie, exports, confidentialité ; liens retour vers l'accueil depuis les deux outils.
+- Interface de l'Atelier et de Motion Studio : thème neutre, jaune réservé à l'action et à la sélection, icônes dessinées, panneaux et séquenceur plus lisibles.
+- Illustrations de démonstration originales (pop, noir, cosmos, encre), générées par `tools/gen-placeholders.mjs`.
+- Atelier : 3 familles aux directions distinctes (affiche cinéma, duel, une éditoriale) : 11 familles, 25 variantes.
+- Motion Studio : plans (états successifs d'une création) enchaînés par 6 transitions (fondu, volet, iris, zoom, éclair, glissement), lecture et exports de toute la séquence ; 4 modèles signature (affiche de cinéma, une de magazine, manifeste typographique, annonce en trois plans) ; vignettes des modèles rendues par le moteur ; 3 effets (brume, bandes cinémascope, impression décalée CMJ), 21 au total.
+- Correctif : toucher le fond de la scène ne sélectionne plus un effet plein cadre.
+- Tests : 109 tests Motion Studio (37 Node, 72 Chromium) ; 15 tests du moteur et 54 de l'Atelier, avec les 25 variantes.
+
 ## 0.6.0 · 2026-11-05 · lot 5 : Motion Studio, studio de composition et de motion design
 
 - Éditeur de composition libre : page blanche ou modèle ; éléments texte, illustration, forme, effet, groupe ; manipulation directe sur la scène (déplacer, redimensionner, pivoter, pincer), sélection multiple et lasso, grouper, verrouiller, masquer, ordre, alignement et répartition, copier-coller, annuler et rétablir (120 étapes), règles, guides, grille, magnétisme, zones sûres, zoom.

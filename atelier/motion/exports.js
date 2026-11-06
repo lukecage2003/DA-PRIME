@@ -69,7 +69,7 @@ export function initExports(ctx) {
     return svg.replace('<defs>', `<defs><style>${faces.join('')}</style>`);
   }
   async function gif() {
-    const { w: W, h: H } = S.doc.format, e = Math.min(1, o.gif / W), w = Math.round(W * e), h = Math.round(H * e), fps = o.gifFps, n = Math.max(2, Math.round(S.doc.duree * fps)), tr = o.transparent;
+    const { w: W, h: H } = S.doc.format, e = Math.min(1, o.gif / W), w = Math.round(W * e), h = Math.round(H * e), fps = o.gifFps, n = Math.max(2, Math.round(ctx.duree() * fps)), tr = o.transparent;
     const c = Object.assign(document.createElement('canvas'), { width: w, height: h }), g = c.getContext('2d', { willReadFrequently: true });
     const image = async (i) => { const sc = await ctx.scenePrete(i / fps, { sansFond: tr }); await ctx.rendu.precharger(sc); ctx.rendu.dessiner(g, sc, e); return g.getImageData(0, 0, w, h).data; };
     const ech = []; for (let i = 0; i < 6; i++) ech.push(await image(Math.round((i / 5) * (n - 1))));
@@ -78,7 +78,7 @@ export function initExports(ctx) {
     const b = new Blob([enc.fin()], { type: 'image/gif' }); ctx.telecharger(b, 'gif'); info(`GIF exporté · ${w} × ${h} · ${n} images à ${fps} i/s · ${(b.size / 1048576).toFixed(2)} Mo${tr ? ' · transparent' : ''}.`);
   }
   async function webm() {
-    const { w: W, h: H } = S.doc.format, e = o.vidDef * Math.min(1, 3840 / Math.max(W, H)), w = Math.round(W * e) & ~1, h = Math.round(H * e) & ~1, fps = o.vidFps, n = Math.max(1, Math.round(S.doc.duree * fps)), cc = await codecWebCodecs(w, h);
+    const { w: W, h: H } = S.doc.format, e = o.vidDef * Math.min(1, 3840 / Math.max(W, H)), w = Math.round(W * e) & ~1, h = Math.round(H * e) & ~1, fps = o.vidFps, n = Math.max(1, Math.round(ctx.duree() * fps)), cc = await codecWebCodecs(w, h);
     if (!cc) throw new Error('encodeur vidéo indisponible');
     const c = Object.assign(document.createElement('canvas'), { width: w, height: h }), g = c.getContext('2d'), images = []; let erreur = null;
     const enc = new VideoEncoder({ output: (ch) => { const d = new Uint8Array(ch.byteLength); ch.copyTo(d); images.push({ data: d, temps: ch.timestamp, cle: ch.type === 'key' }); }, error: (x) => { erreur = x; } });
@@ -91,15 +91,15 @@ export function initExports(ctx) {
       prog(i / n); if (i % 3 === 0) { info(`Encodage WebM… ${Math.round((i / n) * 100)} %`); await new Promise((r) => setTimeout(r)); }
     }
     await enc.flush(); enc.close(); if (erreur) throw erreur;
-    const b = muxerWebM({ codec: cc.nom, largeur: w, hauteur: h, duree: S.doc.duree, images }); ctx.telecharger(b, 'webm');
-    info(`WebM exporté · ${cc.nom.toUpperCase()} · ${w} × ${h} · ${fps} i/s · ${S.doc.duree} s · ${(b.size / 1048576).toFixed(2)} Mo.`);
+    const b = muxerWebM({ codec: cc.nom, largeur: w, hauteur: h, duree: ctx.duree(), images }); ctx.telecharger(b, 'webm');
+    info(`WebM exporté · ${cc.nom.toUpperCase()} · ${w} × ${h} · ${fps} i/s · ${ctx.duree()} s · ${(b.size / 1048576).toFixed(2)} Mo.`);
   }
   async function direct() {
     const { w: W, h: H } = S.doc.format, e = o.vidDef * Math.min(1, 1920 / Math.max(W, H)), w = Math.round(W * e) & ~1, h = Math.round(H * e) & ~1;
     const c = Object.assign(document.createElement('canvas'), { width: w, height: h }), g = c.getContext('2d'), s0 = await ctx.scenePrete(0); await ctx.rendu.precharger(s0); ctx.rendu.dessiner(g, s0, w / s0.w);
     const rec = new MediaRecorder(c.captureStream(o.vidFps), { mimeType: MIME_TEMPS_REEL, videoBitsPerSecond: Math.round(Math.min(20e6, w * h * o.vidFps * 0.15)) }), morceaux = [];
     rec.ondataavailable = (x) => x.data.size && morceaux.push(x.data); const fin = new Promise((ok) => { rec.onstop = ok; }); rec.start(250); const t0 = performance.now();
-    await new Promise((ok) => { const pas = async (now) => { const t = Math.min(S.doc.duree, (now - t0) / 1000); if (annule) return ok(); const sc = await ctx.scenePrete(t); await ctx.rendu.precharger(sc); ctx.rendu.dessiner(g, sc, w / sc.w); prog(t / S.doc.duree); info(`Enregistrement… ${Math.round((t / S.doc.duree) * 100)} % (garder l'onglet visible)`); if (t >= S.doc.duree) ok(); else requestAnimationFrame(pas); }; requestAnimationFrame(pas); });
+    await new Promise((ok) => { const pas = async (now) => { const t = Math.min(ctx.duree(), (now - t0) / 1000); if (annule) return ok(); const sc = await ctx.scenePrete(t); await ctx.rendu.precharger(sc); ctx.rendu.dessiner(g, sc, w / sc.w); prog(t / ctx.duree()); info(`Enregistrement… ${Math.round((t / ctx.duree()) * 100)} % (garder l'onglet visible)`); if (t >= ctx.duree()) ok(); else requestAnimationFrame(pas); }; requestAnimationFrame(pas); });
     await new Promise((r) => setTimeout(r, 200)); rec.stop(); await fin; if (annule) return info('Export annulé.');
     const ext = MIME_TEMPS_REEL.includes('mp4') ? 'mp4' : 'webm', b = new Blob(morceaux, { type: MIME_TEMPS_REEL.split(';')[0] }); ctx.telecharger(b, ext);
     info(`${ext.toUpperCase()} exporté (temps réel) · ${w} × ${h} · ${(b.size / 1048576).toFixed(2)} Mo.`);

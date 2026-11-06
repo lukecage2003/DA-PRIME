@@ -1,6 +1,6 @@
 // Motion Studio · stockage durable sur l'appareil (IndexedDB) et fichiers de projet / de bibliothèque.
 // Magasins : créations, ressources (images, polices), versions, modèles, composants, préréglages d'animation.
-import { parcourir, convertirV1, estV1, normaliserDoc, nouvelId } from '../../templates/_systeme/studio.js';
+import { parcourir, convertirV1, estV1, normaliserDoc, nouvelId, plansDe, synchroniserPlans } from '../../templates/_systeme/studio.js';
 
 const BASE = 'primestone-motion', VERSION = 2, MAGASINS = ['creations', 'ressources', 'versions', 'modeles', 'composants', 'presets'];
 let base = null;
@@ -30,7 +30,7 @@ export function migrer(d, placeholder) {
 
 // ---------- Fichiers ----------
 export function paquetProjet(doc, ressources) {
-  const r = Object.fromEntries(ressourcesUtilisees(doc.elements).map((id) => [id, ressources.get(id)]).filter(([, v]) => v));
+  synchroniserPlans(doc); const r = Object.fromEntries(ressourcesUtilisees(plansDe(doc).flatMap((p) => p.elements)).map((id) => [id, ressources.get(id)]).filter(([, v]) => v));
   return { format: 'primestone-motion', version: 2, exporte: new Date().toISOString(), creation: doc, ressources: r };
 }
 // Lit un fichier de projet (version 1 ou 2) ou une bibliothèque complète

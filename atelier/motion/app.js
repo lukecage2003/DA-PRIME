@@ -1,7 +1,7 @@
 // Motion Studio · application : rendu de l'aperçu, lecture, sauvegarde automatique et versions, imports (illustrations, polices,
 // projets), composants et modèles personnels, raccourcis clavier. Tout reste sur l'appareil : aucun serveur, aucune API externe.
 import { S, ecouter, notifier, modifier, charger, selectionner, selection, premier, ajouter, supprimer, dupliquer, grouper, degrouper, copier, coller, annuler, retablir, deplacer, nouvelElement } from './etat.js';
-import { rendreScene, instantPose, docDepuisModele, nouveauDocument, normaliserDoc, normaliserEl, creerElement, adapter, idRessource, nouvelId, parcourir } from '../../templates/_systeme/studio.js';
+import { rendreScene, rendreSequence, dureeTotale, debutPlan, planA, changerPlan, synchroniserPlans, ajouterPlan, supprimerPlan, plansDe, TRANSITIONS, instantPose, docDepuisModele, nouveauDocument, normaliserDoc, normaliserEl, creerElement, adapter, idRessource, nouvelId, parcourir } from '../../templates/_systeme/studio.js';
 import { palette, resoudre } from '../../templates/_systeme/studio-systemes.js';
 import { mesureMetriques } from '../../templates/_systeme/studio-texte.js';
 import PH from '../../templates/_systeme/placeholders.js';
@@ -27,17 +27,20 @@ const col = (v) => resoudre(v, palette(S.doc));
 const traitee = (e) => { const t = e.image.traitement, res = S.ressources.get(e.image.src); if (!TR.actif(t) || !res) return null; const r = TR.lire(e.image.src, t, col); if (r) return r; TR.preparer(res, e.image.src, t, col, () => dessiner()).catch(() => {}); return null; };
 const opts = (o = {}) => ({ mesure, traitee, police: (id) => { const r = S.ressources.get(id); return r ? { fam: r.fam } : null; }, ressource: (id) => S.ressources.get(id), placeholder, ...o });
 const scene = (t, o) => rendreScene(S.doc, t, opts(o));
+const sequence = (t, o) => rendreSequence(S.doc, t, opts(o));
+const total = () => dureeTotale(S.doc), debut = () => debutPlan(S.doc);
 // Scène prête pour l'export : traitements d'images calculés avant le rendu
-async function scenePrete(t, o) { const p = []; parcourir(S.doc.elements, (e) => { if (e.type === 'image' && e.image.src && TR.actif(e.image.traitement)) { const r = S.ressources.get(e.image.src); if (r) p.push(TR.preparer(r, e.image.src, e.image.traitement, col)); } }); await Promise.all(p); return scene(t, o); }
+async function scenePrete(t, o) { const p = []; parcourir(S.doc.elements, (e) => { if (e.type === 'image' && e.image.src && TR.actif(e.image.traitement)) { const r = S.ressources.get(e.image.src); if (r) p.push(TR.preparer(r, e.image.src, e.image.traitement, col)); } }); await Promise.all(p); return t === null || o?.final ? scene(t, o) : sequence(t, o); }
 
 // ---------- Contexte partagé avec les modules ----------
 const ctx = {
-  rendu, scenePrete, dessiner: () => dessiner(), arreter: () => arreter(), jouer: (t) => jouer(t), positionner: (t) => { arreter(); S.auto = false; S.t = Math.max(0, Math.min(S.doc.duree, t)); dessiner(); },
+  rendu, scenePrete, dessiner: () => dessiner(), arreter: () => arreter(), jouer: (t) => jouer(t), positionner: (t) => { arreter(); S.auto = false; S.t = Math.max(0, Math.min(total(), t)); const k = planA(S.doc, S.t).i; if (S.doc.plans && k !== S.doc.planActif) allerAuPlan(k, false); dessiner(); },
+  duree: total, debut, local: () => S.t - debut(), vignette: (d) => vignette(d),
   editerTexte: () => { panneaux.onglet('proprietes'); setTimeout(() => { const z = $('#champ-contenu'); z?.focus(); z?.select(); }, 30); },
   apresGeste: () => panneaux.rafraichir(), telecharger, importerImages: () => { cible = null; $('#fichier-image').click(); }, importerPolice, remplacerImage: (e) => { cible = e.id; $('#fichier-image').removeAttribute('multiple'); $('#fichier-image').click(); },
   insererImage: (id) => { const r = S.ressources.get(id); ajouter(elementImage(r, id)); }, enregistrerComposant, insererComposant, enregistrerModele, depuisModelePerso, enregistrerPreset, presets: () => presets,
   enregistrerVersion: async () => { const n = prompt('Nom de la version', `Version du ${new Date().toLocaleString('fr-FR')}`); if (n === null) return; await sauverMaintenant(); await enregistrerVersion(S.doc, n || 'Version'); ctx.listerVersions(); info('Version enregistrée.'); },
-  listerVersions, declinaison, nouvelle, ouvrir, depuisModele, dupliquerCreation, supprimerCreation, enregistrerProjet, ouvrirProjet: () => $('#fichier-projet').click(), exporterBibliotheque,
+  listerVersions, declinaison, nouvelle, ouvrir, depuisModele, depuisSignature, dupliquerCreation, supprimerCreation, enregistrerProjet, ouvrirProjet: () => $('#fichier-projet').click(), exporterBibliotheque,
 };
 let presets = [], cible = null;
 const vue = initScene(ctx), panneaux = initPanneaux(ctx), seq = initSequenceur(ctx), biblio = initBibliotheque(ctx), exp = initExports(ctx);
@@ -48,10 +51,10 @@ function dessiner() {
   if (planifie || !S.doc) return; planifie = true;
   requestAnimationFrame(async () => {
     planifie = false; const e = vue.dimensionner();
-    if (S.auto && !S.lecture) S.t = instantPose(S.doc);
-    const sc = scene(S.t); await rendu.precharger(sc); rendu.dessiner(g, sc, e); S.derniere = sc;
+    if (S.auto && !S.lecture) S.t = debut() + instantPose(S.doc);
+    const sc = S.lecture ? sequence(S.t) : scene(Math.max(0, S.t - debut())); await rendu.precharger(sc); rendu.dessiner(g, sc, e); S.derniere = sc;
     vue.dessiner(); seq.tete();
-    $('#temps').max = S.doc.duree; $('#temps').value = S.t; $('#temps-lu').textContent = `${S.t.toFixed(1).replace('.', ',')} s / ${String(S.doc.duree).replace('.', ',')} s`;
+    $('#temps').max = total(); $('#temps').value = S.t; $('#temps-lu').textContent = `${S.t.toFixed(1).replace('.', ',')} s / ${String(Math.round(total() * 10) / 10).replace('.', ',')} s`;
     if (!S.lecture) alertes(sc.alertes);
   });
 }
@@ -64,9 +67,9 @@ function alertes(al) {
 const info = (t) => { $('#aide').textContent = t; };
 
 // ---------- Lecture ----------
-function jouer(depuis = S.t >= S.doc.duree - 0.01 ? 0 : S.t) {
+function jouer(depuis = S.t >= total() - 0.01 ? 0 : S.t) {
   arreter(); S.auto = false; const t0 = performance.now() - depuis * 1000; S.lecture = { id: 0 }; $('#lecture').innerHTML = `${icone('pause', 16)}<span>Pause</span>`; $('#lecture').setAttribute('aria-pressed', 'true'); vue.dessiner();
-  const pas = (now) => { if (!S.lecture) return; S.t = (now - t0) / 1000; if (S.t >= S.doc.duree) { if (S.doc.boucle) return jouer(0); S.t = S.doc.duree; arreter(); return dessiner(); } dessiner(); S.lecture.id = requestAnimationFrame(pas); };
+  const pas = (now) => { if (!S.lecture) return; S.t = (now - t0) / 1000; if (S.t >= total()) { if (S.doc.boucle) return jouer(0); S.t = total(); arreter(); return dessiner(); } const k = planA(S.doc, S.t).i; if (S.doc.plans && k !== S.doc.planActif) allerAuPlan(k, false); dessiner(); S.lecture.id = requestAnimationFrame(pas); };
   S.lecture.id = requestAnimationFrame(pas);
 }
 function arreter() { if (S.lecture) cancelAnimationFrame(S.lecture.id); S.lecture = null; $('#lecture').innerHTML = `${icone('lecture', 16)}<span>Lecture</span>`; $('#lecture').setAttribute('aria-pressed', 'false'); }
@@ -77,6 +80,7 @@ $('#temps').addEventListener('input', () => ctx.positionner(+$('#temps').value))
 // ---------- Événements de l'état ----------
 ecouter((q) => {
   if (q === 'charge' || q === 'sel') { panneaux.reconstruire(q); seq.construire(); $('#nom').value = S.doc.nom; }
+  if (q !== 'sel') plans();
   if (q === 'doc') { panneaux.rafraichir(); seq.construire(); sauver(); }
   $('#annuler').disabled = !S.hist.length; $('#retablir').disabled = !S.futur.length;
   dessiner();
@@ -88,13 +92,32 @@ $('#ouvrir-export').addEventListener('click', () => exp.ouvrir());
 for (const b of document.querySelectorAll('[data-ajout]')) b.addEventListener('click', () => { const t = b.dataset.ajout;
   if (t === 'texte') nouvelElement('texte', { role: 'titre' }); else if (t === 'image') ctx.importerImages(); else biblio.ouvrir({ forme: 'formes', effet: 'effets', composant: 'composants' }[t]); });
 
+// ---------- Plans : états successifs de la création, enchaînés par des transitions ----------
+function allerAuPlan(k, auto = true) { changerPlan(S.doc, k); S.sel = []; if (auto) { S.auto = true; } notifier('doc'); notifier('sel'); }
+function plans() {
+  const z = $('#plans'); if (!z || !S.doc) return; const ps = plansDe(S.doc), a = S.doc.planActif || 0, multi = ps.length > 1;
+  const b = (txt, fn, p = {}) => bouton(txt, fn, p);
+  const puces = ps.map((p, i) => { const x = b(`${i + 1} · ${p.nom} · ${String(p.duree).replace('.', ',')} s`, () => { arreter(); allerAuPlan(i); }, { ariaPressed: String(i === a), className: 'plan', dataset: { plan: String(i) } });
+    x.addEventListener('dblclick', () => { const n = prompt('Nom du plan', p.nom); if (n && multi) modifier((d) => { synchroniserPlans(d); d.plans[i].nom = n; }); }); return x; });
+  const ajout = b('+ Plan', () => { arreter(); modifier((d) => ajouterPlan(d)); S.sel = []; notifier('sel'); }, { id: 'plan-ajouter', title: 'Ajouter un plan vide après le plan actif' });
+  const dup = b('Dupliquer le plan', () => { arreter(); modifier((d) => ajouterPlan(d, { dupliquer: true })); S.sel = []; notifier('sel'); }, { id: 'plan-dupliquer' });
+  const parts = [el('span', { className: 'etiquette', textContent: 'Plans' }), ...puces, ajout, dup];
+  if (multi) {
+    const tr = S.doc.plans[a].transition, sel = el('select', { id: 'plan-transition', disabled: a === 0 }, ...Object.entries(TRANSITIONS).map(([k, v]) => el('option', { value: k, textContent: v }))); sel.value = a ? tr.type : 'coupe';
+    sel.addEventListener('change', () => modifier((d) => { d.plans[a].transition.type = sel.value; }));
+    const du = el('input', { type: 'number', id: 'plan-transition-duree', min: 0.1, max: 3, step: 0.1, value: tr.duree, disabled: a === 0 }); du.addEventListener('input', () => +du.value > 0 && modifier((d) => { d.plans[a].transition.duree = Math.min(3, +du.value); }, 'trd'));
+    parts.push(el('label', { className: 'champ en-ligne' }, 'Transition d\'entrée', sel), el('label', { className: 'champ en-ligne' }, 'Durée', du), b('Supprimer le plan', () => { if (confirm('Supprimer ce plan et ses calques ?')) { arreter(); modifier((d) => supprimerPlan(d)); S.sel = []; notifier('sel'); } }, { id: 'plan-supprimer' }));
+  }
+  z.replaceChildren(...parts);
+}
+
 // ---------- Stockage ----------
 let minuterie = null, derniereVersion = Date.now();
 function sauver() { clearTimeout(minuterie); minuterie = setTimeout(() => sauverMaintenant(true), 500); }
 async function sauverMaintenant(apercu = false) {
   clearTimeout(minuterie); if (!S.doc) return; S.doc.modifie = Date.now();
   try {
-    const o = JSON.parse(JSON.stringify(S.doc)); if (apercu) o.apercu = await vignette(); else o.apercu = (await db.lire('creations', S.doc.id))?.apercu;
+    synchroniserPlans(S.doc); const o = JSON.parse(JSON.stringify(S.doc)); if (apercu) o.apercu = await vignette(); else o.apercu = (await db.lire('creations', S.doc.id))?.apercu;
     await db.ecrire('creations', o); localStorage.setItem(DERNIERE, S.doc.id);
     if (Date.now() - derniereVersion > 10 * 60 * 1000) { derniereVersion = Date.now(); await enregistrerVersion(S.doc, 'Automatique', true); }
     $('#sauvegarde').textContent = `Enregistré à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
@@ -112,6 +135,7 @@ async function ouvrirDoc(doc, ressources = {}) {
 }
 async function ouvrir(id) { await sauverMaintenant(); const d = await db.lire('creations', id); if (!d) return info('Création introuvable.'); try { const { doc, ressources } = migrer(d, placeholder); await ouvrirDoc(doc, ressources); } catch (e) { info(`Création illisible (${e.message}). Ses versions restent disponibles.`); } }
 async function nouvelle({ format = '16:9', systeme = 'comics' } = {}) { await sauverMaintenant(); await ouvrirDoc(nouveauDocument({ format, systeme })); }
+async function depuisSignature(id, format) { await sauverMaintenant(); const { docDepuisSignature } = await import('../../templates/_systeme/studio-signatures.js'); await ouvrirDoc(docDepuisSignature(id, { format })); }
 async function depuisModele(id, direction, format) { await sauverMaintenant(); const f = format && (await import('../../templates/_systeme/studio-systemes.js')).format(format); await ouvrirDoc(docDepuisModele(id, { direction, w: f?.w || 1920, h: f?.h || 1080, placeholder })); }
 async function dupliquerCreation(id) { const d = await db.lire('creations', id); if (!d) return; await db.ecrire('creations', { ...JSON.parse(JSON.stringify(d)), id: nouvelId('c'), nom: `${d.nom} (copie)`, modifie: Date.now() }); }
 async function supprimerCreation(id) { await db.suppr('creations', id); for (const v of await versionsDe(id)) await db.suppr('versions', v.id); if (id === S.doc.id) await nouvelle({ format: S.doc.format.id, systeme: S.doc.systeme }); }
@@ -209,6 +233,7 @@ let premierDoc = null; try { const id = localStorage.getItem(DERNIERE); if (id) 
 try { if (premierDoc) { const { doc, ressources } = migrer(premierDoc, placeholder); await ouvrirDoc(doc, ressources); } else throw 0; }
 catch { await ouvrirDoc(docDepuisModele('annonce', { direction: 'pop', placeholder })); }
 persister();
+if (location.hash === '#modeles') biblio.ouvrir('modeles');
 document.documentElement.dataset.version = T.$version;
 if ('serviceWorker' in navigator && window.isSecureContext) navigator.serviceWorker.register('../sw.js').catch(() => {});
-window.__studio = { S, scene, scenePrete, exp, MIME_TEMPS_REEL, ctx, charger: ouvrirDoc, sauver: sauverMaintenant };   // utilisé par les tests automatisés
+window.__studio = { S, scene, sequence, opts, total, scenePrete, exp, MIME_TEMPS_REEL, ctx, charger: ouvrirDoc, sauver: sauverMaintenant };   // utilisé par les tests automatisés

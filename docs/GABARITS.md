@@ -8,7 +8,7 @@
 templates/
   _systeme/
     briques.js       formats, couleurs, grille, mesure et ajustement du texte, formes, images, filtres
-    familles.js      les 8 familles de miniatures et leurs variantes
+    familles.js      les 11 familles de miniatures et leurs variantes
     kiosque.js       les gabarits Kiosque 4:5 (lot 3)
     infographies.js  structures de données, validation, schéma JSON et gabarits d'infographies
     editorial.js     briques Kiosque partagées
@@ -41,7 +41,7 @@ Un gabarit déclare ses champs (`texte`, `texte-long`, `choix`, `image`, `json`)
 
 Briques partagées : `briques.js` (formats, texte, formes, images, filtres) et `editorial.js` (masthead, trame, styles serif, corps et mono, communs à Kiosque et aux infographies).
 
-## Les 8 familles (19 variantes)
+## Les 11 familles (25 variantes)
 
 | Famille | Variantes | Images |
 |---|---|---|
@@ -53,6 +53,9 @@ Briques partagées : `briques.js` (formats, texte, formes, images, filtres) et `
 | 06 · Événements | Titre en bas · Titre en haut | 2 personnages, un par univers |
 | 07 · Histoire des comics | Bichromie · Image en couleur | personnage détouré (année géante) |
 | 08 · Dossiers cosmiques et multiversels | Décor seul · Personnage en surimpression | décor plein cadre (+ personnage) |
+| 09 · Affiche cinéma | Nuit argentée · Ambre | image plein cadre assombrie, bandes de format scope, accroche en italique, titre espacé |
+| 10 · Duel | Coupe jaune · Coupe rouge | 2 images en coupe diagonale, badge central, noms des deux combattants |
+| 11 · Une éditoriale | Papier · Encre | visuel encadré à ombre décalée, filets, accroche en italique, numéro |
 
 Constantes de toutes les familles : rubrique en haut à gauche, sceau en bas à gauche, marge de 58 px, coin bas droit (192 × 80 px) laissé libre pour la durée, crédit vertical au bord droit.
 

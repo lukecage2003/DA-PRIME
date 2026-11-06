@@ -1,4 +1,4 @@
-# Motion Studio · studio de composition et de motion design (lot 5, version 0.6.0)
+# Motion Studio · studio de composition et de motion design (version 0.7.0)
 
 Motion Studio est l'outil de création graphique et d'animation de l'Atelier, spécialisé dans les comics, les super-héros, les univers fictifs et la pop culture. Il s'ouvre depuis le bouton *Motion Studio →* de l'Atelier (`atelier/motion/`).
 
@@ -78,11 +78,11 @@ Chaque effet est un calque : il se déplace, se redimensionne, se masque, s'anim
 
 | Catégorie | Effets |
 |---|---|
-| Impression | trame halftone (radiale, linéaire, Ben-Day uniforme, inversée), texture papier, grain, motifs (rayures, quadrillage, pois, zigzag) |
+| Impression | trame halftone (radiale, linéaire, Ben-Day uniforme, inversée), texture papier, grain, motifs (rayures, quadrillage, pois, zigzag), impression décalée CMJ |
 | Mouvement | lignes de vitesse (radiales), lignes de mouvement (parallèles) |
 | Impact | explosion, impact |
 | Énergie | éclairs, aura d'énergie |
-| Lumière | rayons lumineux, lumière (halo, projecteur, reflets d'objectif), dégradé, vignettage |
+| Lumière | rayons lumineux, lumière (halo, projecteur, reflets d'objectif), dégradé, vignettage, brume, bandes cinémascope |
 | Particules | poussière, étincelles montantes, chute, éclatement |
 | Cosmos | champ d'étoiles, nébuleuse, crépitement cosmique |
 
@@ -116,6 +116,14 @@ Chaque calque a sa propre animation, en trois parties combinables :
 **Composition** : durée (1 à 60 s), lecture en boucle, **caméra** (poussée, recul, travelling, secousse) et **profondeur** de chaque calque pour une parallaxe multicouche.
 
 **Séquenceur** : une piste par calque ; faire glisser la barre bleue change le délai d'entrée, son bord droit sa durée ; la barre rouge règle la sortie ; la tête de lecture se déplace sur la règle des temps. Ce n'est pas une timeline de montage : pas de clips, de pistes audio ni d'images clés libres.
+
+## Plans et transitions
+
+Une création peut enchaîner plusieurs **plans** : des états visuels successifs (teaser, révélation, date…), chacun avec ses propres calques, animations et durée. La barre *Plans*, sous la scène, permet d'ajouter un plan vide, de dupliquer le plan actif, de le supprimer, de le renommer (double-clic) et de choisir sa **transition d'entrée** : coupe franche, fondu enchaîné, volet diagonal, iris, zoom traversant, éclair blanc, glissement (0,1 à 3 s). Le curseur de temps et la lecture parcourent toute la séquence ; le séquenceur montre le plan actif. Les exports animés (GIF, WebM, MP4) couvrent toute la séquence ; les images fixes montrent le plan actif.
+
+## Modèles signature
+
+Quatre compositions libres, chacune avec sa direction artistique, entièrement modifiables : **Affiche de cinéma** (4:5, nuit, lumière volumétrique, brume, titre espacé, bloc de crédits), **Une de magazine** (4:5, grille éditoriale, titraille, personnage détouré), **Manifeste typographique** (1:1, collage expérimental, déformations, ruptures d'échelle), **Annonce en trois plans** (16:9, teaser, révélation et date enchaînés par un éclair et un volet). Elles s'ouvrent dans leur format natif ou adaptées au format choisi. Les vignettes de la bibliothèque sont rendues par le moteur.
 
 ## Formats
 
@@ -183,7 +191,7 @@ Aucune dépendance n'a été ajoutée. Licences et activité vérifiées sur le 
 
 ## Vérifié et non vérifié
 
-`npm run test:motion` (inclus dans `npm test`) exécute les tests du moteur dans Node puis ceux de l'éditeur dans Chromium. **93 tests** : 32 dans Node (modèles du MVP ; 96 modèles convertis ; 6 systèmes × styles, formes, effets et composants à 4 instants ; déterminisme ; typographie ; courbes, entrées, boucles, sorties, caméra ; groupes et matrices ; adaptation de format ; jetons de couleur ; migration du MVP ; document invalide ; encodeurs GIF et WebM) et 61 dans Chromium (page blanche, texte, styles, déformation, annuler et rétablir, bibliothèque, déplacement, poignées, rotation, alignement, groupe, duplication, calques, import multiple et original intact, masque, bichromie, recadrage, remplacement, animation par calque, préréglage, échelonnement, séquenceur, lecture, système, caméra, format A4, police locale, composant, version, modèle personnel, sauvegarde et rechargement, recherche, projet et bibliothèque en fichier, PNG ×1 et ×2 transparent, JPG, SVG, GIF, WebM image par image et MP4 temps réel relus par le navigateur, hors ligne, transfert vers un autre appareil, ouverture d'un projet du MVP, Galaxy S25, iPad M2 portrait et paysage, Windows 1366 px).
+`npm run test:motion` (inclus dans `npm test`) exécute les tests du moteur dans Node puis ceux de l'éditeur dans Chromium. **109 tests** : 37 dans Node (dont plans, transitions et modèles signature ; (modèles du MVP ; 96 modèles convertis ; 6 systèmes × styles, formes, effets et composants à 4 instants ; déterminisme ; typographie ; courbes, entrées, boucles, sorties, caméra ; groupes et matrices ; adaptation de format ; jetons de couleur ; migration du MVP ; document invalide ; encodeurs GIF et WebM) et 72 dans Chromium (accueil et démonstration animée, modèles signature et vignettes, plans, transitions, lecture enchaînée, GIF de toute la séquence, page blanche, texte, styles, déformation, annuler et rétablir, bibliothèque, déplacement, poignées, rotation, alignement, groupe, duplication, calques, import multiple et original intact, masque, bichromie, recadrage, remplacement, animation par calque, préréglage, échelonnement, séquenceur, lecture, système, caméra, format A4, police locale, composant, version, modèle personnel, sauvegarde et rechargement, recherche, projet et bibliothèque en fichier, PNG ×1 et ×2 transparent, JPG, SVG, GIF, WebM image par image et MP4 temps réel relus par le navigateur, hors ligne, transfert vers un autre appareil, ouverture d'un projet du MVP, Galaxy S25, iPad M2 portrait et paysage, Windows 1366 px).
 
 **Non vérifié** : aucun appareil physique ; ni Safari, ni Samsung Internet, ni Firefox (seul Chromium est disponible ici). Les gestes tactiles sont des événements tactiles réels de Chromium sur des appareils émulés. Les fichiers vidéo sont vérifiés par lecture dans Chromium (dimensions et durée), pas dans des lecteurs ou logiciels externes.
 
@@ -202,7 +210,6 @@ Aucune dépendance n'a été ajoutée. Licences et activité vérifiées sur le 
 ## Backlog (non livré)
 
 - Détourage automatique de personnages sur fond complexe (modèle de segmentation local : poids, licence et fiabilité à évaluer).
-- États et scènes successives dans une même composition (transitions entre plans).
 - Images clés libres et trajectoires de mouvement dessinées ; morphing de formes.
 - Masques animés dessinés à la main, masques d'écrêtage entre calques.
 - Export MP4 image par image (multiplexeur MP4), vidéo à transparence (WebM VP9 alpha), séquence PNG, son.

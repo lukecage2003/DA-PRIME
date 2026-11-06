@@ -1,7 +1,7 @@
 // Primestone · Motion Studio · cœur du studio de composition libre (module ES sans dépendance, Node et navigateur).
 // Document (version 2) : format, système graphique, fond, caméra, éléments (texte, image, forme, effet, groupe, vecteur).
 // rendreScene(doc, t) -> liste d'affichage + boîtes de sélection + contrôles. Le même résultat alimente l'aperçu et tous les exports.
-import { C, clamp, r1, placer, M } from './motion-base.js';
+import { C, clamp, r1, placer, M, ease } from './motion-base.js';
 import { SYSTEMES, palette, resoudre, format as fmt, FORMATS_STUDIO } from './studio-systemes.js';
 import { forme, contour } from './studio-formes.js';
 import { texteNoeuds, mesureMetriques, capRatio } from './studio-texte.js';
@@ -31,6 +31,7 @@ export function normaliserDoc(d) {
     duree: clamp(+d.duree || 6, 1, 60), boucle: d.boucle ?? true, camera: { type: 'aucune', intensite: 0.5, ...(d.camera || {}) },
     grille: { pas: 60, visible: false, aimant: true, ...(d.grille || {}) }, guides: { h: [...(d.guides?.h || [])], v: [...(d.guides?.v || [])] }, zonesSures: d.zonesSures ?? false,
     elements: (d.elements || []).map(normaliserEl), cree: d.cree || Date.now(), modifie: d.modifie, origine: d.origine,
+    ...(Array.isArray(d.plans) && d.plans.length > 1 ? { plans: d.plans.map((p, i) => normaliserPlan(p, i)), planActif: Math.min(d.plans.length - 1, Math.max(0, d.planActif | 0)) } : {}),
   };
 }
 const BASE = { x: 0, y: 0, w: 400, h: 200, rot: 0, op: 1, visible: true, verrou: false, blend: 'normal', prof: 0, miroir: false };
@@ -234,3 +235,47 @@ export function docDepuisModele(id, { direction, w = 1920, h = 1080, placeholder
   const fid = Object.entries(FORMATS_STUDIO).find(([, f]) => f.w === w && f.h === h)?.[0]; d.format = fid ? fmt(fid) : fmt('perso', w, h); d.nom = MODELES[id].nom; return d;
 }
 export const estV1 = (d) => !d?.v || d.v < 2;
+
+// ---------- Plans : états visuels successifs d'une même création, enchaînés par des transitions ----------
+// doc.elements et doc.duree sont toujours ceux du plan actif ; doc.plans garde les autres plans.
+export const TRANSITIONS = { coupe: 'Coupe franche', fondu: 'Fondu enchaîné', volet: 'Volet diagonal', zoom: 'Zoom traversant', flash: 'Éclair blanc', glissement: 'Glissement', iris: 'Iris' };
+function normaliserPlan(p, i) { return { id: p.id || nouvelId('p'), nom: String(p.nom || `Plan ${i + 1}`), duree: clamp(+p.duree || 4, 0.5, 60), transition: { type: TRANSITIONS[p.transition?.type] ? p.transition.type : i ? 'fondu' : 'coupe', duree: clamp(+p.transition?.duree || 0.6, 0.1, 3) }, elements: (p.elements || []).map(normaliserEl) }; }
+export function plansDe(doc) {
+  if (!doc.plans || doc.plans.length < 2) return [{ id: 'unique', nom: 'Plan 1', duree: doc.duree, transition: { type: 'coupe', duree: 0 }, elements: doc.elements }];
+  return doc.plans.map((p, i) => (i === doc.planActif ? { ...p, elements: doc.elements, duree: doc.duree } : p));
+}
+export const dureeTotale = (doc) => plansDe(doc).reduce((s, p) => s + p.duree, 0);
+export const debutPlan = (doc, i = doc.planActif || 0) => plansDe(doc).slice(0, i).reduce((s, p) => s + p.duree, 0);
+export const planA = (doc, t) => { const ps = plansDe(doc); let d = 0; for (let i = 0; i < ps.length; i++) { if (t < d + ps[i].duree || i === ps.length - 1) return { i, debut: d }; d += ps[i].duree; } return { i: 0, debut: 0 }; };
+// Écrit le plan actif dans doc.plans (avant enregistrement, changement de plan ou export)
+export function synchroniserPlans(doc) { if (doc.plans?.length > 1) { const p = doc.plans[doc.planActif]; p.elements = doc.elements; p.duree = doc.duree; } return doc; }
+export function changerPlan(doc, k) { if (!doc.plans || k === doc.planActif || !doc.plans[k]) return; synchroniserPlans(doc); doc.planActif = k; doc.elements = doc.plans[k].elements; doc.duree = doc.plans[k].duree; }
+export function ajouterPlan(doc, { dupliquer = false } = {}) {
+  if (!doc.plans || doc.plans.length < 2) doc.plans = [{ id: nouvelId('p'), nom: 'Plan 1', duree: doc.duree, transition: { type: 'coupe', duree: 0.6 }, elements: doc.elements }], doc.planActif = 0;
+  synchroniserPlans(doc); const re = (e) => { e.id = nouvelId(); e.enfants?.forEach(re); return e; };
+  const n = { id: nouvelId('p'), nom: `Plan ${doc.plans.length + 1}`, duree: dupliquer ? doc.duree : 4, transition: { type: 'fondu', duree: 0.6 }, elements: dupliquer ? JSON.parse(JSON.stringify(doc.elements)).map(re) : [] };
+  doc.plans.splice(doc.planActif + 1, 0, n); changerPlan(doc, doc.planActif + 1); return n;
+}
+export function supprimerPlan(doc) {
+  if (!doc.plans || doc.plans.length < 2) return; const k = doc.planActif; doc.plans.splice(k, 1); const j = Math.max(0, k - 1);
+  doc.planActif = j; doc.elements = doc.plans[j].elements; doc.duree = doc.plans[j].duree; if (doc.plans.length < 2) { delete doc.plans; delete doc.planActif; }
+}
+// Rendu de toute la séquence à l'instant global t ; une transition occupe le début du plan qui arrive
+export function rendreSequence(doc, t, opts = {}) {
+  const ps = plansDe(doc); if (ps.length < 2 || opts.final || t === null) return rendreScene(doc, t, opts);
+  const T = dureeTotale(doc), tg = clamp(t, 0, T), { i, debut } = planA(doc, tg), tl = tg - debut, p = ps[i], { w: W, h: H } = doc.format;
+  const sc = rendreScene({ ...doc, elements: p.elements, duree: p.duree }, tl, opts), tr = p.transition;
+  if (!i || tr.type === 'coupe' || tl >= tr.duree) return { ...sc, t: tg, duree: T, plan: i };
+  const pr = ps[i - 1], av = rendreScene({ ...doc, elements: pr.elements, duree: pr.duree }, pr.duree, opts).nodes, q = ease.inOut(clamp(tl / tr.duree)), g = (kids, o = {}) => ({ k: 'g', kids, ...o });
+  let nodes;
+  switch (tr.type) {
+    case 'fondu': nodes = [...av, g(sc.nodes, { op: q })]; break;
+    case 'volet': { const o = H * 0.35, x = -o + (W + 2 * o) * q; nodes = [...av, g(sc.nodes, { clip: [-o - 2, -2, x + o, -2, x - o, H + 2, -o - 2, H + 2].map(r1) })]; break; }
+    case 'iris': { const pts = []; for (let k = 0; k < 48; k++) { const a = (k / 48) * Math.PI * 2, R = Math.hypot(W, H) * 0.55 * q; pts.push(r1(W / 2 + Math.cos(a) * R), r1(H / 2 + Math.sin(a) * R)); } nodes = [...av, g(sc.nodes, { clip: pts })]; break; }
+    case 'zoom': nodes = [g(av, { op: 1 - q, tr: { x: 0, y: 0, s: 1 + q * 0.35, r: 0, ox: W / 2, oy: H / 2 } }), g(sc.nodes, { op: q, tr: { x: 0, y: 0, s: 1.25 - 0.25 * q, r: 0, ox: W / 2, oy: H / 2 } })]; break;
+    case 'flash': nodes = [...(q < 0.5 ? av : sc.nodes), { k: 'rect', x: 0, y: 0, w: W, h: H, fill: '#FFFFFF', op: r1((1 - Math.abs(q * 2 - 1)) * 100) / 100 }]; break;
+    case 'glissement': nodes = [g(av, { tr: { x: r1(-q * W), y: 0, s: 1, r: 0, ox: 0, oy: 0 } }), g(sc.nodes, { tr: { x: r1((1 - q) * W), y: 0, s: 1, r: 0, ox: 0, oy: 0 } })]; break;
+    default: nodes = sc.nodes;
+  }
+  return { ...sc, nodes, t: tg, duree: T, plan: i };
+}

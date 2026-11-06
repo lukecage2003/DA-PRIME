@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Atelier Primestone · création graphique et motion design pour les comics</title>
-<meta name="description" content="Miniatures YouTube, carrousels, infographies et créations animées pour les comics et la pop culture. Gratuit, sans compte, tout reste sur votre appareil.">
+<title>Atelier Primestone · studio de création graphique et de motion design pour les comics</title>
+<meta name="description" content="Affiches animées, révélations de couvertures, annonces, miniatures YouTube et carrousels pour les comics et la pop culture. Gratuit, sans compte : tout reste sur votre appareil.">
 <meta name="theme-color" content="#0E0E10">
 <meta property="og:title" content="Atelier Primestone">
-<meta property="og:description" content="Création graphique et motion design pour les comics, directement dans le navigateur.">
+<meta property="og:description" content="Studio de création graphique et de motion design pour les comics, directement dans le navigateur.">
 <meta property="og:image" content="https://lukecage2003.github.io/DA-PRIME/accueil/motion-evenement.jpg">
 <meta property="og:type" content="website">
 <link rel="icon" href="brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png">
@@ -15,90 +15,141 @@
 <style>
 :root { --fond:#0E0E10; --surface:#16161A; --ligne:#2A2A31; --texte:#ECEBE7; --doux:#8F8E96; --jaune:#FFE500; color-scheme:dark; }
 * { box-sizing:border-box; } html { scroll-behavior:smooth; }
-body { margin:0; background:var(--fond); color:var(--texte); font:16px/1.55 Archivo, system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+body { margin:0; background:var(--fond); color:var(--texte); font:16px/1.55 Archivo, system-ui, sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.05; z-index:0; background-image:radial-gradient(#fff 1px, transparent 1.3px); background-size:6px 6px; }
 a { color:inherit; }
-.page { max-width:1200px; margin:0 auto; padding:0 max(20px, env(safe-area-inset-left)); }
+.page { position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:0 max(20px, env(safe-area-inset-left)); }
 header { display:flex; align-items:center; gap:24px; padding:20px 0; }
-.logo { font:400 22px/1 Anton, Impact, sans-serif; text-transform:uppercase; color:var(--jaune); text-decoration:none; letter-spacing:.01em; }
-nav { display:flex; gap:20px; margin-left:auto; font-size:14px; } nav a { color:var(--doux); text-decoration:none; } nav a:hover { color:var(--texte); }
-.bouton { display:inline-flex; align-items:center; gap:10px; min-height:48px; padding:0 22px; border-radius:8px; font-weight:700; text-decoration:none; border:1px solid var(--ligne); background:#1D1D22; transition:background .15s, transform .15s; }
+.logo { font:400 22px/1 Anton, Impact, sans-serif; text-transform:uppercase; color:var(--jaune); text-decoration:none; }
+nav { display:flex; gap:22px; margin-left:auto; font-size:14px; } nav a { color:var(--doux); text-decoration:none; } nav a:hover { color:var(--texte); }
+.bouton { display:inline-flex; align-items:center; gap:10px; min-height:48px; padding:0 22px; border-radius:8px; font-weight:700; text-decoration:none; border:1px solid var(--ligne); background:#1D1D22; transition:background .15s, transform .15s; white-space:nowrap; }
 .bouton:hover { background:#26262D; transform:translateY(-1px); } .bouton.jaune { background:var(--jaune); color:#111; border-color:var(--jaune); } .bouton.jaune:hover { background:#FFF06A; }
-.hero { display:grid; grid-template-columns:1.05fr 1fr; gap:48px; align-items:center; padding:56px 0 72px; }
 .surtitre { font:700 12px "JetBrains Mono", monospace; letter-spacing:.18em; text-transform:uppercase; color:var(--jaune); }
-h1 { font:400 clamp(44px, 6.4vw, 84px)/.98 Anton, Impact, sans-serif; text-transform:uppercase; margin:14px 0 18px; letter-spacing:.005em; }
+.hero { display:grid; grid-template-columns:.92fr 1.08fr; gap:56px; align-items:center; padding:48px 0 80px; }
+h1 { font:400 clamp(46px, 6.6vw, 92px)/.96 Anton, Impact, sans-serif; text-transform:uppercase; margin:16px 0 20px; }
 h1 em { font-style:normal; color:var(--jaune); }
-.chapeau { font-size:19px; color:#C9C8C2; max-width:34em; margin:0 0 30px; }
+.chapeau { font-size:19px; color:#C9C8C2; max-width:32em; margin:0 0 30px; }
 .actions { display:flex; flex-wrap:wrap; gap:12px; }
-.visuel { position:relative; aspect-ratio:16/10; }
-.visuel img { position:absolute; border-radius:10px; box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06); }
-.visuel .v1 { width:82%; right:0; top:0; } .visuel .v2 { width:34%; left:0; bottom:-6%; transform:rotate(-3deg); }
-section { padding:64px 0; border-top:1px solid var(--ligne); }
-h2 { font:400 clamp(30px, 4vw, 44px)/1.05 Anton, Impact, sans-serif; text-transform:uppercase; margin:10px 0 12px; }
-.intro { color:var(--doux); max-width:42em; margin:0 0 36px; }
+.ecran { position:relative; border-radius:14px; overflow:hidden; background:#0B0B0D; box-shadow:0 40px 100px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.07); }
+.ecran canvas, .ecran img { display:block; width:100%; aspect-ratio:16/9; }
+.ecran .barre { position:absolute; left:0; right:0; bottom:0; display:flex; align-items:center; gap:10px; padding:10px 14px; font:700 11px "JetBrains Mono", monospace; letter-spacing:.12em; text-transform:uppercase; color:#fff; background:linear-gradient(transparent, rgba(0,0,0,.75)); }
+.ecran .barre i { flex:1; height:3px; background:rgba(255,255,255,.2); border-radius:2px; overflow:hidden; } .ecran .barre i b { display:block; height:100%; width:0; background:var(--jaune); }
+section { padding:72px 0; border-top:1px solid var(--ligne); }
+h2 { font:400 clamp(32px, 4.2vw, 50px)/1.02 Anton, Impact, sans-serif; text-transform:uppercase; margin:10px 0 14px; }
+.intro { color:var(--doux); max-width:44em; margin:0 0 40px; font-size:17px; }
+.departs { display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; }
+.depart { display:flex; flex-direction:column; gap:10px; padding:28px; border:1px solid var(--ligne); border-radius:14px; background:var(--surface); text-decoration:none; transition:border-color .15s, transform .15s; }
+.depart:hover { border-color:#45454F; transform:translateY(-2px); }
+.depart .num { font:400 44px/1 Anton, sans-serif; color:var(--jaune); } .depart b { font-size:20px; } .depart span { color:var(--doux); font-size:15px; } .depart u { margin-top:auto; text-decoration:none; font-weight:700; color:#fff; }
+.galerie { display:grid; grid-template-columns:repeat(6, 1fr); gap:16px; align-items:start; }
+.galerie figure { margin:0; } .galerie img { width:100%; border-radius:10px; display:block; border:1px solid var(--ligne); }
+.galerie figcaption { font-size:13px; color:var(--doux); margin-top:8px; }
+.g2 { grid-column:span 2; } .g3 { grid-column:span 3; }
 .outils { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
 .outil { background:var(--surface); border:1px solid var(--ligne); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; }
 .outil img { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; }
-.outil div { padding:24px 26px 28px; display:flex; flex-direction:column; gap:10px; flex:1; }
-.outil h3 { font:400 26px/1 Anton, sans-serif; text-transform:uppercase; margin:0; }
-.outil p { margin:0; color:#BDBCB6; } .outil ul { margin:4px 0 14px; padding-left:18px; color:var(--doux); font-size:15px; } .outil .bouton { align-self:flex-start; margin-top:auto; }
-.galerie { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
-.galerie figure { margin:0; } .galerie img { width:100%; border-radius:10px; display:block; border:1px solid var(--ligne); }
-.galerie figcaption { font-size:13px; color:var(--doux); margin-top:8px; }
+.outil div { padding:26px 28px 30px; display:flex; flex-direction:column; gap:10px; flex:1; }
+.outil h3 { font:400 28px/1 Anton, sans-serif; text-transform:uppercase; margin:0; }
+.outil p { margin:0; color:#BDBCB6; } .outil ul { margin:4px 0 16px; padding-left:18px; color:var(--doux); font-size:15px; } .outil .bouton { align-self:flex-start; margin-top:auto; }
+.formats { display:grid; grid-template-columns:repeat(3, 1fr); gap:1px; background:var(--ligne); border:1px solid var(--ligne); border-radius:14px; overflow:hidden; }
+.format { background:var(--surface); padding:24px; } .format b { font:400 30px/1 Anton, sans-serif; display:block; margin-bottom:8px; } .format span { color:var(--doux); font-size:15px; }
 .points { display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; }
-.point { padding:24px; border:1px solid var(--ligne); border-radius:12px; background:var(--surface); }
-.point b { display:block; font-size:17px; margin-bottom:6px; } .point span { color:var(--doux); font-size:15px; }
+.point { padding:26px; border:1px solid var(--ligne); border-radius:14px; background:var(--surface); }
+.point b { display:block; font-size:18px; margin-bottom:6px; } .point span { color:var(--doux); font-size:15px; }
 footer { padding:36px 0 48px; border-top:1px solid var(--ligne); color:#6E6D75; font-size:13px; display:flex; flex-wrap:wrap; gap:8px 24px; }
-@media (max-width: 900px) { .hero, .outils { grid-template-columns:1fr; } .hero { padding-top:24px; gap:40px; } .galerie, .points { grid-template-columns:1fr; } nav { display:none; } .visuel { margin-bottom:24px; } }
+@media (max-width: 960px) { .hero, .outils { grid-template-columns:1fr; } .hero { padding-top:20px; gap:36px; } .departs, .points, .formats { grid-template-columns:1fr; } .galerie { grid-template-columns:1fr 1fr; } .g2, .g3 { grid-column:span 1; } nav { display:none; } }
+@media (prefers-reduced-motion: reduce) { * { transition:none !important; } html { scroll-behavior:auto; } }
 </style>
 </head>
 <body>
 <div class="page">
   <header><a class="logo" href="./">Atelier Primestone</a>
-    <nav aria-label="Navigation"><a href="#outils">Outils</a><a href="#galerie">Exemples</a><a href="#confidentialite">Vos données</a></nav>
-    <a class="bouton jaune" href="atelier/motion/">Motion Studio</a></header>
+    <nav aria-label="Navigation"><a href="#commencer">Commencer</a><a href="#galerie">Exemples</a><a href="#outils">Outils</a><a href="#exports">Exports</a><a href="#confidentialite">Vos données</a></nav>
+    <a class="bouton jaune" href="atelier/motion/#modeles">Créer</a></header>
   <main>
     <div class="hero">
       <div>
-        <div class="surtitre">Comics · super-héros · pop culture</div>
-        <h1>Créez des visuels <em>dignes d'un éditeur</em></h1>
-        <p class="chapeau">Miniatures YouTube, carrousels, infographies, révélations de couvertures et animations : composez, animez et exportez directement dans votre navigateur. Gratuit, sans compte.</p>
-        <div class="actions"><a class="bouton jaune" href="atelier/motion/">Ouvrir Motion Studio</a><a class="bouton" href="atelier/">Ouvrir l'Atelier</a></div>
+        <div class="surtitre">Studio graphique · comics · pop culture</div>
+        <h1>Des visuels <em>dignes d'un éditeur</em>, animés</h1>
+        <p class="chapeau">Affiches animées, révélations de couvertures et de personnages, annonces, crossovers, miniatures YouTube : composez, animez et exportez directement dans le navigateur. Gratuit, sans compte, rien n'est envoyé en ligne.</p>
+        <div class="actions"><a class="bouton jaune" href="atelier/motion/#modeles">Partir d'un modèle</a><a class="bouton" href="atelier/">Miniature express</a></div>
       </div>
-      <div class="visuel" aria-hidden="true"><img class="v1" src="accueil/motion-evenement.jpg" alt=""><img class="v2" src="accueil/motion-annonce.jpg" alt=""></div>
+      <figure class="ecran" style="margin:0"><canvas id="demo" width="1280" height="720" aria-label="Démonstration animée : annonce en trois plans réalisée avec Motion Studio"></canvas>
+        <figcaption class="barre"><span>En direct · Motion Studio</span><i><b id="demo-progression"></b></i><span id="demo-plan">Plan 1</span></figcaption></figure>
     </div>
-    <section id="outils">
-      <div class="surtitre">Deux outils</div><h2>Du gabarit à la composition libre</h2>
-      <p class="intro">L'Atelier remplit en quelques secondes des gabarits éprouvés ; Motion Studio laisse composer et animer librement, avec un langage graphique comics complet.</p>
-      <div class="outils">
-        <article class="outil"><img src="accueil/motion-personnage.jpg" alt="Révélation d'un personnage créée avec Motion Studio" loading="lazy">
-          <div><h3>Motion Studio</h3><p>Composition libre et motion design pour les comics.</p>
-            <ul><li>Textes d'impact, bulles, trames, explosions, lumières et effets cosmiques</li><li>Animation par calque, séquenceur, caméra et parallaxe</li><li>Exports PNG, SVG, GIF, WebM et MP4</li></ul>
-            <a class="bouton jaune" href="atelier/motion/">Ouvrir Motion Studio</a></div></article>
-        <article class="outil"><img src="templates/miniatures/01-analyse-personnage/exemples/PS_MIN_01-analyse-personnage_jaune_NON-OFFICIEL.jpg" alt="Miniature YouTube créée avec l'Atelier" loading="lazy">
-          <div><h3>Atelier</h3><p>Gabarits prêts à l'emploi, contrôles de lisibilité intégrés.</p>
-            <ul><li>8 familles de miniatures YouTube, 19 variantes</li><li>Carrousels Kiosque et fiches personnage</li><li>Infographies pilotées par des données</li></ul>
-            <a class="bouton" href="atelier/">Ouvrir l'Atelier</a></div></article>
+    <section id="commencer">
+      <div class="surtitre">Commencer</div><h2>Trois façons de démarrer</h2>
+      <p class="intro">Pas besoin de comprendre le moteur pour créer : choisissez un point de départ, remplacez les textes et les illustrations, exportez.</p>
+      <div class="departs">
+        <a class="depart" href="atelier/motion/#modeles"><span class="num">01</span><b>Un modèle signature</b><span>Affiche de cinéma, une de magazine, manifeste typographique, annonce en trois plans… entièrement modifiables.</span><u>Choisir un modèle →</u></a>
+        <a class="depart" href="atelier/"><span class="num">02</span><b>Une miniature express</b><span>11 gabarits de miniatures YouTube, carrousels et infographies, avec contrôle de lisibilité intégré.</span><u>Ouvrir l'Atelier →</u></a>
+        <a class="depart" href="atelier/motion/"><span class="num">03</span><b>Une page blanche</b><span>Composition libre : textes d'impact, bulles, trames, explosions, lumières, effets cosmiques et animation par calque.</span><u>Ouvrir Motion Studio →</u></a>
       </div>
     </section>
     <section id="galerie">
       <div class="surtitre">Exemples</div><h2>Ce que vous pouvez créer</h2>
-      <p class="intro">Tous ces visuels sont des modèles entièrement modifiables : textes, illustrations, couleurs, effets et animations.</p>
+      <p class="intro">Chaque visuel ci-dessous est un modèle livré avec l'outil, rendu par son propre moteur. Directions éditoriales, comics ou cinématographiques : à vous de les détourner.</p>
       <div class="galerie">
-        <figure><img src="accueil/motion-equipe.jpg" alt="Révélation d'équipe" loading="lazy"><figcaption>Révélation d'équipe · Motion Studio</figcaption></figure>
-        <figure><img src="templates/miniatures/08-cosmique/exemples/PS_MIN_08-cosmique_decor_NON-OFFICIEL.jpg" alt="Miniature cosmique" loading="lazy"><figcaption>Miniature YouTube · Atelier</figcaption></figure>
-        <figure><img src="templates/miniatures/06-evenements/exemples/PS_MIN_06-evenements_titre-bas_NON-OFFICIEL.jpg" alt="Miniature événement" loading="lazy"><figcaption>Miniature YouTube · Atelier</figcaption></figure>
+        <figure class="g2"><img src="accueil/signature-affiche.jpg" alt="Affiche de cinéma animée" loading="lazy"><figcaption>Affiche de cinéma · 4:5</figcaption></figure>
+        <figure class="g2"><img src="accueil/signature-magazine.jpg" alt="Une de magazine" loading="lazy"><figcaption>Une de magazine · 4:5</figcaption></figure>
+        <figure class="g2"><img src="accueil/signature-manifeste.jpg" alt="Manifeste typographique" loading="lazy"><figcaption>Manifeste typographique · 1:1</figcaption></figure>
+        <figure class="g3"><img src="accueil/motion-equipe.jpg" alt="Révélation d'équipe" loading="lazy"><figcaption>Révélation d'équipe · Motion Studio</figcaption></figure>
+        <figure class="g3"><img src="accueil/motion-personnage.jpg" alt="Révélation de personnage" loading="lazy"><figcaption>Révélation de personnage · Motion Studio</figcaption></figure>
+        <figure class="g2"><img src="templates/miniatures/09-affiche-cinema/exemples/PS_MIN_09-affiche-cinema_ambre_NON-OFFICIEL.jpg" alt="Miniature affiche cinéma" loading="lazy"><figcaption>Miniature · affiche cinéma</figcaption></figure>
+        <figure class="g2"><img src="templates/miniatures/10-duel/exemples/PS_MIN_10-duel_jaune_NON-OFFICIEL.jpg" alt="Miniature duel" loading="lazy"><figcaption>Miniature · duel</figcaption></figure>
+        <figure class="g2"><img src="templates/miniatures/11-une-editoriale/exemples/PS_MIN_11-une-editoriale_papier_NON-OFFICIEL.jpg" alt="Miniature une éditoriale" loading="lazy"><figcaption>Miniature · une éditoriale</figcaption></figure>
+      </div>
+    </section>
+    <section id="outils">
+      <div class="surtitre">Deux outils</div><h2>Du gabarit à la composition libre</h2>
+      <div class="outils">
+        <article class="outil"><img src="accueil/motion-evenement.jpg" alt="Crossover réalisé avec Motion Studio" loading="lazy">
+          <div><h3>Motion Studio</h3><p>Composition libre et motion design pour les comics.</p>
+            <ul><li>Calques, groupes, masques, typographie avancée et polices locales</li><li>21 effets : trames, encrage, vitesse, explosions, énergie, lumière, brume, cosmos</li><li>Animation par calque, caméra et parallaxe, plans enchaînés par des transitions</li></ul>
+            <a class="bouton jaune" href="atelier/motion/#modeles">Ouvrir Motion Studio</a></div></article>
+        <article class="outil"><img src="templates/miniatures/01-analyse-personnage/exemples/PS_MIN_01-analyse-personnage_jaune_NON-OFFICIEL.jpg" alt="Miniature YouTube réalisée avec l'Atelier" loading="lazy">
+          <div><h3>Atelier</h3><p>Gabarits éprouvés, remplis en quelques secondes.</p>
+            <ul><li>11 familles de miniatures YouTube, 25 variantes</li><li>Carrousels Kiosque, fiches personnage, infographies pilotées par des données</li><li>Contrôles de lisibilité à la taille réelle d'un téléphone</li></ul>
+            <a class="bouton" href="atelier/">Ouvrir l'Atelier</a></div></article>
+      </div>
+    </section>
+    <section id="exports">
+      <div class="surtitre">Exports</div><h2>Prêt pour chaque plateforme</h2>
+      <p class="intro">Formats vidéo, réseaux et impression en 300 dpi, ou dimensions personnalisées jusqu'à 8192 px.</p>
+      <div class="formats">
+        <div class="format"><b>PNG · JPG</b><span>Jusqu'à quatre fois la définition, fond transparent possible.</span></div>
+        <div class="format"><b>SVG</b><span>Vectoriel, calques nommés, images et polices intégrées.</span></div>
+        <div class="format"><b>GIF</b><span>Animation en boucle, jusqu'à 1080 px et 25 images/s.</span></div>
+        <div class="format"><b>WebM</b><span>Rendu image par image, exact, jusqu'à la 4K.</span></div>
+        <div class="format"><b>MP4</b><span>Enregistrement direct quand le navigateur le permet.</span></div>
+        <div class="format"><b>Projet</b><span>Un fichier qui contient tout pour reprendre sur un autre appareil.</span></div>
       </div>
     </section>
     <section id="confidentialite">
       <div class="surtitre">Vos données</div><h2>Tout reste sur votre appareil</h2>
       <div class="points">
-        <div class="point"><b>Aucun compte, aucun serveur</b><span>Vos créations, illustrations et polices sont enregistrées dans votre navigateur. Rien n'est envoyé en ligne.</span></div>
+        <div class="point"><b>Aucun compte, aucun serveur</b><span>Créations, illustrations et polices sont enregistrées dans votre navigateur. Rien n'est envoyé en ligne.</span></div>
         <div class="point"><b>Fonctionne hors ligne</b><span>Après une première visite, les outils se rouvrent même sans connexion.</span></div>
-        <div class="point"><b>Vos projets en fichier</b><span>Enregistrez un projet complet pour le sauvegarder ou le reprendre sur un autre appareil.</span></div>
+        <div class="point"><b>Versions et sauvegardes</b><span>Sauvegarde automatique, versions restaurables, export de toute la bibliothèque en un fichier.</span></div>
       </div>
     </section>
   </main>
-  <footer><span>Atelier Primestone · version 0.6.0</span><span>Logo et jaune de marque provisoires (non officiels)</span><span>Illustrations de démonstration originales</span></footer>
+  <footer><span>Atelier Primestone · version 0.7.0</span><span>Logo et jaune de marque provisoires (non officiels)</span><span>Illustrations de démonstration originales</span></footer>
 </div>
+<script type="module">
+// Démonstration en direct : le modèle « Annonce en trois plans » rendu image par image par le moteur de Motion Studio
+import { rendreSequence, dureeTotale, planA } from './templates/_systeme/studio.js';
+import { docDepuisSignature } from './templates/_systeme/studio-signatures.js';
+import { creerRendu } from './atelier/motion/rendu-canvas.js';
+import PH from './templates/_systeme/placeholders.js';
+const cv = document.querySelector('#demo'), g = cv.getContext('2d'), rendu = creerRendu(), doc = docDepuisSignature('annonce-plans'), T = dureeTotale(doc);
+const opts = { placeholder: (n) => (PH[n] ? { href: PH[n].src, w: PH[n].w, h: PH[n].h } : null) }, calme = matchMedia('(prefers-reduced-motion: reduce)').matches;
+await Promise.all(['400 40px Anton', '700 40px "JetBrains Mono"', '700 40px Archivo', 'italic 400 40px "Instrument Serif"'].map((f) => document.fonts.load(f).catch(() => {})));
+let visible = true, t0 = performance.now(); new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(cv);
+const image = async (t) => { const sc = rendreSequence(doc, t, opts); await rendu.precharger(sc); rendu.dessiner(g, sc, cv.width / sc.w);
+  document.querySelector('#demo-progression').style.width = `${(t / T) * 100}%`; document.querySelector('#demo-plan').textContent = doc.plans[planA(doc, t).i]?.nom || ''; };
+if (calme) await image(T * 0.5);
+else { const pas = async (now) => { if (visible) await image(((now - t0) / 1000) % T); requestAnimationFrame(pas); }; requestAnimationFrame(pas); }
+</script>
 </body>
 </html>
