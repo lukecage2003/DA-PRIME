@@ -105,7 +105,7 @@ async function grandeImage(p) {
   await p.getByRole('button', { name: 'Infographies', exact: true }).click(); await p.waitForFunction(() => window.__atelier.etat.coll === 'infographies');
   await p.locator('#familles button').nth(0).click(); await p.waitForSelector('#champ-donnees');
   ok((await vb()) === '0 0 1920 1080' && !(await erreursAffichees()).length, 'Infographies : chronologie d’exemple, 1920 × 1080, sans erreur');
-  await p.fill('#champ-donnees', '{ "type": "chronologie", '); await p.waitForTimeout(60);
+  await p.fill('#champ-donnees', '{ "type": "chronologie", '); await p.waitForFunction(() => /JSON invalide/.test(document.querySelector('#alertes').innerText), null, { timeout: 5000 }).catch(() => {});
   ok((await erreursAffichees()).some((t) => /JSON invalide/.test(t)) && /données invalides/i.test(await p.locator('#apercu').innerText()), 'Infographies : JSON mal formé signalé, aperçu d’erreur');
   const un = JSON.stringify({ type: 'chronologie', titre: 'Test', periodes: [{ nom: 'Seule', debut: 1990, fin: 1980 }], couleur: 'x' });
   await p.fill('#champ-donnees', un); await p.waitForTimeout(60); const eu = (await erreursAffichees()).join(' | ');
