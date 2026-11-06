@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "name": "primestone-brand",
   "release": {
-    "version": "0.9.0",
+    "version": "0.9.1",
     "date": "2026-11-05",
     "channel": "provisoire"
   },
@@ -20,7 +20,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "case",
         "cadre",
@@ -62,7 +62,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "filet",
         "incision",
@@ -104,7 +104,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "filet",
         "incision",
@@ -146,7 +146,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "incision",
         "jaune"
@@ -187,7 +187,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "incision",
         "noir"
@@ -228,7 +228,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "rubrique",
         "actu"
@@ -269,7 +269,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "rubrique",
         "analyse",
@@ -311,7 +311,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "rubrique",
         "analyse",
@@ -353,7 +353,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "rubrique",
         "cosmique"
@@ -394,7 +394,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "rubrique",
         "evenement"
@@ -435,7 +435,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "rubrique",
         "guide"
@@ -476,7 +476,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "rubrique",
         "histoire"
@@ -517,7 +517,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "rubrique",
         "theorie"
@@ -558,7 +558,7 @@
       "category": "elements",
       "kind": "element",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "sceau",
         "jaune",
@@ -601,7 +601,7 @@
       "category": "elements",
       "kind": "element",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "sceau",
         "noir",
@@ -644,7 +644,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "trame",
         "benday",
@@ -686,7 +686,7 @@
       "category": "elements",
       "kind": "element",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "volet",
         "transition",
@@ -728,7 +728,7 @@
       "category": "elements",
       "kind": "grille",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "grid",
         "carrousel",
@@ -770,7 +770,7 @@
       "category": "elements",
       "kind": "grille",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "grid",
         "miniature",
@@ -812,7 +812,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "car",
         "avis",
@@ -847,7 +847,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "car",
         "chiffre",
@@ -883,7 +883,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "car",
         "couverture",
@@ -918,7 +918,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "car",
         "faits",
@@ -953,7 +953,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "car",
         "presentation",
@@ -989,7 +989,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "car",
         "recit",
@@ -1024,7 +1024,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "car",
         "planche",
@@ -1051,7 +1051,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "fiche",
         "personnage",
@@ -1086,7 +1086,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "fiche",
         "personnage",
@@ -1121,7 +1121,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "info",
         "barres",
@@ -1156,7 +1156,7 @@
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "info",
         "chronologie",
@@ -1191,7 +1191,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "analyse",
@@ -1227,7 +1227,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "analyse",
@@ -1263,7 +1263,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "analyse",
@@ -1299,7 +1299,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "analyse",
@@ -1335,7 +1335,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "analyse",
@@ -1371,7 +1371,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "analyse",
@@ -1407,7 +1407,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "actualites",
@@ -1443,7 +1443,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "actualites",
@@ -1479,7 +1479,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "theories",
@@ -1514,7 +1514,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "theories",
@@ -1549,7 +1549,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "guides",
@@ -1584,7 +1584,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "guides",
@@ -1619,7 +1619,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "guides",
@@ -1654,7 +1654,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "evenements",
@@ -1690,7 +1690,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "evenements",
@@ -1726,7 +1726,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "histoire",
@@ -1761,7 +1761,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "histoire",
@@ -1796,7 +1796,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "cosmique",
@@ -1831,7 +1831,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "cosmique",
@@ -1866,7 +1866,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "affiche",
@@ -1881,16 +1881,16 @@
         {
           "path": "templates/miniatures/09-affiche-cinema/exemples/PS_MIN_09-affiche-cinema_ambre_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 75644,
-          "sha256": "ecb6d90605046177cf691dc54f731c077870db449b23553d62c5de160cf4e6f2",
+          "bytes": 75427,
+          "sha256": "8ef04b953d2cd428546459a28b6ca815a3796457c58264ea3bc9eb7cb07876ac",
           "width": 1280,
           "height": 720
         },
         {
           "path": "templates/miniatures/09-affiche-cinema/PS_MIN_09-affiche-cinema_ambre_NON-OFFICIEL.svg",
           "format": "svg",
-          "bytes": 11607,
-          "sha256": "05220162800cf8156fb8c0ccc2dc4e0c72336c6ddf5aaee87e3e0fc3534a8df9",
+          "bytes": 14111,
+          "sha256": "0132b4b6bd8d9f5633487f2768c8d51bb128f94c8443af8c95762d49f4b7f063",
           "width": 1280,
           "height": 720
         }
@@ -1902,7 +1902,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "affiche",
@@ -1917,16 +1917,16 @@
         {
           "path": "templates/miniatures/09-affiche-cinema/exemples/PS_MIN_09-affiche-cinema_nuit_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 69391,
-          "sha256": "0ccaa19894b2fca8e63e461644f5fbf3ec0750f8d51e88469486c991150b2c54",
+          "bytes": 68279,
+          "sha256": "7b89ba33a0428c037e9c98971518878a0d3419a3dda1b35b91189fac82790bea",
           "width": 1280,
           "height": 720
         },
         {
           "path": "templates/miniatures/09-affiche-cinema/PS_MIN_09-affiche-cinema_nuit_NON-OFFICIEL.svg",
           "format": "svg",
-          "bytes": 11615,
-          "sha256": "8aff9b1713dbfc1edbce5900f0286bdb5993e116ed371150c2ecfab7b601aa20",
+          "bytes": 14120,
+          "sha256": "4ba790b5d696d7c2bc2b46ff1c27fa0a1bfb4e3d01bf97d403888bcb5fc95ea0",
           "width": 1280,
           "height": 720
         }
@@ -1938,7 +1938,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "duel",
@@ -1952,16 +1952,16 @@
         {
           "path": "templates/miniatures/10-duel/exemples/PS_MIN_10-duel_jaune_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 181698,
-          "sha256": "d974fe7363ff5b862947d3df43b2f423029ba5a7d56745d79d5603fb5ac7651c",
+          "bytes": 186524,
+          "sha256": "ee882ae787e36201f3decf27ec6492e63970c3cba146a60e23691b9b6bc7c97b",
           "width": 1280,
           "height": 720
         },
         {
           "path": "templates/miniatures/10-duel/PS_MIN_10-duel_jaune_NON-OFFICIEL.svg",
           "format": "svg",
-          "bytes": 12647,
-          "sha256": "3e5a655de0dced70d57cb73c6c97316c76a1ede157444e680973ecc80161626f",
+          "bytes": 18439,
+          "sha256": "276fc7d6e2cf0df0b0d0e9efdb8625511ab7d4bc13bb6acd4cb9152dd652cb2e",
           "width": 1280,
           "height": 720
         }
@@ -1973,7 +1973,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "duel",
@@ -1987,16 +1987,16 @@
         {
           "path": "templates/miniatures/10-duel/exemples/PS_MIN_10-duel_rouge_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 178803,
-          "sha256": "0a7d11d5145ceae2ab009cf62546e40530f4ef7c24eb6c5fae06d345dba143fe",
+          "bytes": 183561,
+          "sha256": "e22e9c6c1838e652499116165b4a7165708b13e2e177e661a94c512c00e68264",
           "width": 1280,
           "height": 720
         },
         {
           "path": "templates/miniatures/10-duel/PS_MIN_10-duel_rouge_NON-OFFICIEL.svg",
           "format": "svg",
-          "bytes": 12647,
-          "sha256": "a7aca98cb35e37e3e375d04317ce3e7fdf11bddb46f7506d926baf331d7c7616",
+          "bytes": 18439,
+          "sha256": "a04b068ff01c3ce23bae3df540a4fcefcb184331937f095cb040b143e2fad6ed",
           "width": 1280,
           "height": 720
         }
@@ -2008,7 +2008,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "une",
@@ -2023,16 +2023,16 @@
         {
           "path": "templates/miniatures/11-une-editoriale/exemples/PS_MIN_11-une-editoriale_encre_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 79398,
-          "sha256": "19a57803b5b9b60908c64ce2dc779c07bc34e75e82c7c06f16d3f78a3c476e03",
+          "bytes": 81251,
+          "sha256": "08b473927e07fceead8a012c901670d55a0927d2a442271329f185de3bafe9bf",
           "width": 1280,
           "height": 720
         },
         {
           "path": "templates/miniatures/11-une-editoriale/PS_MIN_11-une-editoriale_encre_NON-OFFICIEL.svg",
           "format": "svg",
-          "bytes": 11916,
-          "sha256": "f2cc3e413085f782b2650b75fc68b15c2ed61962fb822cfc2abf06e1baaafe7b",
+          "bytes": 12841,
+          "sha256": "963845f5879524d191a07d353ad0dd03bf91c9bd00a7af47247d4680a3b79e57",
           "width": 1280,
           "height": 720
         }
@@ -2044,7 +2044,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "une",
@@ -2059,16 +2059,16 @@
         {
           "path": "templates/miniatures/11-une-editoriale/exemples/PS_MIN_11-une-editoriale_papier_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 79424,
-          "sha256": "f8cd611a63a5d126c5e2c481336db38512f9d9b4e85c790a1ccaa128019eee05",
+          "bytes": 105099,
+          "sha256": "13fbdba682a195c0827e1467793782b35aedbbf323ff500c78c0f3b722bb2021",
           "width": 1280,
           "height": 720
         },
         {
           "path": "templates/miniatures/11-une-editoriale/PS_MIN_11-une-editoriale_papier_NON-OFFICIEL.svg",
           "format": "svg",
-          "bytes": 11918,
-          "sha256": "7c65c56ad4d4d5d75da0817a73c75f714dc08f45230bbff07d6288bfee1b0c8b",
+          "bytes": 12962,
+          "sha256": "cd73ba18eec80089ce3d920e104b74176b3da069d1fecdede1f1f988a469759b",
           "width": 1280,
           "height": 720
         }
@@ -2080,7 +2080,7 @@
       "category": "gabarits",
       "kind": "gabarit-miniature",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "planche",
@@ -2094,8 +2094,8 @@
         {
           "path": "templates/miniatures/PS_MIN_planche-168px_NON-OFFICIEL.png",
           "format": "png",
-          "bytes": 705858,
-          "sha256": "da5bd92a1496b69743876ada2e17b1f29049f49efbb205198162811f23830ddf",
+          "bytes": 733474,
+          "sha256": "ef8f374f4d1a93d80ddd3c6bb0a51acf8155eedfce8c43515c6322632511acd9",
           "width": 912,
           "height": 637
         }
@@ -2107,7 +2107,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "logo",
         "icone",
@@ -2166,7 +2166,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "logo",
         "icone",
@@ -2225,7 +2225,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "logo",
         "icone",
@@ -2284,7 +2284,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "logo",
         "logotype",
@@ -2343,7 +2343,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "logo",
         "logotype",
@@ -2402,7 +2402,7 @@
       "category": "logo",
       "kind": "logo",
       "status": "non-officiel",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "logo",
         "logotype",
@@ -2461,7 +2461,7 @@
       "category": "originaux",
       "kind": "logo",
       "status": "reference",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "logo",
         "icone",
@@ -2486,7 +2486,7 @@
       "category": "originaux",
       "kind": "logo",
       "status": "reference",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "logo",
         "logotype",
@@ -2512,7 +2512,7 @@
       "category": "originaux",
       "kind": "gabarit-miniature",
       "status": "reference",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "min",
         "superman",
@@ -2538,7 +2538,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "anton",
         "ofl"
@@ -2572,7 +2572,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "archivo",
         "bold"
@@ -2648,7 +2648,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "instrumentserif",
         "italic"
@@ -2688,7 +2688,7 @@
       "category": "polices",
       "kind": "police",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "jetbrainsmono",
         "bold"
@@ -2728,7 +2728,7 @@
       "category": "tokens",
       "kind": "tokens",
       "status": "provisoire",
-      "version": "0.9.0",
+      "version": "0.9.1",
       "tags": [
         "tokens"
       ],

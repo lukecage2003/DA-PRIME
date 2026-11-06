@@ -4,7 +4,7 @@ Dépôt de l'identité visuelle de **Primestone Media** : système graphique, de
 
 Direction artistique de référence : **Signal** (YouTube, accroches, communication) + **Kiosque** (éditorial, dossiers, carrousels, infographies, bibliothèque). Direction sombre et cinématographique en usage secondaire.
 
-## État : studio créatif éditorial (accueil, Production, Atelier, Motion Studio) · version 0.9.0 provisoire
+## État : studio créatif éditorial (accueil, Production, Atelier, Motion Studio) · version 0.9.1 provisoire
 
 | Élément | Emplacement | Statut |
 |---|---|---|
@@ -20,6 +20,7 @@ Direction artistique de référence : **Signal** (YouTube, accroches, communicat
 | Atelier : 3 supports, saisie, recadrage, données JSON, contrôles, exports PNG/JPG/SVG, partage, sauvegarde automatique | `atelier/` | prototype |
 | Motion Studio : composition libre (texte, image, forme, effet, groupe), typographie avancée, 21 effets, 6 systèmes graphiques, animation par calque, plans et transitions, modèles signature, séquenceur, caméra, 12 formats et personnalisé, exports PNG/JPG/SVG/GIF/WebM/MP4, bibliothèque, versions, projets et polices locales | `atelier/motion/`, `templates/_systeme/studio*.js`, `templates/_systeme/motion*.js` | version stable, provisoire |
 | Production éditoriale : assistant local (27 types de contenus), compositeur multiformat, campagnes et calendrier, statuts de validation, production et export par lot (ZIP), profils de direction artistique mesurés, bibliothèque centralisée | `atelier/production/`, `templates/_systeme/studio-assistant.js`, `studio-compositeur.js`, `studio-personnages.js` | prototype fonctionnel |
+| Bibliothèque visuelle : import multiple, catégories, tags, collections, favoris, fiches de personnages (7 rôles d'image), comparaison de 4 traitements × 3 formats, réutilisation dans l'Atelier et Motion Studio | `atelier/production/` (onglet Visuels), `atelier/motion/visuels.js` | prototype fonctionnel |
 | Catalogue `brand-manifest.json` + schéma | `catalog/`, `schemas/` | généré |
 | Schéma Supabase | `supabase/` | **brouillon non appliqué** |
 | Présentations des missions 01 et 02 | `presentations/` | archive |

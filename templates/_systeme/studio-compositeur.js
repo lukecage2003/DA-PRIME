@@ -30,6 +30,7 @@ function kit(d) {
 }
 // Ambiance d'univers : fond, lumière, matière ; centrée sur le sujet (cx, cy en fractions)
 function ambiance(k, univers, cx = 0.6, cy = 0.45, { fondImage = true, intensite = 1 } = {}) {
+  if (k.minimal) fondImage = false;
   const { W, H, E, I } = k, out = [], plein = { x: 0, y: 0, w: W, h: H };
   if (fondImage) out.push(I(null, FOND_UNIVERS[univers] || 'noir', { ...plein, nom: 'Décor', prof: 0.15, verrou: false, op: univers === 'techno' ? 0.3 : univers === 'mystique' ? 0.6 : 0.85 }, {}, { entree: { type: 'fondu', duree: 1.2, delai: 0 } }));
   if (univers === 'cosmique') out.push(E('nebuleuse', { couleur: '@accent2', couleur2: '@papier', intensite: 0.5 * intensite, densite: 0.5 }, { ...plein, nom: 'Nébuleuse', prof: 0.25 }), E('etoiles', { intensite: 0.7, densite: 0.45 }, { ...plein, nom: 'Étoiles', prof: 0.1 }), E('energie', { couleur: '@accent', couleur2: '@accent2', intensite: 0.55 * intensite, cx, cy }, { ...plein, nom: 'Énergie', prof: 0.5 }));
@@ -47,7 +48,22 @@ const nomDe = (brief, i, defaut) => perso(brief, i)?.nom || defaut;
 // Lumière par univers : contre-jour, aura et ombre portée choisis pour l'ambiance (l'image du personnage n'est jamais déformée ni retournée)
 export const LUMIERES = { cosmique: { contre: '#FFE9A8', aura: '@accent2', auraForce: 0.55, ombre: 0.45, dir: 300 }, urbain: { contre: '#D8E6FF', aura: null, ombre: 0.75, dir: 220 },
   mystique: { contre: '@accent2', aura: '@accent2', auraForce: 0.6, ombre: 0.4, dir: 270 }, techno: { contre: '#9FE6FF', aura: '@accent', auraForce: 0.35, ombre: 0.6, dir: 315 } };
-const heros = (k, brief, i, box, ix = {}, anim, lum = {}) => { const un = perso(brief, i)?.univers || brief.univers;
+// Image réelle d'un personnage : la mise en scène suit ses caractéristiques mesurées (transparence, sujet, orientation, rôle, catégorie)
+function imageReelle(k, p, box, ix, anim, lum, un) {
+  const inf = p.imageInfo, base = { nom: p.nom || 'Personnage', prof: 0.45, ...box };
+  if (inf.alpha) { // détouré : devant le décor, silhouette entière cadrée sur le sujet utile, mis en lumière
+    const b = inf.boite || { x: 0, y: 0, w: 1, h: 1 }, s0 = Math.min(box.w / inf.w, box.h / inf.h), z = Math.min(2.2, Math.max(1, Math.min(box.w / (inf.w * s0 * b.w), box.h / (inf.h * s0 * b.h)) * 0.98)), w = inf.w * s0 * z, h = inf.h * s0 * z;
+    return k.I(p.image, 'encre', base, { ajustement: 'contenir', masque: { forme: 'aucun' }, zoom: +z.toFixed(3), dx: +((w * (0.5 - b.x - b.w / 2)) / box.w).toFixed(3), dy: +((h * (1 - b.y - b.h)) / box.h).toFixed(3), contour: { c: '@encre', w: Math.round(5 * k.u) }, eclairage: { actif: true, ...(LUMIERES[un] || LUMIERES.urbain), ...lum }, ...ix }, anim);
+  }
+  const ra = inf.w / inf.h, ombre = { c: '@encre', dx: 16 * k.u, dy: 16 * k.u, op: 0.5 };
+  // Couverture ou silhouette complète : jamais recadrées, le cadre prend les proportions de l'image
+  if (inf.categorie === 'couverture' || p.role === 'silhouette' || inf.categorie === 'logo') { const bw = Math.min(box.w, box.h * ra), bh = bw / ra;
+    return k.I(p.image, 'pop', { ...base, x: box.x + (box.w - bw) / 2, y: box.y + (box.h - bh) * (inf.categorie === 'couverture' ? 0.5 : 1), w: bw, h: bh }, { ajustement: 'couvrir', masque: { forme: 'rect' }, contour: { c: '@encre', w: Math.round(5 * k.u) }, ombre, ...ix }, anim); }
+  // Illustration opaque : cadre plein, visage privilégié (haut de l'image) pour un portrait ou une image verticale
+  const s = Math.max(box.w / inf.w, box.h / inf.h), h = inf.h * s, haut = ['portrait', 'gros-plan'].includes(p.role) || inf.orientation === 'portrait';
+  return k.I(p.image, 'pop', base, { ajustement: 'couvrir', masque: { forme: 'rect' }, dy: haut ? +(((h - box.h) / (2 * box.h)) * 0.85).toFixed(3) : 0, contour: { c: '@encre', w: Math.round(5 * k.u) }, ombre, ...ix }, anim);
+}
+const heros = (k, brief, i, box, ix = {}, anim, lum = {}) => { const un = perso(brief, i)?.univers || brief.univers; if (perso(brief, i)?.image && perso(brief, i).imageInfo) return imageReelle(k, perso(brief, i), box, ix, anim, lum, un);
   return k.I(perso(brief, i)?.image || null, 'encre', { nom: nomDe(brief, i, 'Personnage'), prof: 0.45, ...box }, { ajustement: 'contenir', masque: { forme: 'aucun' }, contour: { c: '@encre', w: Math.round(6 * k.u) }, eclairage: { actif: true, ...(LUMIERES[un] || LUMIERES.urbain), ...lum }, ...ix }, anim); };
 // Variante de mise en page stable pour un même sujet (évite la répétition dans une campagne)
 const variante = (b, n = 2) => { let h = 7; for (const c of `${b.titre}|${b.personnages[0]?.nom || ''}|${b.type}`) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h % n; };
@@ -58,8 +74,9 @@ const MISES = {
   duel(k, b) {
     const { W, H, u, m, P, T, F, I, en } = k, ua = perso(b, 0)?.univers || b.univers, ub = perso(b, 1)?.univers || b.univers, o = (P ? H : W) * 0.12, out = [];
     const pa = P ? [0, 0, 0.5 + o / W, 0, 0.5 - o / W, 1, 0, 1] : [0, 0, 1, 0, 1, 0.5 - o / H, 0, 0.5 + o / H], pb = P ? [0.5 + o / W, 0, 1, 0, 1, 1, 0.5 - o / W, 1] : [0, 0.5 + o / H, 1, 0.5 - o / H, 1, 1, 0, 1];
-    out.push(I(null, FOND_UNIVERS[ua] || 'pop', { nom: 'Décor A', x: 0, y: 0, w: W, h: H, prof: 0.15 }, { masque: { forme: 'polygone', pts: pa } }, en('glisse', 0, 0.8, 'forte', { dir: P ? 'gauche' : 'haut', force: 0.4 })),
-      I(null, FOND_UNIVERS[ub] === FOND_UNIVERS[ua] ? 'pop' : FOND_UNIVERS[ub] || 'cosmos', { nom: 'Décor B', x: 0, y: 0, w: W, h: H, prof: 0.15 }, { masque: { forme: 'polygone', pts: pb }, traitement: { contraste: 0.1 } }, en('glisse', 0, 0.8, 'forte', { dir: P ? 'droite' : 'bas', force: 0.4 })),
+    const opq = (i) => perso(b, i)?.image && perso(b, i).imageInfo && !perso(b, i).imageInfo.alpha ? perso(b, i).image : null;
+    out.push(I(opq(0), FOND_UNIVERS[ua] || 'pop', { nom: opq(0) ? nomDe(b, 0, 'Héros') : 'Décor A', x: 0, y: 0, w: W, h: H, prof: 0.15 }, { masque: { forme: 'polygone', pts: pa } }, en('glisse', 0, 0.8, 'forte', { dir: P ? 'gauche' : 'haut', force: 0.4 })),
+      I(opq(1), FOND_UNIVERS[ub] === FOND_UNIVERS[ua] ? 'pop' : FOND_UNIVERS[ub] || 'cosmos', { nom: opq(1) ? nomDe(b, 1, 'Rival') : 'Décor B', x: 0, y: 0, w: W, h: H, prof: 0.15 }, { masque: { forme: 'polygone', pts: pb }, traitement: { contraste: 0.1 } }, en('glisse', 0, 0.8, 'forte', { dir: P ? 'droite' : 'bas', force: 0.4 })),
       k.E('vitesse', { couleur: '#FFFFFF', intensite: 0.45, densite: 0.5, cx: 0.5, cy: 0.5 }, { x: 0, y: 0, w: W, h: H, nom: 'Lignes de vitesse', op: 0.35 }), k.E('energie', { couleur: '@accent', couleur2: '#FFFFFF', intensite: 0.6, cx: 0.5, cy: 0.5 }, { x: 0, y: 0, w: W, h: H, nom: 'Choc' }),
       F('polygone', { nom: 'Séparation', x: 0, y: 0, w: W, h: H }, { fill: '@accent', stroke: 'none', lw: 0, pts: P ? [0.5 + o / W - 0.006, 0, 0.5 + o / W + 0.006, 0, 0.5 - o / W + 0.006, 1, 0.5 - o / W - 0.006, 1] : [0, 0.5 + o / H - 0.006, 1, 0.5 - o / H - 0.006, 1, 0.5 - o / H + 0.006, 0, 0.5 + o / H + 0.006] }, en('revelation', 0.3, 0.5, 'forte', { dir: P ? 'haut' : 'gauche' })),
       ...(P ? [heros(k, b, 0, { x: -W * 0.02, y: H * 0.08, w: W * 0.52, h: H * 0.92 }, {}, en('glisse', 0.4, 0.7, 'forte', { dir: 'gauche', force: 0.5 }), { contre: '#FFFFFF', aura: '@accent', auraForce: 0.45, dir: 340 }), heros(k, b, 1, { x: W * 0.5, y: H * 0.08, w: W * 0.52, h: H * 0.92 }, {}, en('glisse', 0.5, 0.7, 'forte', { dir: 'droite', force: 0.5 }), { contre: '#9FE6FF', aura: '@accent2', auraForce: 0.55, dir: 200 })]
@@ -72,11 +89,12 @@ const MISES = {
       T('onomatopee', 'VS', { nom: 'VS', x: W / 2 - s * 0.32, y: H / 2 - s * 0.24, w: s * 0.64, h: s * 0.48 }, { taille: 150 * u, align: 'middle', valign: 'milieu', fill: '#FFFFFF', deformation: { type: 'aucune', force: 0 } }, en('tampon', 1.3, 0.4, 'rebond')));
     const tt = b.titre && !/\bvs\b/i.test(b.titre) ? b.titre : TYPES[b.type]?.nom || 'Versus';
     out.push(rubrique(k, tt, { x: W / 2 - W * (P ? 0.2 : 0.35), y: m * 0.7, w: W * (P ? 0.4 : 0.7), h: 56 * u }, en('revelation', 0.2, 0.5, 'forte')));
-    return out;
+    // Image opaque : déjà posée en moitié de décor, pas de personnage détouré en double
+    return out.filter((e) => !(e.type === 'image' && e.prof === 0.45 && ((opq(0) && e.nom === nomDe(b, 0, 'Héros')) || (opq(1) && e.nom === nomDe(b, 1, 'Rival')))));
   },
   // Héros : présence dominante, écho du nom, ambiance d'univers, rubrique et accroche
   heros(k, b, repere = false) {
-    if (!repere && variante(b) === 1) return MISES.monumental(k, b);
+    if (!repere && !k.lateral && variante(b) === 1) return MISES.monumental(k, b);
     const { W, H, u, m, P, V, T, F, en } = k, nom = b.titre || nomDe(b, 0, 'Personnage'), hz = P ? { x: W * 0.4, y: H * 0.04, w: W * 0.6, h: H * 0.96 } : V ? { x: W * 0.02, y: H * 0.05, w: W * 0.96, h: H * 0.62 } : { x: W * 0.32, y: H * 0.06, w: W * 0.7, h: H * 0.94 };
     if (P && k.sujet === 'gauche') hz.x = W - hz.x - hz.w;
     const cx = (hz.x + hz.w / 2) / W, cy = (hz.y + hz.h * 0.4) / H, out = [...ambiance(k, b.univers, cx, cy)];
@@ -194,13 +212,15 @@ const MISES = {
 };
 
 // Composition d'un brief dans un format ; brief : { type, titre, sousTitre, rubrique, personnages: [{ nom, image?, univers? }], univers, repere, items, citation, note, profil }
-export function composer(brief, formatId = 'miniature', { profil } = {}) {
-  const b = normaliserBrief(brief), mise = TYPES[b.type]?.mise || 'heros', carrousel = formatId === 'carrousel';
-  const [sy, pal] = profil?.systeme ? [profil.systeme, profil.palette] : SYSTEME_PAR_DEFAUT[mise] ? SYSTEME_PAR_DEFAUT[mise] : SYSTEME_UNIVERS[b.univers] || ['comics'];
+// Traitements comparables d'un même sujet (Production › Visuels › Comparer)
+export const TRAITEMENTS = { monumental: { nom: 'Monumental', mise: 'monumental' }, editorial: { nom: 'Éditorial', mise: 'une', systeme: ['editorial', 'papier'] }, cinema: { nom: 'Cinématographique', mise: 'heros', systeme: ['cinema', 'nuit'] }, minimal: { nom: 'Minimaliste', mise: 'heros', systeme: ['minimal', 'noir'], sobre: true } };
+export function composer(brief, formatId = 'miniature', { profil, traitement } = {}) {
+  const tr = TRAITEMENTS[traitement], b = normaliserBrief(brief), mise = tr?.mise || TYPES[b.type]?.mise || 'heros', carrousel = formatId === 'carrousel';
+  const [sy, pal] = profil?.systeme ? [profil.systeme, profil.palette] : tr?.systeme ? tr.systeme : SYSTEME_PAR_DEFAUT[mise] ? SYSTEME_PAR_DEFAUT[mise] : SYSTEME_UNIVERS[b.univers] || ['comics'];
   const f = fmt(FORMATS_COMPOSITEUR[formatId] || formatId), d = nouveauDocument({ format: f.id, w: f.w, h: f.h, systeme: sy, palette: pal, nom: b.titre || TYPES[b.type]?.nom || 'Création' });
   if (profil?.couleurs) d.couleurs = { ...profil.couleurs }; if (profil?.id) d.profil = profil.id;
   d.duree = mise === 'liste' ? 7 : 6; d.brief = JSON.parse(JSON.stringify({ ...brief, personnages: b.personnages })); d.origine = { compositeur: b.type, format: formatId };
-  const k = kit(d); k.sujet = profil?.composition?.sujet; k.sobre = profil?.sobriete === 'épurée' || (profil?.mesures?.densite ?? 1) < 0.08; d.elements = sansVides((MISES[mise] || MISES.heros)(k, b));
+  const k = kit(d); k.sujet = profil?.composition?.sujet; k.sobre = !!tr?.sobre || profil?.sobriete === 'épurée' || (profil?.mesures?.densite ?? 1) < 0.08; k.lateral = !!tr && mise === 'heros'; k.minimal = traitement === 'minimal'; if (tr) d.origine.traitement = traitement; d.elements = sansVides((MISES[mise] || MISES.heros)(k, b));
   if (['duel', 'heros', 'heros-repere', 'annonce', 'evenement'].includes(mise)) d.camera = { type: 'poussee', intensite: 0.3 };
   if (carrousel) composerCarrousel(d, b);
   return d;

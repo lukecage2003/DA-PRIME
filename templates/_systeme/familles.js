@@ -261,9 +261,10 @@ export default {
       const t = texte(ctx, d, 'titre', 'Titre', { ...TITRE, tMax: 150, tMin: 100, l: 900, h: 200, maxLignes: 2, interlettre: 6 }, (f) => ({ x: W / 2, y: 460 + f.cap, couleur: titreC, ancre: 'middle', interlettre: 6 }), { titre: true, requis: true });
       return {
         fond: fondPlein(C.k0),
-        illustration: image('decor', d.decor, z, { filtre: 'assombri' }) + `<rect width="${W}" height="${H}" fill="url(#voile-bas)"/>`,
+        illustration: image('decor', d.decor, z, { filtre: 'assombri' }) + `<rect width="${W}" height="${H}" fill="#0A1430" opacity="${id === 'nuit' ? 0.35 : 0}" style="mix-blend-mode:multiply"/><rect width="${W}" height="${H}" fill="#3A1E00" opacity="${id === 'ambre' ? 0.3 : 0}" style="mix-blend-mode:multiply"/>` + `<rect width="${W}" height="${H}" fill="url(#voile-bas)"/>`
+          + A.brume(`f9-b`, W, 600, { couleur: id === 'nuit' ? '#9FB0D8' : '#E8B070', op: 0.3 }) + A.halo('f9-h', W / 2, 470, 520, filet, 0.22, { ry: 170 }) + A.faisceau('f9-f', W / 2, 160, W / 2, 900, H, { couleur: titreC, op: 0.1 }) + A.vignette('f9-v', W, H, 0.7) + A.grain('f9-g', W, H, 0.12),
         graphisme: `<rect width="${W}" height="36" fill="${C.k0}"/><rect y="${H - 36}" width="${W}" height="36" fill="${C.k0}"/><rect x="${W / 2 - 60}" y="372" width="120" height="3" fill="${filet}"/>`,
-        textes: ac + t,
+        textes: ac + lueur('f9-tl', t, '#000', 14, 0.7),
         marque: marque(d, filet, C.k, titreC, C.k, C.w),
       };
     } }])),
@@ -281,8 +282,10 @@ export default {
       const bw = Math.min(600, Math.max(320, largeur(String(d.titre || '').toLocaleUpperCase('fr-FR'), 'display', 132) + 90));
       return {
         fond: fondPlein(C.k),
-        illustration: `<clipPath id="duel-a"><polygon points="${ptsA}"/></clipPath><clipPath id="duel-b"><polygon points="${ptsB}"/></clipPath><g clip-path="url(#duel-a)">${image('imageA', d.imageA, zA)}</g><g clip-path="url(#duel-b)">${image('imageB', d.imageB, zB, { filtre: 'assombri' })}</g>`,
-        graphisme: `<polygon points="${mx + o - 10},0 ${mx + o + 10},0 ${mx - o + 10},${H} ${mx - o - 10},${H}" fill="${coupe}"/><g transform="rotate(-6 ${mx} 360)"><rect x="${mx - bw / 2}" y="272" width="${bw}" height="176" fill="${coupe}" stroke="${C.k}" stroke-width="10"/></g>`,
+        illustration: `<clipPath id="duel-a"><polygon points="${ptsA}"/></clipPath><clipPath id="duel-b"><polygon points="${ptsB}"/></clipPath><g clip-path="url(#duel-a)">${image('imageA', d.imageA, zA)}</g><g clip-path="url(#duel-b)">${image('imageB', d.imageB, zB, { filtre: 'assombri' })}</g>`
+          + `<g clip-path="url(#duel-a)">${A.degrade('f10-a', W, H, [[0, '#FF7A1A', 0], [1, '#FF7A1A', 0.28]], 0, ' style="mix-blend-mode:screen"')}</g><g clip-path="url(#duel-b)">${A.degrade('f10-b', W, H, [[0, '#2E6BFF', 0.3], [1, '#2E6BFF', 0]], 0, ' style="mix-blend-mode:screen"')}</g>`
+          + A.vitesse(mx, 360, { n: 70, r0: 280, couleur: '#FFFFFF', op: 0.1, graine: 12 }) + A.vignette('f10-v', W, H, 0.6) + A.grain('f10-g', W, H, 0.08),
+        graphisme: A.choc('f10-c', mx, 360, 70, { couleur: coupe, graine: 14 }) + `<polygon points="${mx + o - 10},0 ${mx + o + 10},0 ${mx - o + 10},${H} ${mx - o - 10},${H}" fill="${coupe}"/><g transform="rotate(-6 ${mx} 360)"><rect x="${mx - bw / 2}" y="272" width="${bw}" height="176" fill="${coupe}" stroke="${C.k}" stroke-width="10"/></g>`,
         textes: t + nom('nomA', 'Premier combattant', G.m + 10, 380, 'start') + nom('nomB', 'Second combattant', W - G.m - 10, 120, 'end'),
         marque: marque(d, coupe, badgeT, coupe, badgeT, C.w),
       };
@@ -299,7 +302,8 @@ export default {
       const num = String(d.numero || '').toLocaleUpperCase('fr-FR');
       return {
         fond: fondPlein(fond),
-        illustration: `<rect x="${z.x + 14}" y="${z.y + 14}" width="${z.w}" height="${z.h}" fill="${accent}"/>` + image('visuel', d.visuel, z) + `<rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" fill="none" stroke="${encre}" stroke-width="6"/>`,
+        illustration: (id === 'papier' ? A.trame('f11-t', 0, 0, W, H, { couleur: C.k, pas: 12, rayon: 1.6, op: 0.12, fondu: 'droite' }) : A.halo('f11-h', z.x + z.w / 2, z.y + z.h / 2, 520, accent, 0.18)) + A.grain('f11-g', W, H, id === 'papier' ? 0.14 : 0.08)
+          + `<filter id="f11-o" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="22" stdDeviation="22" flood-opacity="0.35"/></filter><rect x="${z.x + 14}" y="${z.y + 14}" width="${z.w}" height="${z.h}" fill="${accent}" filter="url(#f11-o)"/>` + image('visuel', d.visuel, z) + `<rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" fill="none" stroke="${encre}" stroke-width="6"/>`,
         graphisme: `<rect x="${G.m}" y="150" width="580" height="4" fill="${encre}"/><rect x="${G.m}" y="292" width="140" height="10" fill="${accent}"/>` + (num ? `<text x="${z.x + z.w - 18}" y="${z.y + z.h - 22}" text-anchor="end" font-family="${M.mono.family}" font-weight="700" font-size="26" letter-spacing="3" fill="${C.w}" stroke="${C.k}" stroke-width="5" paint-order="stroke">${esc(num)}</text>` : ''),
         textes: ac + t,
         marque: marque(d, encre, fond, encre, fond, encre),

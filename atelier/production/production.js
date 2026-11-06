@@ -7,9 +7,11 @@ import { rendreScene, instantPose, changerPlan, normaliserDoc, nouvelId, adapter
 import { SYSTEMES, JETONS, format as fmt } from '../../templates/_systeme/studio-systemes.js';
 import { analyser, planifierCampagne, titresPour, TYPES, FORMATS_ASSISTANT } from '../../templates/_systeme/studio-assistant.js';
 import { composer, FORMATS_COMPOSITEUR } from '../../templates/_systeme/studio-compositeur.js';
-import { PERSONNAGES, UNIVERS, trouverPersonnage } from '../../templates/_systeme/studio-personnages.js';
+import { PERSONNAGES, UNIVERS, trouverPersonnage, sans } from '../../templates/_systeme/studio-personnages.js';
 import { analyserPixels, proposerProfil } from './analyse-da.js';
 import PH from '../../templates/_systeme/placeholders.js';
+import { choisirImage, infoImage } from '../motion/visuels.js';
+import { initVisuels } from './visuels-ui.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const el = (tag, { dataset, ...p } = {}, ...k) => { const e = Object.assign(document.createElement(tag), p); if (dataset) Object.assign(e.dataset, dataset); e.append(...k.flat().filter((x) => x !== null && x !== undefined && x !== false)); return e; };
@@ -29,7 +31,11 @@ const rendu = creerRendu(), ressources = new Map();
 const placeholder = (n) => (PH[n] ? { href: '../../' + PH[n].src, w: PH[n].w, h: PH[n].h } : null);
 const opts = { placeholder, ressource: (id) => ressources.get(id), police: (id) => { const r = ressources.get(id); return r ? { fam: r.fam } : null; }, final: true };
 // Image d'une création (plan k pour un carrousel), côté max en px
+// Chargement à la demande des images et polices d'une création (la bibliothèque n'est jamais chargée entière)
+async function assurer(doc) { const ids = new Set(JSON.stringify(doc.plans || doc.elements).match(/"src":"[^"]+"|"police":"f:[^"]+"/g)?.map((x) => x.split(':"')[1].replace(/^f:/, '').replace(/"$/, '')) || []);
+  for (const id of ids) if (!ressources.has(id)) { const r = await db.lire('ressources', id).catch(() => null); if (r) ressources.set(id, r); } }
 async function image(doc, max = 360, k = 0, type = 'image/jpeg') {
+  await assurer(doc);
   let d = doc; if (k && doc.plans?.length > 1) { d = JSON.parse(JSON.stringify(doc)); changerPlan(d, k); }
   const sc = rendreScene(d, instantPose(d), opts), e = Math.min(1, max / Math.max(sc.w, sc.h)), c = Object.assign(document.createElement('canvas'), { width: Math.round(sc.w * e), height: Math.round(sc.h * e) });
   await rendu.precharger(sc); rendu.dessiner(c.getContext('2d'), sc, e); return c;
@@ -46,9 +52,18 @@ async function fichiersPNG(doc, base) {
 
 // ---------- Création et enregistrement ----------
 const profilDoc = (p) => (p ? { id: p.id, systeme: p.systeme, palette: p.palette, couleurs: p.couleurs, composition: p.composition, sobriete: p.sobriete, mesures: p.mesures } : undefined);
+// Fiches de personnages et visuels (cache léger) : un personnage nommé comme une fiche reçoit l'image la plus adaptée à la mise en scène
+let fiches = [], visuelsIdx = new Map();
+export async function rafraichirVisuels() { fiches = await db.tous('personnages').catch(() => []); visuelsIdx = new Map((await db.tous('visuels').catch(() => [])).map((v) => [v.id, v])); }
+const ficheDe = (nom) => fiches.find((f) => sans(f.nom) === sans(nom));
+function personnageBrief(n, mise) {
+  const f = ficheDe(n), c = f && choisirImage(f, mise), v = c && visuelsIdx.get(c.id);
+  return { nom: n, univers: f?.univers || trouverPersonnage(n)?.univers || null, ...(v ? { image: c.id, role: c.role, imageInfo: infoImage(v, c.role) } : {}) };
+}
 function briefDe(o) {
+  const mise = TYPES[o.type]?.mise || 'heros';
   return { type: o.type, titre: o.titre, sousTitre: o.sousTitre || '', rubrique: o.rubrique || '', univers: o.univers || null, repere: o.repere || '', items: o.items || [], citation: o.citation || '',
-    personnages: (o.personnages || (o.personnage ? [o.personnage] : [])).filter(Boolean).map((n) => ({ nom: n, univers: trouverPersonnage(n)?.univers || null })) };
+    personnages: (o.personnages || (o.personnage ? [o.personnage] : [])).filter(Boolean).map((n) => (typeof n === 'object' ? n : personnageBrief(n, mise))) };
 }
 async function enregistrer(doc, { dossier, origine } = {}) {
   const d = normaliserDoc(doc); d.dossier = dossier || d.dossier; d.origine = { ...(doc.origine || {}), source: origine || 'assistant' }; d.modifie = Date.now();
@@ -60,7 +75,7 @@ const ouvrirStudio = (id) => { location.href = `../motion/?creation=${encodeURIC
 function onglet(nom) {
   for (const b of document.querySelectorAll('[data-onglet]')) { const actif = b.dataset.onglet === nom; b.setAttribute('aria-selected', actif); $(`#${b.dataset.onglet}`).hidden = !actif; }
   if (location.hash !== `#${nom}`) history.replaceState(null, '', `#${nom}`);
-  ({ campagnes: listerCampagnes, profils: listerProfils, bibliotheque: listerCreations })[nom]?.();
+  ({ campagnes: listerCampagnes, profils: listerProfils, bibliotheque: listerCreations, visuels: () => visuelsUI.afficher() })[nom]?.();
 }
 document.querySelectorAll('[data-onglet]').forEach((b) => b.addEventListener('click', () => onglet(b.dataset.onglet)));
 
@@ -341,8 +356,9 @@ $('#biblio-export').addEventListener('click', async () => { const fs = []; let i
 
 // ---------- Démarrage ----------
 await Promise.all(['400 40px Anton', '700 40px "JetBrains Mono"', '700 40px Archivo', 'italic 400 40px "Instrument Serif"'].map((f) => document.fonts.load(f).catch(() => {})));
-for (const r of await db.tous('ressources').catch(() => [])) ressources.set(r.id, r);
+await rafraichirVisuels();
 persister();
-onglet(['campagnes', 'profils', 'bibliotheque'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'assistant');
+const visuelsUI = initVisuels({ el, bouton, champ, choix, info, image, enregistrer, ouvrirStudio, rafraichirVisuels, telecharger });
+onglet(['campagnes', 'profils', 'bibliotheque', 'visuels'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'assistant');
 if ('serviceWorker' in navigator && window.isSecureContext) navigator.serviceWorker.register('../sw.js').catch(() => {});
 window.__production = { analyser, composer, planifierCampagne, db, zip, STATUTS };   // utilisé par les tests automatisés

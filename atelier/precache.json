@@ -1,5 +1,5 @@
 {
- "version": "0.1.1-db5292dc5f",
+ "version": "0.1.1-a2c15e66a0",
  "fichiers": [
   "./",
   "index.html",
@@ -22,6 +22,7 @@
   "motion/stockage.js",
   "motion/studio.css",
   "motion/traitements.js",
+  "motion/visuels.js",
   "motion/webm.js",
   "motion/zip.js",
   "production/",
@@ -29,6 +30,7 @@
   "production/index.html",
   "production/production.css",
   "production/production.js",
+  "production/visuels-ui.js",
   "../templates/_systeme/ambiances.js",
   "../templates/_systeme/briques.js",
   "../templates/_systeme/editorial.js",

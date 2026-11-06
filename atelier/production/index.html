@@ -16,6 +16,7 @@
   <a href="../../" class="marque" title="Accueil">Production</a>
   <nav class="onglets" role="tablist" aria-label="Espaces de production">
     <button type="button" role="tab" id="t-assistant" data-onglet="assistant" aria-selected="true" aria-controls="assistant">Assistant</button>
+    <button type="button" role="tab" id="t-visuels" data-onglet="visuels" aria-selected="false" aria-controls="visuels">Visuels</button>
     <button type="button" role="tab" id="t-campagnes" data-onglet="campagnes" aria-selected="false" aria-controls="campagnes">Campagnes</button>
     <button type="button" role="tab" id="t-profils" data-onglet="profils" aria-selected="false" aria-controls="profils">Profils DA</button>
     <button type="button" role="tab" id="t-bibliotheque" data-onglet="bibliotheque" aria-selected="false" aria-controls="bibliotheque">Bibliothèque</button>
@@ -35,6 +36,37 @@
       <div class="exemples" id="exemples" aria-label="Exemples de demandes"></div>
     </form>
     <div id="proposition" class="proposition" hidden></div>
+  </section>
+
+  <!-- Bibliothèque visuelle locale -->
+  <section id="visuels" role="tabpanel" aria-labelledby="t-visuels" class="panneau" hidden>
+    <aside class="cote">
+      <h2 class="titre-section">Visuels</h2>
+      <label class="bouton accent" for="visuel-fichiers">Importer des images…</label>
+      <input type="file" id="visuel-fichiers" accept="image/*" multiple class="masque">
+      <select id="import-categorie" aria-label="Catégorie des images importées"></select>
+      <p id="stockage" class="note"></p>
+      <h3>Collections</h3><ul id="liste-collections" class="liste"></ul>
+      <h3>Personnages</h3><button type="button" id="nouvelle-fiche">Nouvelle fiche de personnage</button><ul id="liste-personnages" class="liste"></ul>
+    </aside>
+    <div>
+      <div class="filtres">
+        <input type="search" id="v-recherche" placeholder="Rechercher : nom, tag, collection, personnage…" aria-label="Rechercher une image">
+        <select id="v-categorie" aria-label="Catégorie"><option value="">Toutes catégories</option></select>
+        <select id="v-tri" aria-label="Tri"><option value="recent">Plus récentes</option><option value="nom">Nom</option><option value="taille">Poids</option></select>
+        <label class="bascule"><input type="checkbox" id="v-favoris"> Favoris</label>
+        <label class="bascule"><input type="checkbox" id="v-transparents"> Transparentes</label>
+        <button type="button" id="v-tout">Tout sélectionner</button>
+      </div>
+      <div class="barre-lot" id="barre-visuels" role="toolbar" aria-label="Actions sur les images sélectionnées" hidden>
+        <input type="text" id="lot-tag-valeur" placeholder="Tag ou collection" aria-label="Tag ou collection" style="width:auto">
+        <button type="button" id="lot-tag">Ajouter le tag</button><button type="button" id="lot-collection">Ajouter à la collection</button>
+        <select id="lot-categorie" aria-label="Changer la catégorie"></select>
+        <button type="button" id="lot-supprimer" class="danger">Supprimer</button>
+      </div>
+      <p id="v-resume" class="note"></p>
+      <ul id="grille-visuels" class="grille-visuels"></ul>
+    </div>
   </section>
 
   <!-- Campagnes et calendrier éditorial -->
@@ -81,6 +113,8 @@
   </section>
 </main>
 
+<dialog id="dialogue-visuel" class="dialogue" aria-label="Fiche"><form method="dialog" id="form-visuel"></form></dialog>
+<dialog id="dialogue-comparer" class="dialogue large" aria-labelledby="comparer-titre"><div class="pile" style="padding:16px"><div class="rangee"><h2 class="titre-section" id="comparer-titre">Comparer</h2><button type="button" id="fermer-comparer">Fermer</button></div><div id="grille-comparer"></div></div></dialog>
 <dialog id="editeur-pub" class="dialogue" aria-labelledby="ep-titre"><form method="dialog" id="form-pub"></form></dialog>
 <script type="module" src="production.js"></script>
 </body>

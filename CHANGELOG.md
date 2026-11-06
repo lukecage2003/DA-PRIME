@@ -1,5 +1,18 @@
 # Journal des versions
 
+## 0.9.1 · 2026-11-06 · Visual Asset Studio : bibliothèque visuelle
+
+- Production › Visuels : bibliothèque locale et privée des images (personnages, illustrations, couvertures, logos, arrière-plans, textures, effets, ressources transparentes, images promotionnelles) ; import individuel et multiple, vignettes légères, recherche (nom, tag, collection, personnage), filtres (catégorie, favoris, transparentes), tri, collections, favoris, renommage, actions par lot, suppression confirmée avec les créations concernées, jauge de stockage.
+- Import analysé sur l'appareil : transparence réelle et boîte du sujet mesurées, orientation, catégorie suggérée d'après des mesures (jamais d'identité devinée), copie de travail limitée à 4096 px (original intact en dessous), doublons détectés par empreinte (une seule copie par image). Les images importées dans Motion Studio rejoignent la bibliothèque ; les anciennes sont indexées une fois.
+- Fiches de personnages : nom, ambiance d'univers, version, description, tags (vos informations) et 7 rôles d'image (portrait, silhouette complète, action, gros plan, version alternative, transparente, référence) ; le compositeur choisit l'image adaptée à chaque mise en scène.
+- Compositeur adaptatif : image transparente posée devant le décor, cadrée sur son sujet et mise en lumière ; couverture et silhouette jamais recadrées (cadre aux proportions de l'image) ; portrait ou image verticale cadrés sur le haut (visage) ; image opaque d'un duel utilisée comme moitié de décor. Traitements comparables : monumental, éditorial, cinématographique, minimaliste.
+- Comparaison : 4 traitements × 3 formats (miniature, carré, story) d'une image ou d'une fiche, création en un clic.
+- Motion Studio : remplacement d'une image depuis la bibliothèque sans reconstruire la composition (l'intention suit, les déclinaisons recomposées utilisent la nouvelle image), cadrages rapides (haut, centre, bas, image entière), vignettes légères dans l'onglet Ressources.
+- Atelier : bouton « Bibliothèque » sur chaque emplacement d'image des gabarits.
+- Familles 09 à 11 alignées sur les 8 autres : affiche cinéma (teinte, brume, halo, faisceau, grain), duel (lumières opposées, choc d'énergie, vitesse), une éditoriale (matière papier, ombre douce).
+- Stockage : base locale version 4 (magasins `visuels` et `personnages`), chargement des images à la demande dans Production.
+- Tests : 149 tests Motion Studio (dont 13 pour la bibliothèque visuelle de bout en bout), 54 de l'Atelier, 15 du moteur.
+
 ## 0.9.0 · 2026-11-06 · excellence visuelle et direction artistique
 
 - Les 8 familles historiques de miniatures recomposées en profondeur, chacune avec un usage et une mise en scène propres : portrait héroïque à contre-jour (01), couverture-objet sous projecteur avec reflet (02), flash d'actualité à bandeau incliné (03), enquête nocturne avec faisceau, brume, « ? » lumineux ou loupe (04), parcours de lecture en escalier (05), choc de deux univers chaud/froid avec collision d'énergie (06), archive avec année monumentale derrière le personnage (07), échelle cosmique avec nébuleuse et aura (08). Palette, typographies, sceau et grille Primestone conservés.

@@ -15,6 +15,7 @@ import { initBibliotheque } from './bibliotheque.js';
 import { initExports, MIME_TEMPS_REEL } from './exports.js';
 import { db, persister, migrer, paquetProjet, lirePaquet, paquetBibliotheque, importerBibliotheque, enregistrerVersion, versionsDe, ressourcesUtilisees } from './stockage.js';
 import * as TR from './traitements.js';
+import { importerVisuel } from './visuels.js';
 import { icone, poserIcones } from './icones.js';
 poserIcones();
 
@@ -40,6 +41,9 @@ const ctx = {
   apresGeste: () => panneaux.rafraichir(), telecharger, importerImages: () => { cible = null; $('#fichier-image').click(); }, importerPolice, remplacerImage: (e) => { cible = e.id; $('#fichier-image').removeAttribute('multiple'); $('#fichier-image').click(); },
   insererImage: (id) => { const r = S.ressources.get(id); ajouter(elementImage(r, id)); }, enregistrerComposant, insererComposant, enregistrerModele, depuisModelePerso, enregistrerPreset, presets: () => presets,
   enregistrerVersion: async () => { const n = prompt('Nom de la version', `Version du ${new Date().toLocaleString('fr-FR')}`); if (n === null) return; await sauverMaintenant(); await enregistrerVersion(S.doc, n || 'Version'); ctx.listerVersions(); info('Version enregistrée.'); },
+  // Remplacement d'image : l'intention (brief) suit, pour que les déclinaisons recomposées utilisent la nouvelle image
+  majBriefImage: async (e, id) => { const ps = S.doc.brief?.personnages; const p = ps?.find((x) => x.nom === e.nom); if (!p) return; const v = id ? await db.lire('visuels', id).catch(() => null) : null;
+    if (id) { p.image = id; p.imageInfo = v ? { w: v.w, h: v.h, alpha: v.alpha, boite: v.boite, role: p.role || null, categorie: v.categorie, orientation: v.orientation } : null; } else { delete p.image; delete p.imageInfo; } },
   listerVersions, declinaison, profils: () => db.tous('profils').catch(() => []), appliquerProfil: (p) => { modifier(() => { S.doc.systeme = p.systeme || S.doc.systeme; if (p.palette) S.doc.palette = p.palette; S.doc.couleurs = { ...(p.couleurs || {}), ...(S.doc.couleursPropres || {}) }; S.doc.profil = p.id; }); panneaux.documentP?.(); info(`Profil « ${p.nom} » appliqué${S.doc.couleursPropres ? ' (couleurs propres à cette création conservées)' : ''}.`); }, nouvelle, ouvrir, depuisModele, depuisSignature, dupliquerCreation, supprimerCreation, enregistrerProjet, ouvrirProjet: () => $('#fichier-projet').click(), exporterBibliotheque,
 };
 let presets = [], cible = null;
@@ -142,7 +146,7 @@ async function supprimerCreation(id) { await db.suppr('creations', id); for (con
 // Déclinaison : recomposition complète quand la création vient d'une intention (brief), sinon adaptation par ancrages ; la DA du document est conservée
 async function declinaison(nf) { await sauverMaintenant();
   if (S.doc.brief) { const C = await import('../../templates/_systeme/studio-compositeur.js'), cible = Object.entries(C.FORMATS_COMPOSITEUR).find(([, v]) => v === nf.id)?.[0] || nf.id;
-    const d = C.composer(S.doc.brief, cible, { profil: { systeme: S.doc.systeme, palette: S.doc.palette, couleurs: S.doc.couleurs, id: S.doc.profil } }); d.nom = `${S.doc.nom} · ${nf.nom || cible}`; if (S.doc.campagne) d.campagne = S.doc.campagne;
+    const d = C.composer(S.doc.brief, cible, { profil: { systeme: S.doc.systeme, palette: S.doc.palette, couleurs: S.doc.couleurs, id: S.doc.profil }, traitement: S.doc.origine?.traitement }); d.nom = `${S.doc.nom} · ${nf.nom || cible}`; if (S.doc.campagne) d.campagne = S.doc.campagne;
     if (nf.w !== d.format.w || nf.h !== d.format.h) { const a = adapter(d, nf); d.elements = a.elements; d.format = nf; }
     await ouvrirDoc(normaliserDoc(d)); return info(`Déclinaison ${nf.w} × ${nf.h} recomposée pour ce format.`); }
   const d = adapter(S.doc, nf); d.id = nouvelId('c'); d.nom = `${S.doc.nom} · ${nf.nom}`; d.cree = Date.now(); await ouvrirDoc(normaliserDoc(d)); info(`Déclinaison ${nf.w} × ${nf.h} créée : corriger les placements si besoin.`); }
@@ -154,13 +158,8 @@ async function listerVersions() {
 
 // ---------- Illustrations et polices ----------
 function elementImage(r, id) { const { w: W, h: H } = S.doc.format, k = Math.min((W * 0.6) / r.w, (H * 0.7) / r.h); const e = creerElement('image', S.doc); Object.assign(e, { w: r.w * k, h: r.h * k, x: (W - r.w * k) / 2, y: (H - r.h * k) / 2, nom: r.nom.replace(/\.[a-z0-9]+$/i, '') }); e.image.src = id; e.image.placeholder = null; return e; }
-async function lireImage(f) {
-  const href = await new Promise((ok, ko) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = ko; r.readAsDataURL(f); });
-  const im = new Image(); im.src = href; await im.decode(); let w = im.naturalWidth, h = im.naturalHeight, src = href;
-  if (Math.max(w, h) > MAX_COTE_SOURCE) { const k = MAX_COTE_SOURCE / Math.max(w, h); w = Math.round(w * k); h = Math.round(h * k); const c = Object.assign(document.createElement('canvas'), { width: w, height: h }); c.getContext('2d').drawImage(im, 0, 0, w, h); src = c.toDataURL(/png|webp|gif|avif/.test(f.type) ? 'image/png' : 'image/jpeg', 0.92); }
-  const id = idRessource(src), r = { id, type: 'image', href: src, w, h, nom: f.name, taille: f.size, reduite: src !== href };
-  S.ressources.set(id, r); await db.ecrire('ressources', r).catch(() => {}); return r;
-}
+// Import : passe par la bibliothèque visuelle (fiche, vignette, transparence, doublons) ; l'original reste intact jusqu'à 4096 px
+async function lireImage(f) { const { ressource: r } = await importerVisuel(f, { source: 'motion' }); S.ressources.set(r.id, r); return r; }
 $('#fichier-image').addEventListener('change', async () => {
   const fs = [...($('#fichier-image').files || [])]; $('#fichier-image').value = ''; $('#fichier-image').setAttribute('multiple', ''); const ids = [];
   for (const [i, f] of fs.entries()) {

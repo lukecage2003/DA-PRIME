@@ -66,9 +66,10 @@ export function initBibliotheque(ctx) {
   const effets = async () => CATEGORIES_EFFETS.flatMap((c) => [el('h3', { textContent: c }), el('div', { className: 'cartes' }, ...Object.entries(EFFETS_LIB).filter(([, e]) => e.cat === c).map(([k, e]) => carte(e.nom, null, null, bouton('Insérer', fermerApres(() => nouvelElement('effet', { effet: k })), { dataset: { effet: k } }))))]);
   async function ressources() {
     const r = [...S.ressources.values()], imgs = r.filter((x) => x.type === 'image'), pol = r.filter((x) => x.type === 'police');
-    return [el('div', { className: 'rangee' }, bouton('Importer des illustrations…', () => ctx.importerImages()), bouton('Importer une police…', () => ctx.importerPolice())),
+    const fiches = new Map((await db.tous('visuels').catch(() => [])).map((v) => [v.id, v]));   // vignettes légères de la bibliothèque visuelle
+    return [el('div', { className: 'rangee' }, bouton('Importer des illustrations…', () => ctx.importerImages()), bouton('Importer une police…', () => ctx.importerPolice()), el('a', { href: '../production/#visuels', textContent: 'Organiser la bibliothèque visuelle →' })),
       el('p', { className: 'info', textContent: 'Les originaux sont conservés tels quels sur l\'appareil (au-delà de 4096 px de côté, une copie de travail réduite est créée). Les polices importées restent locales : vérifier leur licence avant toute diffusion.' }),
-      el('h3', { textContent: `Illustrations (${imgs.length})` }), el('div', { className: 'cartes', id: 'liste-ressources' }, ...imgs.map((x) => carte(x.nom, `${x.w} × ${x.h}`, vignette(x.href), bouton('Insérer', fermerApres(() => ctx.insererImage(x.id)))))),
+      el('h3', { textContent: `Illustrations (${imgs.length})` }), el('div', { className: 'cartes', id: 'liste-ressources' }, ...imgs.map((x) => carte(fiches.get(x.id)?.nom || x.nom, `${x.w} × ${x.h}${fiches.get(x.id)?.alpha ? ' · transparent' : ''}`, vignette(fiches.get(x.id)?.vignette || x.href), bouton('Insérer', fermerApres(() => ctx.insererImage(x.id)))))),
       el('h3', { textContent: `Polices importées (${pol.length})` }), el('div', { className: 'cartes' }, ...pol.map((x) => carte(x.nom, x.fam, null)))];
   }
   async function fichiers() {

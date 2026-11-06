@@ -71,3 +71,9 @@ legend { color:var(--doux); font-weight:600; letter-spacing:.14em; }
 .resume { border-radius:6px; }
 .lien-motion { border-radius:6px; }
 .logo-accueil { text-decoration:none; }
+
+.choix-visuel { background:var(--surface); color:var(--texte); border:1px solid var(--ligne); width:min(900px, 96vw); max-height:88vh; padding:12px; }
+.choix-visuel::backdrop { background:rgba(0,0,0,.7); } .choix-visuel input { width:calc(100% - 100px); min-height:44px; margin-right:8px; }
+.grille-choix { display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:6px; margin-top:10px; }
+.grille-choix button { display:flex; flex-direction:column; gap:4px; padding:4px; background:#1E1E1E; border:1px solid var(--ligne); color:var(--texte); font-size:11px; cursor:pointer; }
+.grille-choix img { width:100%; aspect-ratio:1; object-fit:contain; background:repeating-conic-gradient(#222 0 25%, #2c2c2c 0 50%) 0 0 / 14px 14px; }

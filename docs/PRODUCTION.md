@@ -49,3 +49,18 @@ IndexedDB `primestone-motion` version 3 : `creations`, `ressources`, `versions`,
 - Analyse d'image statistique : une référence très texturée ou multicolore peut donner une palette à corriger.
 - Le profil appliqué à une campagne recolore les créations produites ; il ne réorganise pas leur composition.
 - Export par lot en PNG uniquement (les animations s'exportent une par une depuis Motion Studio).
+
+## Bibliothèque visuelle (0.9.1)
+
+Onglet **Visuels** de Production, partagé avec Motion Studio (onglet Ressources, propriété « Image de la bibliothèque ») et l'Atelier (bouton « Bibliothèque » sur chaque image).
+
+- **Organisation** : catégories (personnage, illustration, couverture, logo, arrière-plan, texture, effet, transparente, promotionnelle), tags, collections, favoris, recherche plein texte, filtres, tri, actions par lot. 60 vignettes par page, « Afficher plus ».
+- **Fiches de personnages** : informations saisies par vous uniquement (l'outil ne reconnaît pas les personnages) et 7 rôles d'image. Image choisie par mise en scène : transparente ou silhouette pour un duel ou un portrait, portrait pour une une éditoriale, action pour une annonce.
+- **Composition adaptative** : transparente → détourée devant le décor, cadrée sur sa boîte de sujet mesurée, mise en lumière ; couverture, logo, silhouette → jamais recadrés ; portrait ou image verticale → cadrage sur le haut ; opaque dans un duel → moitié de décor. Remplacer une image dans Motion Studio garde la composition et met à jour l'intention.
+- **Comparer** : monumental, éditorial, cinématographique, minimaliste × miniature, carré, story.
+
+### Stockage : limites et solution
+
+Les originaux sont stockés une seule fois (identifiant = empreinte du contenu) dans IndexedDB, sous forme de données encodées (≈ +33 % par rapport au fichier). Le magasin `visuels` ne garde que des fiches légères (vignette ≤ 360 px) : la grille ne charge jamais les originaux, et Production ne lit une image qu'au moment de la rendre. Copie de travail limitée à 4096 px de côté.
+
+Quota navigateur (estimation affichée dans l'onglet) : Chromium accorde une part importante du disque libre ; Safari limite davantage et peut purger les données d'un site non persistant. Le stockage persistant est demandé automatiquement. Limite connue : Motion Studio charge toutes les ressources au démarrage ; au-delà de quelques centaines d'images très lourdes, la mémoire de l'onglet devient le facteur limitant. Solution compatible local-first si nécessaire : stocker les originaux en `Blob` (sans surcoût d'encodage) et les charger à la demande dans Motion Studio comme dans Production, ou utiliser le système de fichiers privé du navigateur (OPFS). Sauvegarde : « Exporter la bibliothèque » dans Motion Studio (fichier local, aucun service externe).

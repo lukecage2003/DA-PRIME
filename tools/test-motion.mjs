@@ -444,6 +444,58 @@ let fichierBiblio = null, fichierProjetV2 = null;
   ok(d.profil === prof.id && d.couleurs.accent === prof.couleurs.accent && d.systeme === prof.systeme, 'Motion Studio : profil DA appliqué depuis le panneau Document');
   ok(!err.length, `production : aucune erreur JavaScript${err.length ? ' · ' + err.slice(0, 2).join(' | ') : ''}`); await ctx.close();
 }
+// Bibliothèque visuelle : import multiple (transparent, très grand, couverture, portrait), organisation, fiche de personnage,
+// comparaison des traitements, création, cadrage et éclairage, déclinaisons, remplacement d'image, réouverture, export, Atelier
+{
+  const ctx = await browser.newContext({ viewport: { width: 1400, height: 1000 }, acceptDownloads: true }), p = await ctx.newPage(), err = erreurs(p); p.on('dialog', (x) => x.accept());
+  await p.goto(URL0 + 'production/#visuels'); await p.waitForFunction(() => window.__production);
+  const fichiers = await D(p, async () => { const mk = (w, h, fn, type) => { const c = Object.assign(document.createElement('canvas'), { width: w, height: h }), g = c.getContext('2d'); fn(g, w, h); return c.toDataURL(type, 0.9).split(',')[1]; };
+    return [['ESSAI_personnage.png', 'image/png', mk(800, 1100, (g) => { g.fillStyle = '#C82828'; g.beginPath(); g.arc(400, 260, 150, 0, 7); g.fill(); g.fillStyle = '#1E3CA0'; g.fillRect(200, 400, 400, 700); }, 'image/png')],
+      ['ESSAI_decor-geant.jpg', 'image/jpeg', mk(5000, 2800, (g, w, h) => { g.fillStyle = '#141428'; g.fillRect(0, 0, w, h); g.fillStyle = '#FAB43C'; g.beginPath(); g.arc(3800, 900, 500, 0, 7); g.fill(); }, 'image/jpeg')],
+      ['ESSAI_couverture.jpg', 'image/jpeg', mk(800, 1240, (g, w, h) => { g.fillStyle = '#F03C28'; g.fillRect(0, 0, w, h); g.fillStyle = '#111'; g.fillRect(0, 0, w, 180); }, 'image/jpeg')],
+      ['ESSAI_portrait.jpg', 'image/jpeg', mk(900, 1300, (g, w, h) => { g.fillStyle = '#3C465A'; g.fillRect(0, 0, w, h); g.fillStyle = '#DCB496'; g.beginPath(); g.arc(450, 300, 150, 0, 7); g.fill(); }, 'image/jpeg')]]; });
+  const lots = fichiers.map(([name, mimeType, b]) => ({ name, mimeType, buffer: Buffer.from(b, 'base64') }));
+  await p.setInputFiles('#visuel-fichiers', lots); await p.waitForFunction(() => /importée/.test(document.querySelector('#etat').textContent), null, { timeout: 90000 });
+  const msg = await p.textContent('#etat'), cartes = await p.$$eval('.carte-visuel', (l) => l.map((x) => ({ a: x.dataset.alpha, t: x.textContent })));
+  ok(cartes.length === 4 && cartes.filter((c) => c.a === '1').length === 1 && /réduite/.test(msg) && cartes.some((c) => /4096×2294/.test(c.t)) && cartes.some((c) => /Couverture/.test(c.t)), `import multiple : 4 images, transparence détectée, très grande image réduite à 4096 px, couverture reconnue (${msg})`);
+  await p.setInputFiles('#visuel-fichiers', lots.slice(0, 1)); await p.waitForFunction(() => /déjà présente/.test(document.querySelector('#etat').textContent), null, { timeout: 30000 });
+  ok(await p.locator('.carte-visuel').count() === 4, 'réimport du même fichier : aucun doublon');
+  const ids = await D(p, async () => Object.fromEntries((await window.__production.db.tous('visuels')).map((v) => [v.nom, v.id])));
+  await p.locator(`[data-visuel="${ids.ESSAI_personnage}"] .favori`).click(); await p.locator(`[data-visuel="${ids.ESSAI_portrait}"] input`).check(); await p.locator(`[data-visuel="${ids.ESSAI_personnage}"] input`).check();
+  await p.fill('#lot-tag-valeur', 'Essai'); await p.click('#lot-collection'); await p.fill('#lot-tag-valeur', 'héros'); await p.click('#lot-tag'); await attendre(p, 300);
+  await p.check('#v-favoris'); const fav = await p.locator('.carte-visuel').count(); await p.uncheck('#v-favoris'); await p.fill('#v-recherche', 'héros'); const tag = await p.locator('.carte-visuel').count(); await p.fill('#v-recherche', '');
+  await p.locator('#liste-collections button', { hasText: 'Essai' }).click(); const col = await p.locator('.carte-visuel').count(); await p.locator('#liste-collections button').first().click();
+  ok(fav === 1 && tag === 2 && col === 2, `organisation : favori (${fav}), tag (${tag}), collection (${col})`);
+  await p.locator(`[data-visuel="${ids['ESSAI_couverture']}"] .vignette-visuel`).click(); await p.fill('#fv-nom', 'Couverture de test renommée'); await p.click('#fv-enregistrer'); await attendre(p, 300);
+  ok((await p.textContent('#grille-visuels')).includes('Couverture de test renommée'), 'renommage d\'une image');
+  await p.click('#nouvelle-fiche'); await p.fill('#fp-nom', 'Héros d\'essai'); await p.selectOption('select[data-role="transparente"]', ids.ESSAI_personnage); await p.selectOption('select[data-role="portrait"]', ids.ESSAI_portrait);
+  await p.click('#fp-comparer'); await p.waitForFunction(() => document.querySelectorAll('#grille-comparer figure').length === 12, null, { timeout: 90000 });
+  ok(true, 'fiche de personnage (2 images) et comparaison : 4 traitements × 3 formats');
+  await p.locator('#grille-comparer [data-traitement="cinema"][data-format="miniature"] button').click(); await prets(p);
+  let d = await docJ(p), h = d.elements.find((e) => e.type === 'image' && e.image.src === ids.ESSAI_personnage);
+  ok(d.format.w === 1280 && h && h.image.eclairage.actif && h.image.ajustement === 'contenir' && h.image.zoom > 1 && d.brief.personnages[0].imageInfo?.alpha, `miniature créée avec l'image transparente : détourée, mise en lumière, cadrée sur le sujet (zoom ${h?.image.zoom})`);
+  await D(p, async (id) => (await import('./etat.js')).selectionner([id]), h.id); await p.click('button[data-onglet="proprietes"]'); await deplier(p);
+  await p.locator('[data-cadrage="0.35"]').click(); await p.fill('#prop-eclairage', '').catch(() => {}); await attendre(p, 200); d = await docJ(p); h = d.elements.find((e) => e.id === h.id);
+  ok(h.image.dy === 0.35, 'cadrage modifié depuis le panneau (haut, visage)');
+  await D(p, async (id) => { const E = await import('./etat.js'); E.modifier((doc) => { const e = doc.elements.find((x) => x.id === id); e.image.eclairage.dir = 300; e.image.eclairage.contre = '#FFAA00'; }); }, h.id);
+  const id0 = d.id; await D(p, async () => { const S = await import('../../templates/_systeme/studio-systemes.js'); await window.__studio.ctx.declinaison(S.format('1:1')); }); await attendre(p, 400); const carre = await docJ(p);
+  await D(p, async (id) => { await window.__studio.ctx.ouvrir(id); }, id0).catch(() => {}); await attendre(p, 300);
+  await D(p, async () => { const S = await import('../../templates/_systeme/studio-systemes.js'); await window.__studio.ctx.declinaison(S.format('9:16')); }); await attendre(p, 400); const story = await docJ(p);
+  const hi = (x) => x.elements.find((e) => e.type === 'image' && e.image.src === ids.ESSAI_personnage);
+  ok(carre.format.w === 1080 && carre.format.h === 1080 && story.format.h === 1920 && hi(carre) && hi(story) && hi(story).y !== hi(carre).y, 'déclinaisons carrée et story recomposées avec la même image');
+  await D(p, async (id) => (await import('./etat.js')).selectionner([id]), hi(story).id); await p.click('button[data-onglet="proprietes"]'); await deplier(p);
+  const n0 = story.elements.length; await p.selectOption('#prop-ressource', ids.ESSAI_portrait); await attendre(p, 300); let s2 = await docJ(p);
+  ok(s2.elements.length === n0 && s2.elements.find((e) => e.id === hi(story).id).image.src === ids.ESSAI_portrait && s2.brief.personnages[0].image === ids.ESSAI_portrait, 'image remplacée sans reconstruire la composition (calques et réglages conservés, intention mise à jour)');
+  await D(p, () => window.__studio.sauver()); await p.goto(URL0 + `motion/?creation=${s2.id}`); await prets(p); s2 = await docJ(p);
+  ok(s2.elements.some((e) => e.image?.src === ids.ESSAI_portrait), 'projet enregistré puis rouvert avec ses images');
+  await p.click('#ouvrir-export'); await attendre(p, 400); const qa = await p.textContent('#controle-qualite');
+  const [dl] = await Promise.all([p.waitForEvent('download', { timeout: 90000 }), p.click('[data-export="png"]')]); const f = join(OUT, 'visuels-story.png'); await dl.saveAs(f);
+  ok(pngDims(readFileSync(f)).join('×') === '1080×1920' && /Contrôle qualité/.test(qa), `export PNG pleine définition ${pngDims(readFileSync(f)).join(' × ')}, contrôle qualité affiché`);
+  await p.goto(URL0); await p.waitForSelector('#apercu svg'); await p.locator('button', { hasText: 'Bibliothèque' }).first().click(); await p.waitForSelector('.grille-choix button');
+  await p.locator(`.grille-choix [data-visuel="${ids.ESSAI_personnage}"]`).click(); await attendre(p, 400);
+  ok((await p.innerHTML('#apercu')).includes('data:image/png'), 'Atelier : image choisie dans la bibliothèque visuelle et posée dans le gabarit');
+  ok(!err.length, `bibliothèque visuelle : aucune erreur JavaScript${err.length ? ' · ' + err.slice(0, 2).join(' | ') : ''}`); await ctx.close();
+}
 for (const [nom, opt] of [
   ['galaxy-s25', { viewport: { width: 384, height: 832 }, deviceScaleFactor: 2.8125, isMobile: true, hasTouch: true }],
   ['ipad-m2-portrait', { viewport: { width: 820, height: 1180 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true }],
