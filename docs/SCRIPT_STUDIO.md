@@ -101,7 +101,7 @@ Trois moteurs indépendants et remplaçables : **OCR Engine**, **Comic Vision En
 Les zones affichées sont des zones de texte reconnues, **pas des contours de bulles** ; aucun personnage n'est identifié ; l'ordre de lecture est établi par les cases quand elles existent, et signalé **approximatif** sur une page entière. La confiance Tesseract n'est pas un taux d'exactitude.
 
 ### Architecture et confidentialité
-- `templates/_systeme/ocr.js` (pur) : modèles et empreintes, prétraitements (×2, gris, contraste, seuil d'Otsu), conversion des blocs Tesseract en coordonnées de page, regroupement prudent des lignes d'un même texte, ordre de lecture, mesures (exactitude des mots, WER, CER).
+- `templates/_systeme/ocr.js` (pur) : modèles et empreintes, prétraitements (×2, gris, contraste, seuil d'Otsu), blocs reconstruits à partir des mots (coupure entre bulles voisines, fragments parasites retirés mais conservés dans le texte brut), coordonnées de page, regroupement prudent des lignes d'un même texte, ordre de lecture, mesures (exactitude des mots, WER, CER).
 - `atelier/script/ocr.js` : téléchargement explicite et vérifié des modèles, stockage local (base IndexedDB, magasin `modeles-ocr`), prétraitement sur **copies temporaires** (les pages importées ne sont jamais modifiées), reconnaissance annulable, libération du worker et de la mémoire à la fin.
 - `atelier/script/ocr-worker.js` : enveloppe du worker Tesseract ; sert les modèles depuis la base locale, charge le cœur WebAssembly intégré, et **refuse toute requête vers une autre origine** (aucune image ni aucun texte ne peut sortir de l'appareil).
 - `atelier/script/ocr-ui.js` : panneau du lecteur, section Moteurs, traitement `ocr-pages` de la file existante ; passages enregistrés dans le magasin `ocr-passes` (base locale version 7).
@@ -122,17 +122,17 @@ Protocole indépendant de la confiance Tesseract : `node tools/mesurer-ocr.mjs <
 
 | Mesure (anglais) | Zone délimitée (reconnaissance seule) | Page entière (détection + reconnaissance, réglages par défaut) |
 |---|---|---|
-| Lettrage courant (dialogues + narration, 193 mots) | **95,3 %** des mots (×2 + noir et blanc) | **91,2 %** des mots (×2 + gris + contraste), WER 65 % |
-| Dialogues | 93,3 % | 89,4 % |
+| Lettrage courant (dialogues + narration, 193 mots) | **95,3 %** des mots, WER 11 % (×2 + noir et blanc) | **93,3 %** des mots, WER 13 %, CER 8,5 % (×2 + gris + contraste) |
+| Dialogues | 93,3 % | 93,3 % |
 | Narration et cartouches | 97,8 % | 93,3 % |
-| Italique (14 mots) | 78,6 à 100 % selon le prétraitement | 57 à 71 % |
-| Lettrage stylisé (50 mots) | 42 à 60 % | 16 à 46 % |
-| Petit texte (15 mots) | 13 à 47 % | 33 à 60 % |
+| Italique (14 mots) | 79 à 100 % selon le prétraitement | 43 à 71 % |
+| Lettrage stylisé (50 mots) | 42 à 60 % | 18 à 50 % |
+| Petit texte (15 mots) | 20 à 47 % | 33 à 60 % |
 | Effet sonore (1 échantillon) | 0 % | 0 % |
-| Temps | 40 à 200 ms par zone | ≈ 3 à 5 s par page de 2400 px |
-| Mémoire (navigateur) | — | 485 Mo au repos, pic 1,1 Go |
+| Temps | 60 à 200 ms par zone | ≈ 3 à 5 s par page de 2400 px |
+| Mémoire (navigateur) | 487 Mo au repos, pic 721 Mo | 485 Mo au repos, pic 1,1 Go |
 
-Lecture : l'objectif de 85 % est atteint sur le lettrage courant, sur ce petit corpus. Sur une page entière, le WER élevé vient des **insertions** (fragments parasites tirés du dessin ou de textes voisins) : la relecture reste indispensable. Le découpage « automatique » fusionne les cases voisines (60 % seulement) : « épars » est le réglage par défaut ; le mode **case par case** est conseillé quand les cases sont bien détectées. Lettrage stylisé, effets sonores et petit texte : **non fiables**. Le français n'a été mesuré que sur des pages de synthèse (100 % sur 13 mots), faute de comic français réel dans le corpus.
+Lecture : l'objectif de 85 % est atteint sur le lettrage courant, sur ce petit corpus. Deux traitements ont fait passer le WER de la page entière de 65 % à 13 % : les blocs sont reconstruits à partir des mots (une ligne est coupée entre deux bulles voisines que Tesseract réunissait) et les fragments probablement tirés du dessin (courts, peu sûrs, en minuscules dans un lettrage en capitales) sont retirés du texte proposé, mais conservés dans le texte brut et listés dans la provenance. Le découpage « automatique » fusionne les cases voisines (60 % seulement) : « épars » est le réglage par défaut ; le mode **case par case** est conseillé quand les cases sont bien détectées. Italique, lettrage stylisé, effets sonores et petit texte : **non fiables**. Le français n'a été mesuré que sur des pages de synthèse (100 % sur 13 mots), faute de comic français réel dans le corpus.
 
 ## Validation sur 10 comics réels
 

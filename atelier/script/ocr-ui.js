@@ -20,7 +20,7 @@ export function initOcr({ file, kb, ouvrirMoteurs, ouvrirPage }) {
     const P = t.params, passe = `${t.id}:${p.id}:${pre}`, date = Date.now(), moteur = `${mod.VERSION_MOTEUR} · fast ${O.MODELES.version}`;
     const meta = { langues: P.langues, pretraitement: pre, segmentation: P.segmentation, zoneMode: P.zone, tache: t.id, passe, date, moteur };
     const as = r.blocs.map((b) => K.normaliser({ id: `ocr:${passe}:${b.ordre}`, contenu: b.texte, categorie: b.confiance < 0.5 ? 'incertain' : 'texte', comic: c.id, page: idx, case: b.case, zone: b.zone, methode: 'ocr:tesseract-fast', moteur, confiance: b.confiance, statut: 'a-verifier',
-      origine: { genre: 'ocr', passe, pageId: p.id, tache: t.id }, ocr: { ...meta, texteBrut: b.texte, lignes: b.lignes, ordre: b.ordre, ordreCertain: r.ordreCertain, mots: b.mots, motsFaibles: b.motsFaibles } }));
+      origine: { genre: 'ocr', passe, pageId: p.id, tache: t.id }, ocr: { ...meta, texteBrut: b.texteBrut ?? b.texte, texteInitial: b.texte, retires: b.retires || [], lignes: b.lignes, ordre: b.ordre, ordreCertain: r.ordreCertain, mots: b.mots, motsFaibles: b.motsFaibles } }));
     await db.ecrire('ocr-passes', { id: passe, ...meta, comic: c.id, pageId: p.id, page: idx, blocs: as.length, ignores: r.ignores, ordreCertain: r.ordreCertain, regions: r.regions, duree: r.duree, largeur: r.largeur, hauteur: r.hauteur, texte: r.blocs.map((b) => b.texte).join('\n'), ids: as.map((a) => a.id) });
     await kb.ajouterLot(as); return as.length;
   }
@@ -95,7 +95,8 @@ export function initOcr({ file, kb, ouvrirMoteurs, ouvrirPage }) {
           el('div', { className: 'pile' }, el('div', { className: 'rangee' }, cb, el('b', { textContent: `${a.ocr.ordre}.` }), el('span', { className: 'badge-prov', dataset: { prov: a.categorie === 'incertain' ? 'incertain' : 'dialogue' }, textContent: K.CATEGORIES[a.categorie] }),
             el('span', { className: 'compteur', textContent: `confiance Tesseract ${pc(a.confiance)}${a.case ? ` · case ${a.case}` : ''}${a.ocr.motsFaibles ? ` · ${a.ocr.motsFaibles} mot(s) douteux` : ''}` }), el('b', { className: 'statut-kb', dataset: { statut: a.statut }, textContent: K.STATUTS[a.statut] })),
             el('div', { className: 'image-texte' }, await apercuZone(p.id, a.zone, { largeur: 260 }), t),
-            a.contenu !== a.ocr.texteBrut ? el('span', { className: 'note', textContent: `Texte OCR initial : « ${a.ocr.texteBrut} »` }) : null),
+            a.contenu !== (a.ocr.texteInitial ?? a.ocr.texteBrut) ? el('span', { className: 'note', textContent: `Texte OCR initial : « ${a.ocr.texteInitial ?? a.ocr.texteBrut} »` }) : null,
+            a.ocr.retires?.length ? el('span', { className: 'note', textContent: `Fragments retirés comme probables traits du dessin : ${a.ocr.retires.map((x) => `« ${x} »`).join(' ')} (texte brut : « ${a.ocr.texteBrut} »)` }) : null),
           el('div', { className: 'pile' }, a.statut !== 'valide' ? bouton('Valider', async () => { try { await kb.statuer(a.id, 'valide', 'validation individuelle (OCR)'); } catch (e) { info(e.message); } rafraichir(); }, { className: 'accent petit', dataset: { validerOcr: a.id } }) : null,
             a.statut !== 'rejete' ? bouton('Rejeter', async () => { await kb.statuer(a.id, 'rejete', 'rejet (OCR)'); rafraichir(); }, { className: 'petit', dataset: { rejeterOcr: a.id } }) : null));
         ligne.addEventListener('pointerenter', () => cadre.querySelector(`.zone-ocr[data-ocr="${CSS.escape(a.id)}"]`)?.classList.add('actif')); ligne.addEventListener('pointerleave', () => cadre.querySelectorAll('.zone-ocr.actif').forEach((x) => x.classList.remove('actif')));

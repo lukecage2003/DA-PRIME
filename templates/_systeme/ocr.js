@@ -56,18 +56,41 @@ export function traiterPixels(d, { gris, contraste, binaire } = {}) {
   return d;
 }
 
-// Blocs Tesseract (paragraphes) → blocs DA-PRIME, coordonnées normalisées (0-1) dans la PAGE d'origine.
+// Mot parasite (traits du dessin lus comme du texte) : sans lettre ni chiffre, ou confiance < 60 % ET (fragment de 1-2 signes
+// qui n'est pas un mot courant, ou minuscules au milieu d'un lettrage en capitales). Retiré du texte proposé, conservé dans le texte brut.
+const COURTS = new Set(['I', 'A', 'AN', 'AT', 'BE', 'BY', 'DO', 'GO', 'HE', 'IF', 'IN', 'IS', 'IT', 'ME', 'MY', 'NO', 'OF', 'OH', 'ON', 'OR', 'SO', 'TO', 'UP', 'US', 'WE', 'OK', 'À', 'Y', 'EN', 'ET', 'IL', 'JE', 'LA', 'LE', 'NE', 'TU', 'UN', 'DE', 'DU', 'SA', 'SE', 'TA', 'TE', 'MA', 'ON', 'OÙ', 'OU', 'AU', 'CE', 'ÇA', 'NI']);
+export function estParasite(m, capitales = true) {
+  const t = String(m.text || '').trim(), c = m.confidence ?? 0, l = t.replace(/[^\p{L}\p{N}]/gu, '');
+  if (!l) return !/^[?!.,;:…«»"'’—–-]{1,3}$/.test(t);   // ponctuation isolée (« BOMBE ? » en français) gardée ; traits | ~ ] _ retirés
+  if (c >= 60) return false;
+  return (l.length <= 2 && !COURTS.has(l.toUpperCase())) || (capitales && /\p{Ll}/u.test(l));
+}
+// Blocs Tesseract → blocs DA-PRIME, coordonnées normalisées (0-1) dans la PAGE d'origine. Construits à partir des MOTS :
+// une ligne est coupée là où l'écart entre deux mots dépasse 1,2 hauteur de ligne (Tesseract réunit parfois deux bulles voisines).
 // Ce sont des zones de texte reconnues, PAS des limites de bulles.
 export function blocsDepuisTesseract(data, { echelle = 1, decalage = { x: 0, y: 0 }, largeur, hauteur, caseNo = null } = {}) {
   const out = []; let ignores = 0;
+  const zoneDe = (bb) => ({ x: +((bb.x0 / echelle + decalage.x) / largeur).toFixed(4), y: +((bb.y0 / echelle + decalage.y) / hauteur).toFixed(4), w: +((bb.x1 - bb.x0) / echelle / largeur).toFixed(4), h: +((bb.y1 - bb.y0) / echelle / hauteur).toFixed(4) });
   for (const b of data?.blocks || []) for (const p of b.paragraphs || []) {
-    const lignes = (p.lines || []).map((l) => l.text.replace(/\s+/g, ' ').trim()).filter(Boolean), texte = (lignes.length ? lignes.join(' ') : String(p.text || '')).replace(/\s+/g, ' ').trim();
-    // Fragments sans lettre ni chiffre (traits du dessin pris pour du texte) : ignorés et comptés
-    if (!/[\p{L}\p{N}]/u.test(texte)) { ignores++; continue; }
-    const bb = p.bbox, x = (bb.x0 / echelle + decalage.x) / largeur, y = (bb.y0 / echelle + decalage.y) / hauteur, w = (bb.x1 - bb.x0) / echelle / largeur, h = (bb.y1 - bb.y0) / echelle / hauteur;
-    const mots = (p.lines || []).flatMap((l) => l.words || []);
-    out.push({ texte, lignes, confiance: Math.max(0, Math.min(1, (p.confidence ?? 0) / 100)), zone: { x: +x.toFixed(4), y: +y.toFixed(4), w: +w.toFixed(4), h: +h.toFixed(4) }, case: caseNo,
-      mots: mots.length, motsFaibles: mots.filter((m) => m.confidence < 60).length });
+    const lignes = p.lines || [];
+    if (!lignes.some((l) => (l.words || []).some((w) => w.bbox))) {   // pas de détail par mot : paragraphe entier
+      const texte = (lignes.length ? lignes.map((l) => l.text.replace(/\s+/g, ' ').trim()).filter(Boolean).join(' ') : String(p.text || '')).replace(/\s+/g, ' ').trim();
+      if (!/[\p{L}\p{N}]/u.test(texte)) { ignores++; continue; }
+      const mots = lignes.flatMap((l) => l.words || []); out.push({ texte, texteBrut: texte, retires: [], lignes: lignes.map((l) => l.text.trim()).filter(Boolean), confiance: Math.max(0, Math.min(1, (p.confidence ?? 0) / 100)), zone: zoneDe(p.bbox), case: caseNo, mots: mots.length, motsFaibles: mots.filter((m) => m.confidence < 60).length }); continue;
+    }
+    for (const l of lignes) {
+      const ws = (l.words || []).filter((w) => w.bbox && String(w.text || '').trim()).sort((a, b) => a.bbox.x0 - b.bbox.x0); if (!ws.length) continue;
+      const hs = ws.map((w) => w.bbox.y1 - w.bbox.y0).sort((a, b) => a - b), hL = hs[Math.floor(hs.length / 2)] || 1, segs = [[ws[0]]];
+      for (let k = 1; k < ws.length; k++) { if (ws[k].bbox.x0 - ws[k - 1].bbox.x1 > 1.2 * hL) segs.push([]); segs.at(-1).push(ws[k]); }
+      for (const seg of segs) {
+        const lettres = seg.map((w) => String(w.text).replace(/[^\p{L}]/gu, '')).join(''), capitales = lettres.length ? (lettres.match(/\p{Lu}/gu) || []).length / lettres.length >= 0.6 : true;
+        const garde = seg.filter((w) => !estParasite(w, capitales)), brut = seg.map((w) => w.text).join(' ');
+        if (!garde.length) { ignores++; continue; }
+        const bb = { x0: Math.min(...garde.map((w) => w.bbox.x0)), y0: Math.min(...garde.map((w) => w.bbox.y0)), x1: Math.max(...garde.map((w) => w.bbox.x1)), y1: Math.max(...garde.map((w) => w.bbox.y1)) }, texte = garde.map((w) => w.text).join(' ');
+        out.push({ texte, texteBrut: brut, retires: seg.filter((w) => !garde.includes(w)).map((w) => w.text), lignes: [texte], confiance: Math.max(0, Math.min(1, garde.reduce((t, w) => t + (w.confidence ?? 0), 0) / garde.length / 100)), zone: zoneDe(bb), case: caseNo,
+          mots: garde.length, motsFaibles: garde.filter((w) => w.confidence < 60).length });
+      }
+    }
   }
   return { blocs: out, ignores };
 }
@@ -80,7 +103,7 @@ export function regrouperLignes(blocs) {
       return o >= 0.5 * Math.min(x.zone.w, b.zone.w) && b.zone.y - (dernier.y + dernier.h) < 1.0 * Math.min(dernier.h, b.zone.h) && b.zone.y >= dernier.y; })());
     if (!g) { out.push({ ...b, lignes: [...(b.lignes || [b.texte])], derniere: { ...b.zone } }); continue; }
     const x0 = Math.min(g.zone.x, b.zone.x), y0 = Math.min(g.zone.y, b.zone.y), x1 = Math.max(g.zone.x + g.zone.w, b.zone.x + b.zone.w), y1 = Math.max(g.zone.y + g.zone.h, b.zone.y + b.zone.h), n = g.mots + b.mots;
-    Object.assign(g, { texte: `${g.texte} ${b.texte}`, lignes: [...g.lignes, ...(b.lignes || [b.texte])], confiance: n ? (g.confiance * g.mots + b.confiance * b.mots) / n : Math.min(g.confiance, b.confiance), mots: n, motsFaibles: g.motsFaibles + b.motsFaibles,
+    Object.assign(g, { texte: `${g.texte} ${b.texte}`, texteBrut: `${g.texteBrut ?? g.texte} ${b.texteBrut ?? b.texte}`, retires: [...(g.retires || []), ...(b.retires || [])], lignes: [...g.lignes, ...(b.lignes || [b.texte])], confiance: n ? (g.confiance * g.mots + b.confiance * b.mots) / n : Math.min(g.confiance, b.confiance), mots: n, motsFaibles: g.motsFaibles + b.motsFaibles,
       zone: { x: +x0.toFixed(4), y: +y0.toFixed(4), w: +(x1 - x0).toFixed(4), h: +(y1 - y0).toFixed(4) }, derniere: { ...b.zone } });
   }
   return out.map(({ derniere, ...b }) => b);

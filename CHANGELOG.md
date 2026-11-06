@@ -12,6 +12,7 @@
   - Modèles *fast* français et anglais (tessdata_fast 4.1.0) téléchargés seulement à la demande, vérifiés par SHA-256, ou importés depuis un fichier ; ensuite hors ligne.
   - Worker isolé qui refuse toute requête externe.
   - Prétraitements sur copies (×2, gris, contraste, noir et blanc).
+  - Blocs reconstruits à partir des mots : coupure entre bulles voisines, fragments parasites retirés du texte proposé (conservés dans le texte brut).
   - Page entière ou case par case ; langue choisie (fr, en, fr+en).
 - **Traitement** par la file existante : une page, des pages choisies ou le numéro entier ; progression, annulation, reprise ; résultats enregistrés page par page.
 - **Résultats** : blocs « à vérifier » dans la base de connaissances avec texte, zone, confiance, langue, prétraitement, numéro, page, traitement et date.
@@ -19,9 +20,9 @@
   - Correction (texte OCR initial conservé dans l'historique), validation et rejet un à un ou en lot.
   - Relance, comparaison de passages et de prétraitements, page source.
   - Jamais repris comme matière de script.
-- **Mesure** : `tools/mesurer-ocr.mjs` (exactitude des mots, WER, CER, temps, mémoire, par catégorie, prétraitement et langue) ; corpus réel (46 zones, 6 pages) : 91 à 95 % des mots sur le lettrage courant, lettrage stylisé, petit texte et effets sonores non fiables.
+- **Mesure** : `tools/mesurer-ocr.mjs` (exactitude des mots, WER, CER, temps, mémoire, par catégorie, prétraitement et langue) ; corpus réel (46 zones, 6 pages) : 93 à 95 % des mots sur le lettrage courant (WER 11 à 13 %) ; italique, lettrage stylisé, petit texte et effets sonores non fiables.
 - Base locale version 7 (`modeles-ocr`, `ocr-passes`) ; le moteur est publié mais pas préchargé.
-- Tests : 47 tests OCR (15 Node, 32 Chromium), dont confidentialité, hors ligne, annulation et reprise.
+- Tests : 49 tests OCR (17 Node, 32 Chromium), dont confidentialité, hors ligne, annulation et reprise.
 
 ## 0.11.0 · 2026-11-06 · Script Studio : fondation (connaissances, validation, file, capacités, moteurs)
 

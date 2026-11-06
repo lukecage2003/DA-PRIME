@@ -70,7 +70,7 @@ export function initConnaissances({ file, libelleComic, ocr = () => null, ouvrir
   function blocOcr(a) {
     const o = a.ocr, ap = el('div', { className: 'image-texte', id: 'kb-ocr-apercu' }), z = a.zone;
     ocr()?.apercuZone(a.origine.pageId, z, { largeur: 420 })?.then((cv) => ap.prepend(cv)).catch(() => {});
-    const lignes = [['Texte OCR initial', o.texteBrut], ['Confiance Tesseract', `${Math.round(a.confiance * 100)} % (indicateur du moteur, pas un taux d'exactitude)`], ['Langue', o.langues], ['Prétraitement', o.pretraitement],
+    const lignes = [['Texte OCR initial', o.texteInitial ?? o.texteBrut], ['Texte brut de Tesseract', `${o.texteBrut}${o.retires?.length ? ` (fragments retirés : ${o.retires.join(' ')})` : ''}`], ['Confiance Tesseract', `${Math.round(a.confiance * 100)} % (indicateur du moteur, pas un taux d'exactitude)`], ['Langue', o.langues], ['Prétraitement', o.pretraitement],
       ['Découpage', `${o.segmentation} · ${o.zoneMode === 'cases' ? 'case par case' : 'page entière'}`],
       ['Zone sur la page', z ? `x ${Math.round(z.x * 100)} %, y ${Math.round(z.y * 100)} %, ${Math.round(z.w * 100)} × ${Math.round(z.h * 100)} % (zone de texte reconnue, pas le contour d'une bulle)` : '—'],
       ['Ordre de lecture', `${o.ordre}${o.ordreCertain ? '' : ' (approximatif)'}`], ['Moteur', `${o.moteur} · traitement ${o.tache}`], ['Date', new Date(o.date).toLocaleString('fr-FR')]];

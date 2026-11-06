@@ -26,6 +26,9 @@ console.log('OCR : prétraitement, blocs, ordre de lecture, mesures (Node)');
   const b = O.blocsDepuisTesseract(data, { echelle: 2, decalage: { x: 50, y: 100 }, largeur: 1000, hauteur: 2000, caseNo: 3 });
   ok(b.ignores === 1 && b.blocs.length === 1 && b.blocs[0].texte === 'HULK SMASH' && b.blocs[0].zone.x === 0.15 && b.blocs[0].zone.y === 0.075 && b.blocs[0].zone.w === 0.2 && b.blocs[0].confiance === 0.91 && b.blocs[0].motsFaibles === 1 && b.blocs[0].case === 3,
     'blocs Tesseract : lignes réunies, coordonnées ramenées à la page d\'origine (échelle ×2, décalage de case), fragments sans lettre ignorés');
+  const w = (t, c, x0, x1) => ({ text: t, confidence: c, bbox: { x0, y0: 100, x1, y1: 130 } }), sg = O.blocsDepuisTesseract({ blocks: [{ paragraphs: [{ lines: [{ words: [w('SOME', 90, 0, 80), w('SERIOUS', 90, 95, 200), w('GOING', 88, 300, 380), w('ee', 30, 390, 410), w('|', 20, 420, 425)] }] }] }] }, { largeur: 1000, hauteur: 1000 });
+  ok(sg.blocs.map((b) => b.texte).join(' / ') === 'SOME SERIOUS / GOING' && sg.blocs[1].retires.join() === 'ee,|' && sg.blocs[1].texteBrut === 'GOING ee |' && sg.blocs[1].zone.w === 0.08, 'ligne coupée entre deux bulles voisines (grand écart entre mots) ; fragments parasites retirés du texte proposé mais conservés dans le texte brut');
+  ok(!O.estParasite({ text: 'I', confidence: 40 }) && !O.estParasite({ text: 'OÙ', confidence: 45 }) && O.estParasite({ text: 'Bp', confidence: 40 }) && !O.estParasite({ text: 'xy', confidence: 80 }) && !O.estParasite({ text: '?', confidence: 30 }) && O.estParasite({ text: '|', confidence: 90 }), 'mot court courant (I, OÙ) et ponctuation isolée (« ? ») gardés ; fragment douteux et trait (|) retirés ; mot sûr toujours gardé');
   const z = (x, y, caseNo = null) => ({ texte: `${x},${y}`, zone: { x, y, w: 0.2, h: 0.05 }, case: caseNo });
   const o1 = O.ordreLecture([z(0.6, 0.1), z(0.1, 0.5), z(0.1, 0.11)]), o2 = O.ordreLecture([z(0.6, 0.1), z(0.1, 0.11)], { sens: 'dg' }), o3 = O.ordreLecture([z(0.1, 0.6, 2), z(0.1, 0.1, 1)]);
   ok(o1.blocs.map((x) => x.texte).join(' ') === '0.1,0.11 0.6,0.1 0.1,0.5' && !o1.certain && o2.blocs[0].texte === '0.6,0.1' && o3.blocs.map((x) => x.case).join() === '1,2' && o3.certain, 'ordre de lecture : rangées puis gauche → droite (droite → gauche en manga), ordre des cases ; approximatif signalé');
@@ -96,6 +99,7 @@ const refus = await p.textContent('#ocr-moteur-resultat');
 await p.setInputFiles('#ocr-importer', join(TESS, 'fra.traineddata')); await p.waitForSelector('#ocr-modeles tr[data-modele="fra"][data-etat="disponible"]');
 ok(/refusé/.test(refus) && telechargements.length === 1, `import d'un fichier local : modèle inconnu refusé (${refus.slice(0, 60)}…), modèle fast reconnu accepté sans réseau`);
 await p.click('#ocr-tester'); await p.waitForFunction(() => /OCR prêt|mal reconnu|Erreur/.test(document.querySelector('#ocr-moteur-resultat').textContent), null, { timeout: 60000 });
+await p.waitForFunction(() => [...document.querySelectorAll('#ocr-modeles tr[data-etat="disponible"]')].filter((r) => /Prêt/.test(r.textContent)).length === 2, null, { timeout: 10000 }).catch(() => {});
 ok(/OCR prêt/.test(await p.textContent('#ocr-moteur-resultat')) && await p.locator('#ocr-modeles tr[data-etat="disponible"]', { hasText: 'Prêt' }).count() === 2, `test du moteur : ${await p.textContent('#ocr-moteur-resultat')}`);
 
 // C. Numéro de test : pages dessinées sur l'appareil (texte connu = référence), importées en CBZ, PNG et PDF
@@ -112,14 +116,15 @@ const REF = { 1: 'WHERE IS THE GAMMA BOMB? I BURIED IT DEEP. THEN WE DIG. NOT TO
 await p.click('[data-espace="comics"]'); await p.setInputFiles('#import-comics', { name: 'Essai OCR 01.cbz', mimeType: 'application/zip', buffer: Buffer.from(PAGES.cbz, 'base64') });
 await attendreQue(async () => (await window.__script.db.tous('comics')).some((c) => c.pages?.length === 3));
 const C = await D(async () => (await window.__script.db.tous('comics')).find((c) => c.pages?.length === 3));
-await p.click(`[data-comic="${C.id}"]`); await p.waitForSelector('#ocr-panneau'); await p.waitForFunction(() => /Modèles installés|Aucun modèle|indisponible/.test(document.querySelector('#ocr-etat-modeles')?.textContent || ''), null, { timeout: 20000 });
-ok(/Modèles installés : (Anglais, Français|Français, Anglais)/.test(await p.textContent('#ocr-etat-modeles')), `panneau OCR du lecteur : modèles installés signalés, réglages proposés (${await p.textContent('#ocr-etat-modeles')})`);
+await p.click(`[data-comic="${C.id}"]`); await p.waitForSelector('#ocr-panneau'); await att(800);
+const etatTxt = await (await p.waitForFunction(() => { const t = document.querySelector('#ocr-etat-modeles')?.textContent || ''; return /Modèles installés|Aucun modèle|indisponible/.test(t) && t; }, null, { timeout: 20000 })).jsonValue();
+ok(/Modèles installés : (Anglais, Français|Français, Anglais)/.test(etatTxt), `panneau OCR du lecteur : modèles installés signalés, réglages proposés (${etatTxt.slice(0, 60)})`);
 // Reconnaissance d'une page (anglais, ×2 + gris, page entière)
 await p.selectOption('#ocr-langues', 'eng'); await p.selectOption('#ocr-pretraitement', 'x2-gris'); await p.selectOption('#ocr-zone', 'page'); await p.selectOption('#ocr-segmentation', 'epars');
 await p.click('#ocr-page'); await p.waitForSelector('#ocr-blocs .bloc-ocr', { timeout: 60000 });
 let as = (await kbTous()).filter((a) => a.origine?.genre === 'ocr' && a.page === 1), passe1 = as[0]?.origine.passe;
 const m1 = O.mesurer(REF[1], as.sort((x, y) => x.ocr.ordre - y.ocr.ordre).map((a) => a.contenu).join(' '));
-ok(as.length >= 4 && as.every((a) => a.statut === 'a-verifier' && a.methode === 'ocr:tesseract-fast' && a.ocr.langues === 'eng' && a.ocr.pretraitement === 'x2-gris' && a.comic === C.id && a.zone && a.ocr.tache && a.ocr.date && a.ocr.texteBrut === a.contenu),
+ok(as.length >= 4 && as.every((a) => a.statut === 'a-verifier' && a.methode === 'ocr:tesseract-fast' && a.ocr.langues === 'eng' && a.ocr.pretraitement === 'x2-gris' && a.comic === C.id && a.zone && a.ocr.tache && a.ocr.date && a.ocr.texteInitial === a.contenu && typeof a.ocr.texteBrut === 'string'),
   `page 1 : ${as.length} blocs « à vérifier » avec texte, zone, confiance, langue, prétraitement, numéro, page, tâche et date · exactitude des mots ${Math.round(m1.exactitude * 100)} %`);
 ok(m1.exactitude >= 0.85, `lettrage net de synthèse : exactitude ${Math.round(m1.exactitude * 100)} % (WER ${Math.round(m1.wer * 100)} %, CER ${Math.round(m1.cer * 100)} %) · ${as.map((a) => a.contenu).join(' | ')}`);
 ok(await p.locator('#cadre-page .zone-ocr').count() === as.length && /APPROXIMATIF/.test(await p.textContent('#ocr-resultats')), 'zones reconnues affichées sur la page ; ordre de lecture d\'une page entière signalé approximatif');
@@ -129,7 +134,7 @@ const premier = await p.locator('#ocr-blocs .bloc-ocr').first().getAttribute('da
 await p.locator('#ocr-blocs .bloc-ocr').first().locator('textarea').fill('WHERE IS THE GAMMA BOMB?!'); await p.locator('#ocr-blocs .bloc-ocr').first().locator('textarea').blur(); await att(600);
 await p.click(`[data-valider-ocr="${premier}"]`); await att(500);
 let a1 = (await kbTous()).find((a) => a.id === premier);
-ok(a1.contenu === 'WHERE IS THE GAMMA BOMB?!' && a1.ocr.texteBrut === brut && a1.historique.some((h) => h.ancien === brut) && a1.statut === 'valide', 'correction manuelle puis validation : texte OCR initial conservé (provenance + historique)');
+ok(a1.contenu === 'WHERE IS THE GAMMA BOMB?!' && a1.ocr.texteInitial === brut && a1.historique.some((h) => h.ancien === brut) && a1.statut === 'valide', 'correction manuelle puis validation : texte OCR initial conservé (provenance + historique)');
 await p.click('#ocr-resultats button:has-text("Tout sélectionner")'); await att(400); await p.locator(`[data-bloc="${premier}"] input[type=checkbox]`).uncheck(); await att(400); await p.click('[data-lot-ocr="rejete"]'); await att(600);
 ok((await kbTous()).filter((a) => a.origine?.passe === passe1 && a.statut === 'rejete').length === as.length - 1 && (await kbTous()).find((a) => a.id === premier).statut === 'valide', 'sélection puis rejet en lot des blocs non retenus ; le bloc validé reste validé');
 // Comparaison de deux prétraitements sur la même page
@@ -141,7 +146,7 @@ ok(/exactitude des mots \d+ %/.test(cmp) && await p.locator('#ocr-comparaison ca
 await p.click('.vignette-page[data-page="2"]'); await p.waitForSelector('#ocr-panneau'); await p.click('#detecter-cases'); await att(600);
 await p.selectOption('#ocr-langues', 'fra'); await p.selectOption('#ocr-zone', 'cases'); await p.selectOption('#ocr-segmentation', 'bloc'); await p.click('#ocr-page'); await p.waitForSelector('#ocr-blocs .bloc-ocr', { timeout: 60000 });
 as = (await kbTous()).filter((a) => a.origine?.genre === 'ocr' && a.page === 2).sort((x, y) => x.ocr.ordre - y.ocr.ordre); const m2 = O.mesurer(REF[2], as.map((a) => a.contenu).join(' '));
-ok(as.every((a) => a.case >= 1 && a.ocr.zoneMode === 'cases' && a.ocr.langues === 'fra') && as.map((a) => a.case).join() === [...as.map((a) => a.case)].sort().join() && m2.exactitude >= 0.85, `français, case par case : ordre des cases conservé, accents · exactitude ${Math.round(m2.exactitude * 100)} % (${as.map((a) => a.contenu).join(' | ')})`);
+ok(as.every((a) => a.case >= 1 && a.ocr.zoneMode === 'cases' && a.ocr.langues === 'fra') && as.map((a) => a.case).join() === [...as.map((a) => a.case)].sort().join() && m2.exactitude >= 0.85 && /BOMBE \?/.test(as.map((a) => a.contenu).join(' ')), `français, case par case : ordre des cases conservé, accents · exactitude ${Math.round(m2.exactitude * 100)} % (${as.map((a) => a.contenu).join(' | ')})`);
 ok(await D(async () => (await window.__script.db.lire('reglages', 'ocr')).langues === 'fra'), 'réglages OCR mémorisés');
 
 // D. Numéro complet en arrière-plan : annulation, interruption (page fermée), reprise sans doublon ni perte
