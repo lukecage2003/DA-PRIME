@@ -22,6 +22,9 @@ export const EFFETS_LIB = {
   particules: { nom: 'Particules', cat: 'Particules', def: p({ couleur: '@accent', couleur2: '#FFFFFF', intensite: 0.6, densite: 0.5, mode: 'poussiere' }), modes: { poussiere: 'Poussière', etincelles: 'Étincelles montantes', neige: 'Chute', explosion: 'Éclatement' } },
   etoiles: { nom: 'Champ d\'étoiles', cat: 'Cosmos', def: p({ couleur: '#FFFFFF', intensite: 0.6, densite: 0.5 }) },
   nebuleuse: { nom: 'Nébuleuse', cat: 'Cosmos', def: p({ couleur: '@accent2', couleur2: '@papier', intensite: 0.6, densite: 0.5 }) },
+  brume: { nom: 'Brume', cat: 'Lumière', def: p({ couleur: '#C9CCD6', intensite: 0.5, densite: 0.5, vitesse: 0.5 }) },
+  scope: { nom: 'Bandes cinémascope', cat: 'Lumière', def: p({ couleur: '#000000', intensite: 0.5, anime: true }) },
+  decalage: { nom: 'Impression décalée (CMJ)', cat: 'Impression', def: p({ intensite: 0.5, echelle: 1, anime: false }) },
   crepitement: { nom: 'Crépitement cosmique', cat: 'Cosmos', def: p({ couleur: '#000000', couleur2: '@accent2', intensite: 0.6, densite: 0.5 }) },
 };
 export const CATEGORIES_EFFETS = [...new Set(Object.values(EFFETS_LIB).map((e) => e.cat))];
@@ -102,6 +105,11 @@ export function effetNoeuds(type, prm, w, h, t, col, u = 1) {
     }
     case 'etoiles': { const rnd = hasard(g), out = []; for (let i = 0, n = Math.round(40 + D * 400); i < n; i++) { const x = rnd() * w, y = rnd() * h, r = (0.5 + rnd() * rnd() * 2.8) * u * S, ph = rnd() * 6.28; out.push(circ(x, y, r, c1, r1((0.25 + 0.75 * Math.abs(Math.sin(ph + tt * 1.7))) * I * 100) / 100)); } return out; }
     case 'nebuleuse': { const rnd = hasard(g), out = []; for (let i = 0, n = Math.round(3 + D * 7); i < n; i++) { const x = rnd() * w + Math.sin(tt * 0.2 + i) * 20 * u, y = rnd() * h, r = Math.min(w, h) * (0.2 + rnd() * 0.4) * S; out.push(halo(x, y, r, i % 2 ? c2 : c1, (0.25 + 0.35 * rnd()) * I)); } return out; }
+    case 'brume': { const rnd = hasard(g), out = []; for (let i = 0, n = Math.round(4 + D * 10); i < n; i++) { const y = h * (0.35 + rnd() * 0.7), x = ((rnd() * w * 1.4 + tt * (20 + rnd() * 30) * u) % (w * 1.4)) - w * 0.2, rx = w * (0.25 + rnd() * 0.3) * S, ry = h * (0.06 + rnd() * 0.08) * S;
+      out.push({ k: 'g', tr: { x: r1(x), y: r1(y), s: 1, sx: rx / ry, r: 0, ox: 0, oy: 0 }, kids: [halo(0, 0, ry, c1, (0.25 + rnd() * 0.3) * I)] }); } return out; }
+    case 'scope': { const b = h * (0.06 + I * 0.1) * (e.anime ? Math.min(1, 1 - (1 - Math.min(1, tt / 0.8)) ** 3) : 1); return [{ k: 'rect', x: 0, y: 0, w, h: r1(b), fill: c1 }, { k: 'rect', x: 0, y: r1(h - b), w, h: r1(b) + 1, fill: c1 }]; }
+    case 'decalage': { const cell = Math.max(5, 16 * u * S), o = cell * 0.35 * (0.5 + I);
+      return [['#00B7EB', -o, 0], ['#EC008C', o, o * 0.4], ['#FFE500', 0, -o]].map(([c, dx, dy], i) => ({ ...trame({ x: dx, y: dy, w, h, cell, angle: [15, 75, 0][i], f: (x, y) => (0.25 + 0.5 * Math.abs(Math.sin((x * 3 + y * 2 + i) * 2.1))) * (0.4 + I * 0.6), fill: c, cle: `cmj-${w}x${h}-${i}-${I}-${S}` }), op: 0.55, blend: 'multiply' })); }
     case 'crepitement': {
       const rnd = hasard(g), out = [];
       for (let i = 0, n = Math.round(3 + D * 12); i < n; i++) { const cx = rnd() * w, cy = rnd() * h, s = (16 + rnd() * 40) * u * S * (0.6 + I), pu = e.anime ? 1 + Math.sin(tt * 3 + i) * 0.08 : 1;

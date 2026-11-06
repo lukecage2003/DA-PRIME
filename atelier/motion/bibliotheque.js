@@ -3,7 +3,9 @@
 import { S, ajouter, nouvelElement } from './etat.js';
 import { el, bouton } from './proprietes.js';
 import { db } from './stockage.js';
-import { MODELES, creerElement, normaliserEl, nouvelId, FORMATS_STUDIO } from '../../templates/_systeme/studio.js';
+import { MODELES, creerElement, normaliserEl, nouvelId, FORMATS_STUDIO, docDepuisModele } from '../../templates/_systeme/studio.js';
+import { SIGNATURES, docDepuisSignature } from '../../templates/_systeme/studio-signatures.js';
+import PH from '../../templates/_systeme/placeholders.js';
 import { COMPOSANTS } from '../../templates/_systeme/studio-composants.js';
 import { SYSTEMES, ROLES_TEXTE } from '../../templates/_systeme/studio-systemes.js';
 import { FORMES } from '../../templates/_systeme/studio-formes.js';
@@ -38,11 +40,19 @@ export function initBibliotheque(ctx) {
         bouton('Ouvrir', fermerApres(() => ctx.ouvrir(c.id)), { className: 'ouvrir' }), bouton('Dupliquer', async () => { await ctx.dupliquerCreation(c.id); afficher(); }),
         bouton('Supprimer', async () => { if (confirm(`Supprimer « ${c.nom} » de cet appareil ?`)) { await ctx.supprimerCreation(c.id); afficher(); } }))))];
   }
+  // Vignettes des modèles : rendues par le moteur à l'ouverture de l'onglet, mises en cache
+  const vignettes = new Map(), phd = (n) => (PH[n] ? { href: '../../' + PH[n].src, w: PH[n].w, h: PH[n].h } : null);
+  const apercu = (cle, fabrique) => { const im = el('img', { alt: '', className: 'apercu-modele' }); if (vignettes.has(cle)) im.src = vignettes.get(cle);
+    else setTimeout(async () => { try { const u = await ctx.vignette(fabrique()); vignettes.set(cle, u); im.src = u; } catch { /* vignette indisponible */ } }, 0); return im; };
   async function modeles() {
     const n = nouveauBloc(), perso = await db.tous('modeles');
-    return [el('p', { className: 'info', textContent: 'Les modèles créent une nouvelle création entièrement éditable (textes, calques, animations) au format choisi.' }), n.bloc,
-      el('h3', { textContent: 'Modèles intégrés' }), el('div', { className: 'cartes', id: 'modeles-integres' }, ...Object.entries(MODELES).map(([id, m]) => { const d = el('select', {}, ...m.directions.map((x) => el('option', { value: x.id, textContent: x.nom })));
-        return carte(m.nom, m.description, null, el('label', { className: 'champ' }, 'Direction', d), bouton('Créer', fermerApres(() => ctx.depuisModele(id, d.value, n.f.value)), { dataset: { modele: id } })); })),
+    return [el('p', { className: 'info', textContent: 'Chaque modèle crée une nouvelle création entièrement éditable (textes, calques, animations, plans), au format choisi.' }), n.bloc,
+      el('h3', { textContent: 'Modèles signature' }), el('div', { className: 'cartes', id: 'modeles-signature' }, ...Object.entries(SIGNATURES).map(([id, m]) => carte(m.nom, m.description, apercu('s:' + id, () => docDepuisSignature(id)),
+        bouton('Créer', fermerApres(() => ctx.depuisSignature(id, n.f.value === '16:9' && m.format !== '16:9' ? m.format : n.f.value)), { dataset: { signature: id } })))),
+      el('h3', { textContent: 'Modèles par famille' }), el('div', { className: 'cartes', id: 'modeles-integres' }, ...Object.entries(MODELES).map(([id, m]) => { const d = el('select', {}, ...m.directions.map((x) => el('option', { value: x.id, textContent: x.nom })));
+        const im = apercu(`m:${id}:${m.directions[0].id}`, () => docDepuisModele(id, { direction: m.directions[0].id, placeholder: phd }));
+        d.addEventListener('change', () => { const k = `m:${id}:${d.value}`; if (vignettes.has(k)) im.src = vignettes.get(k); else ctx.vignette(docDepuisModele(id, { direction: d.value, placeholder: phd })).then((u) => { vignettes.set(k, u); im.src = u; }); });
+        return carte(m.nom, m.description, im, el('label', { className: 'champ' }, 'Direction', d), bouton('Créer', fermerApres(() => ctx.depuisModele(id, d.value, n.f.value)), { dataset: { modele: id } })); })),
       el('h3', { textContent: `Mes modèles (${perso.length})` }), perso.length ? el('div', { className: 'cartes' }, ...perso.map((m) => carte(m.nom, `${m.doc.format.w} × ${m.doc.format.h}`, vignette(m.apercu), bouton('Créer', fermerApres(() => ctx.depuisModelePerso(m))), bouton('Supprimer', async () => { await db.suppr('modeles', m.id); afficher(); })))) : el('p', { className: 'info', textContent: 'Document > Organisation > « Enregistrer comme modèle ».' })];
   }
   async function composants() {
@@ -56,9 +66,10 @@ export function initBibliotheque(ctx) {
   const effets = async () => CATEGORIES_EFFETS.flatMap((c) => [el('h3', { textContent: c }), el('div', { className: 'cartes' }, ...Object.entries(EFFETS_LIB).filter(([, e]) => e.cat === c).map(([k, e]) => carte(e.nom, null, null, bouton('Insérer', fermerApres(() => nouvelElement('effet', { effet: k })), { dataset: { effet: k } }))))]);
   async function ressources() {
     const r = [...S.ressources.values()], imgs = r.filter((x) => x.type === 'image'), pol = r.filter((x) => x.type === 'police');
-    return [el('div', { className: 'rangee' }, bouton('Importer des illustrations…', () => ctx.importerImages()), bouton('Importer une police…', () => ctx.importerPolice())),
+    const fiches = new Map((await db.tous('visuels').catch(() => [])).map((v) => [v.id, v]));   // vignettes légères de la bibliothèque visuelle
+    return [el('div', { className: 'rangee' }, bouton('Importer des illustrations…', () => ctx.importerImages()), bouton('Importer une police…', () => ctx.importerPolice()), el('a', { href: '../production/#visuels', textContent: 'Organiser la bibliothèque visuelle →' })),
       el('p', { className: 'info', textContent: 'Les originaux sont conservés tels quels sur l\'appareil (au-delà de 4096 px de côté, une copie de travail réduite est créée). Les polices importées restent locales : vérifier leur licence avant toute diffusion.' }),
-      el('h3', { textContent: `Illustrations (${imgs.length})` }), el('div', { className: 'cartes', id: 'liste-ressources' }, ...imgs.map((x) => carte(x.nom, `${x.w} × ${x.h}`, vignette(x.href), bouton('Insérer', fermerApres(() => ctx.insererImage(x.id)))))),
+      el('h3', { textContent: `Illustrations (${imgs.length})` }), el('div', { className: 'cartes', id: 'liste-ressources' }, ...imgs.map((x) => carte(fiches.get(x.id)?.nom || x.nom, `${x.w} × ${x.h}${fiches.get(x.id)?.alpha ? ' · transparent' : ''}`, vignette(fiches.get(x.id)?.vignette || x.href), bouton('Insérer', fermerApres(() => ctx.insererImage(x.id)))))),
       el('h3', { textContent: `Polices importées (${pol.length})` }), el('div', { className: 'cartes' }, ...pol.map((x) => carte(x.nom, x.fam, null)))];
   }
   async function fichiers() {

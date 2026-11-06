@@ -22,16 +22,16 @@ export function initSequenceur(ctx) {
     }));
     tete();
   }
-  function tete() { for (const t of zone.querySelectorAll('.tete-lecture')) t.style.left = pct(S.t); }
+  function tete() { for (const t of zone.querySelectorAll('.tete-lecture')) t.style.left = pct(ctx.local()); }
   zone.addEventListener('pointerdown', (ev) => {
     const rail = ev.target.closest('.rail'); if (!rail) return; const r = rail.getBoundingClientRect(), barre = ev.target.closest('[data-barre]');
     if (barre) { const e = (function f(l) { for (const x of l) { if (x.id === rail.dataset.id) return x; if (x.enfants) { const c = f(x.enfants); if (c) return c; } } })(S.doc.elements);
       if (!S.sel.includes(e.id)) selectionner(e.id);
       geste = { e, quoi: barre.dataset.barre, bord: !!ev.target.dataset.bord, x0: ev.clientX, w: r.width, o: { ...e.anim[barre.dataset.barre] }, cle: 's' + Date.now() }; rail.setPointerCapture(ev.pointerId); ev.preventDefault(); return; }
-    geste = { tete: true, r }; rail.setPointerCapture(ev.pointerId); ctx.positionner(((ev.clientX - r.left) / r.width) * D());
+    geste = { tete: true, r }; rail.setPointerCapture(ev.pointerId); ctx.positionner(ctx.debut() + ((ev.clientX - r.left) / r.width) * D());
   });
   zone.addEventListener('pointermove', (ev) => {
-    if (!geste) return; if (geste.tete) return ctx.positionner(((ev.clientX - geste.r.left) / geste.r.width) * D());
+    if (!geste) return; if (geste.tete) return ctx.positionner(ctx.debut() + ((ev.clientX - geste.r.left) / geste.r.width) * D());
     const dt = ((ev.clientX - geste.x0) / geste.w) * D(), arr = (v) => Math.round(v * 20) / 20, { e, quoi, o } = geste;
     modifier(() => { const a = e.anim[quoi]; if (quoi === 'entree') { if (geste.bord) a.duree = Math.max(0.05, arr(o.duree + dt)); else a.delai = Math.max(0, arr(o.delai + dt)); }
       else { if (geste.bord) { a.avance = Math.max(0, arr(o.avance - dt)); } else a.avance = Math.max(0, arr(o.avance - dt)); } }, geste.cle);

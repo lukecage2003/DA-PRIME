@@ -1,7 +1,7 @@
 // Primestone · Motion Studio · cœur du studio de composition libre (module ES sans dépendance, Node et navigateur).
 // Document (version 2) : format, système graphique, fond, caméra, éléments (texte, image, forme, effet, groupe, vecteur).
 // rendreScene(doc, t) -> liste d'affichage + boîtes de sélection + contrôles. Le même résultat alimente l'aperçu et tous les exports.
-import { C, clamp, r1, placer, M } from './motion-base.js';
+import { C, clamp, r1, placer, M, ease } from './motion-base.js';
 import { SYSTEMES, palette, resoudre, format as fmt, FORMATS_STUDIO } from './studio-systemes.js';
 import { forme, contour } from './studio-formes.js';
 import { texteNoeuds, mesureMetriques, capRatio } from './studio-texte.js';
@@ -30,14 +30,15 @@ export function normaliserDoc(d) {
     couleurs: { ...(d.couleurs || {}) }, format: f, fond: { type: 'couleur', c1: '@fond', c2: '@papier', angle: 90, ...(d.fond || {}) },
     duree: clamp(+d.duree || 6, 1, 60), boucle: d.boucle ?? true, camera: { type: 'aucune', intensite: 0.5, ...(d.camera || {}) },
     grille: { pas: 60, visible: false, aimant: true, ...(d.grille || {}) }, guides: { h: [...(d.guides?.h || [])], v: [...(d.guides?.v || [])] }, zonesSures: d.zonesSures ?? false,
-    elements: (d.elements || []).map(normaliserEl), cree: d.cree || Date.now(), modifie: d.modifie, origine: d.origine,
+    elements: (d.elements || []).map(normaliserEl), cree: d.cree || Date.now(), modifie: d.modifie, origine: d.origine, ...(d.brief ? { brief: d.brief } : {}), ...(d.couleursPropres && Object.keys(d.couleursPropres).length ? { couleursPropres: { ...d.couleursPropres } } : {}), ...(d.profil ? { profil: d.profil } : {}), ...(d.campagne ? { campagne: d.campagne } : {}),
+    ...(Array.isArray(d.plans) && d.plans.length > 1 ? { plans: d.plans.map((p, i) => normaliserPlan(p, i)), planActif: Math.min(d.plans.length - 1, Math.max(0, d.planActif | 0)) } : {}),
   };
 }
 const BASE = { x: 0, y: 0, w: 400, h: 200, rot: 0, op: 1, visible: true, verrou: false, blend: 'normal', prof: 0, miroir: false };
 const DEF = {
   texte: { contenu: 'Texte', role: 'titre', police: 'display', taille: 120, auto: true, interligne: 0.95, interlettre: 0, align: 'start', valign: 'haut', casse: 'upper', fill: '@texte', degrade: null, fond: 'none',
     contour: { c: '@encre', w: 0 }, contour2: { c: '@accent', w: 0 }, ombre: { c: '@encre', dx: 0, dy: 0, flou: 0, op: 0.85 }, lueur: { c: '@accent', b: 0 }, extrusion: { c: '@accent', profondeur: 0, angle: 45 }, deformation: { type: 'aucune', force: 0.4 } },
-  image: { src: null, placeholder: 'pop', ajustement: 'couvrir', zoom: 1, dx: 0, dy: 0, masque: { forme: 'rect', pts: null }, contour: { c: '@encre', w: 0 }, ombre: null,
+  image: { src: null, placeholder: 'pop', ajustement: 'couvrir', zoom: 1, dx: 0, dy: 0, masque: { forme: 'rect', pts: null }, contour: { c: '@encre', w: 0 }, ombre: null, eclairage: { actif: false, contre: '#FFFFFF', aura: null, auraForce: 0.5, ombre: 0.5, dir: 225 },
     traitement: { detourage: { actif: false, couleur: '#FFFFFF', tolerance: 40 }, nb: false, bichromie: { actif: false, c1: '@encre', c2: '@accent' }, contraste: 0, luminosite: 0, trame: { actif: false, cellule: 10 } } },
   forme: { type: 'rect', fill: '@accent', stroke: '@encre', lw: 6, rayon: 0, cotes: 5, branches: 12, creux: 0.55, angle: 12, queue: [0.25, 1.3], graine: 3, degrade: null, ombre: null, trame: { actif: false, couleur: '@encre', cellule: 14, intensite: 0.5 } },
 };
@@ -95,7 +96,7 @@ export function boites(doc) { const out = {}; const vis = (els, pm) => els.forEa
 export function instantPose(doc) { return Math.min(doc.duree, finEntrees(doc.elements) + 0.05); }
 // opts : final (composition complète), mesure, ressource(id) -> {href,w,h}, traitee(el) -> {href,w,h}|null, police(id) -> {fam,poids,style}, placeholder(nom) -> {href,w,h}, sansFond
 export function rendreScene(doc, t = null, opts = {}) {
-  const W = doc.format.w, H = doc.format.h, u = Math.min(W, H) / 1080, pal = palette(doc), col = (v) => resoudre(v, pal), D = doc.duree, alertes = [];
+  const W = doc.format.w, H = doc.format.h, u = Math.min(W, H) / 1080, pal = palette(doc), col = (v) => resoudre(v, pal), D = doc.duree, alertes = [], encres = new Map(), hauts = new Set(doc.elements.map((e) => e.id));
   const pose = instantPose(doc), tt = opts.final || t === null ? pose : clamp(t, 0, D), mesure = opts.mesure || mesureMetriques;
   const neutre = { dx: 0, dy: 0, s: 1, r: 0, op: 1, clip: null, texte: null };
   function contenu(e, a) {
@@ -105,6 +106,7 @@ export function rendreScene(doc, t = null, opts = {}) {
         if (r.mp.deborde) alertes.push({ niveau: 'erreur', id: e.id, message: `${e.nom} : le texte déborde de sa boîte. Agrandir la boîte, réduire la taille ou activer l'ajustement automatique.` });
         if (r.mp.vide) alertes.push({ niveau: 'attention', id: e.id, message: `${e.nom} : texte vide.` });
         else if (r.mp.taille * capRatio(tx.police) < Math.min(W, H) * 0.0095) alertes.push({ niveau: 'attention', id: e.id, message: `${e.nom} : capitales de ${Math.round(r.mp.taille * capRatio(tx.police))} px, peu lisibles à ce format.` });
+        if (!r.mp.vide && !e.rot && hauts.has(e.id)) { const lw = Math.max(0, ...r.mp.largeurs), hh = r.mp.hauteur - r.mp.taille * 0.18; encres.set(e.id, { x: e.x + (tx.align === 'middle' ? (e.w - lw) / 2 : tx.align === 'end' ? e.w - lw : 0), y: e.y + (tx.valign === 'milieu' ? (e.h - hh) / 2 : tx.valign === 'bas' ? e.h - hh : 0), w: lw, h: hh, e }); }
         return r.nodes; }
       case 'image': return image(e);
       case 'forme': { const f = e.forme, tr = f.trame?.actif ? [trame({ x: 0, y: 0, w: e.w, h: e.h, cell: Math.max(4, (f.trame.cellule || 14) * u), angle: 15, f: () => f.trame.intensite ?? 0.5, fill: col(f.trame.couleur), cle: `ft-${e.id}-${Math.round(e.w)}x${Math.round(e.h)}-${f.trame.cellule}-${f.trame.intensite}-${col(f.trame.couleur)}` })] : null;
@@ -126,6 +128,8 @@ export function rendreScene(doc, t = null, opts = {}) {
     if (im.src && p.echelle > 1.5) alertes.push({ niveau: 'attention', id: e.id, message: `${e.nom} : image agrandie ${p.echelle.toFixed(1)} fois, risque de flou à l'export.` });
     const n = { k: 'img', href: src.href, x: r1(p.x), y: r1(p.y), w: r1(p.w), h: r1(p.h) };
     if (im.contour?.w > 0 && (im.ajustement === 'contenir' || msq === 'aucun')) n.contour = { c: col(im.contour.c), w: r1(im.contour.w) };
+    // Mise en lumière d'un personnage détouré : ombre portée, aura, lumière de contour côté source, modelé côté opposé (l'image n'est pas déformée)
+    const ec = im.eclairage; if (ec?.actif && (im.ajustement === 'contenir' || msq === 'aucun')) { const a = ((ec.dir ?? 225) * Math.PI) / 180; n.eclairage = { contre: col(ec.contre || '#FFFFFF'), aura: ec.aura ? col(ec.aura) : null, af: ec.auraForce ?? 0.5, ombre: ec.ombre ?? 0.5, lx: r1(Math.cos(a) * 100) / 100, ly: r1(Math.sin(a) * 100) / 100, u: r1(u * 100) / 100 }; }
     out.push(d ? { k: 'g', clip: d, kids: [n] } : n);
     if (im.contour?.w > 0 && d && im.ajustement !== 'contenir') out.push({ k: 'path', d, fill: 'none', stroke: col(im.contour.c), lw: im.contour.w });
     return out;
@@ -145,6 +149,7 @@ export function rendreScene(doc, t = null, opts = {}) {
   for (const e of doc.elements) { const n = element(e, true); if (n) nodes.push(n); }
   // Contrôles de composition
   const bx = boites(doc);
+  controlesQualite(doc, encres, alertes, col, W, H);
   for (const e of doc.elements) { const b = bx[e.id]?.aabb; if (b && e.visible !== false && (b.x > W || b.y > H || b.x + b.w < 0 || b.y + b.h < 0)) alertes.push({ niveau: 'attention', id: e.id, message: `${e.nom} : hors de la scène.` }); }
   return { w: W, h: H, nodes, t: tt, duree: D, pose, alertes, boites: bx };
 }
@@ -152,6 +157,19 @@ export function rendreScene(doc, t = null, opts = {}) {
 // ---------- Adaptation à un autre format ----------
 // Échelle : moyenne géométrique des rapports (ni minuscule ni géante), limitée au cadre ; position : ancrage au bord le plus proche
 // (marge mise à l'échelle) ou position relative au centre ; les éléments plein cadre sont étirés. Les corrections restent manuelles.
+// Contrôles de qualité d'une composition : marges, chevauchements de textes, contraste du texte posé directement sur le fond
+const lumRel = (h) => { const v = [1, 3, 5].map((i) => parseInt(String(h).slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
+export const contraste = (a, b) => { const [x, y] = [lumRel(a), lumRel(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+function controlesQualite(doc, encres, alertes, col, W, H) {
+  const marge = Math.min(W, H) * 0.02, lisibles = [...encres.values()].filter((t) => (t.e.op ?? 1) >= 0.5 && t.e.visible !== false && !t.e.decor && !/^Écho/.test(t.e.nom)), inter = (a, b) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+  for (const t of lisibles) if (t.x < marge - 1 || t.y < marge - 1 || t.x + t.w > W - marge + 1 || t.y + t.h > H - marge + 1) alertes.push({ niveau: 'attention', id: t.e.id, message: `${t.e.nom} : texte trop près du bord (marge de sécurité de ${Math.round(marge)} px).` });
+  for (let i = 0; i < lisibles.length; i++) for (let j = i + 1; j < lisibles.length; j++) { const a = lisibles[i], b = lisibles[j], s = inter(a, b);
+    if (s > 0.3 * Math.min(a.w * a.h, b.w * b.h)) alertes.push({ niveau: 'attention', id: b.e.id, message: `${b.e.nom} chevauche ${a.e.nom} : textes superposés.` }); }
+  const fond = doc.fond?.type === 'couleur' ? col(doc.fond.c1) : null, couvrants = doc.elements.filter((e) => e.visible !== false && ['image', 'forme', 'groupe', 'vecteur'].includes(e.type));
+  if (fond && /^#[0-9a-f]{6}$/i.test(fond)) for (const t of lisibles) { const tx = t.e.texte, c = col(tx.fill); if (tx.fond !== 'none' || tx.degrade || !/^#[0-9a-f]{6}$/i.test(c) || (tx.contour?.w > 0)) continue;
+    if (couvrants.some((e) => inter(t, e) > 0)) continue; const k = contraste(c, fond);
+    if (k < 1.6) alertes.push({ niveau: 'attention', id: t.e.id, message: `${t.e.nom} : contraste insuffisant avec le fond (${k.toFixed(1)}:1).` }); }
+}
 export function adapter(doc, nf) {
   const { w: W, h: H } = doc.format, kx = nf.w / W, ky = nf.h / H, s0 = Math.sqrt(kx * ky), d = copie(doc); d.format = nf;
   const ech = (e, k) => { if (e.type === 'texte') { const t = e.texte; t.taille = Math.max(4, Math.round(t.taille * k * 10) / 10); for (const [o, p] of [['contour', 'w'], ['contour2', 'w'], ['extrusion', 'profondeur'], ['lueur', 'b'], ['ombre', 'dx'], ['ombre', 'dy']]) if (t[o]?.[p]) t[o][p] = Math.round(t[o][p] * k * 10) / 10; }
@@ -163,6 +181,15 @@ export function adapter(doc, nf) {
     const k = Math.min(s0, (nf.w * 0.96) / e.w, (nf.h * 0.96) / e.h), nw = e.w * k, nh = e.h * k;
     e.x = Math.min(Math.max(ancre(e.x, W, nf.w, e.w, nw), 0), Math.max(0, nf.w - nw)); e.y = Math.min(Math.max(ancre(e.y, H, nf.h, e.h, nh), 0), Math.max(0, nf.h - nh)); e.w = nw; e.h = nh; ech(e, k);
   }
+  // Marges de sécurité : un bloc de texte adapté reste dans la zone sûre du nouveau format
+  const mg = Math.min(nf.w, nf.h) * 0.025;
+  for (const e of d.elements) if (e.type === 'texte' && !e.rot) { if (e.w > nf.w - 2 * mg) e.w = nf.w - 2 * mg; if (e.h > nf.h - 2 * mg) e.h = nf.h - 2 * mg; e.x = Math.min(Math.max(e.x, mg), nf.w - mg - e.w); e.y = Math.min(Math.max(e.y, mg), nf.h - mg - e.h); }
+  // Anti-collision : deux blocs de texte qui se superposaient pas dans l'original sont réespacés verticalement (ordre de lecture conservé)
+  const src = new Map(doc.elements.map((e) => [e.id, e])), txt = d.elements.filter((e) => e.type === 'texte' && !e.rot && e.visible !== false && (e.op ?? 1) >= 0.5).sort((a, b) => a.y - b.y), gap = Math.min(nf.w, nf.h) * 0.012;
+  const sep = (a, b, o = 1) => Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x) > Math.min(a.w, b.w) * 0.2 * o;
+  for (let i = 0; i < txt.length; i++) for (let j = 0; j < i; j++) { const a = txt[j], b = txt[i], oa = src.get(a.id), ob = src.get(b.id);
+    if (!oa || !ob || !sep(a, b) || ob.y < oa.y + oa.h - 1 || b.y >= a.y + a.h) continue;
+    const ny = a.y + a.h + gap; if (ny + b.h <= nf.h * 0.985) b.y = ny; }
   d.guides = { h: doc.guides.h.map((y) => (y / H) * nf.h), v: doc.guides.v.map((x) => (x / W) * nf.w) };
   return d;
 }
@@ -234,3 +261,47 @@ export function docDepuisModele(id, { direction, w = 1920, h = 1080, placeholder
   const fid = Object.entries(FORMATS_STUDIO).find(([, f]) => f.w === w && f.h === h)?.[0]; d.format = fid ? fmt(fid) : fmt('perso', w, h); d.nom = MODELES[id].nom; return d;
 }
 export const estV1 = (d) => !d?.v || d.v < 2;
+
+// ---------- Plans : états visuels successifs d'une même création, enchaînés par des transitions ----------
+// doc.elements et doc.duree sont toujours ceux du plan actif ; doc.plans garde les autres plans.
+export const TRANSITIONS = { coupe: 'Coupe franche', fondu: 'Fondu enchaîné', volet: 'Volet diagonal', zoom: 'Zoom traversant', flash: 'Éclair blanc', glissement: 'Glissement', iris: 'Iris' };
+function normaliserPlan(p, i) { return { id: p.id || nouvelId('p'), nom: String(p.nom || `Plan ${i + 1}`), duree: clamp(+p.duree || 4, 0.5, 60), transition: { type: TRANSITIONS[p.transition?.type] ? p.transition.type : i ? 'fondu' : 'coupe', duree: clamp(+p.transition?.duree || 0.6, 0.1, 3) }, elements: (p.elements || []).map(normaliserEl) }; }
+export function plansDe(doc) {
+  if (!doc.plans || doc.plans.length < 2) return [{ id: 'unique', nom: 'Plan 1', duree: doc.duree, transition: { type: 'coupe', duree: 0 }, elements: doc.elements }];
+  return doc.plans.map((p, i) => (i === doc.planActif ? { ...p, elements: doc.elements, duree: doc.duree } : p));
+}
+export const dureeTotale = (doc) => plansDe(doc).reduce((s, p) => s + p.duree, 0);
+export const debutPlan = (doc, i = doc.planActif || 0) => plansDe(doc).slice(0, i).reduce((s, p) => s + p.duree, 0);
+export const planA = (doc, t) => { const ps = plansDe(doc); let d = 0; for (let i = 0; i < ps.length; i++) { if (t < d + ps[i].duree || i === ps.length - 1) return { i, debut: d }; d += ps[i].duree; } return { i: 0, debut: 0 }; };
+// Écrit le plan actif dans doc.plans (avant enregistrement, changement de plan ou export)
+export function synchroniserPlans(doc) { if (doc.plans?.length > 1) { const p = doc.plans[doc.planActif]; p.elements = doc.elements; p.duree = doc.duree; } return doc; }
+export function changerPlan(doc, k) { if (!doc.plans || k === doc.planActif || !doc.plans[k]) return; synchroniserPlans(doc); doc.planActif = k; doc.elements = doc.plans[k].elements; doc.duree = doc.plans[k].duree; }
+export function ajouterPlan(doc, { dupliquer = false } = {}) {
+  if (!doc.plans || doc.plans.length < 2) doc.plans = [{ id: nouvelId('p'), nom: 'Plan 1', duree: doc.duree, transition: { type: 'coupe', duree: 0.6 }, elements: doc.elements }], doc.planActif = 0;
+  synchroniserPlans(doc); const re = (e) => { e.id = nouvelId(); e.enfants?.forEach(re); return e; };
+  const n = { id: nouvelId('p'), nom: `Plan ${doc.plans.length + 1}`, duree: dupliquer ? doc.duree : 4, transition: { type: 'fondu', duree: 0.6 }, elements: dupliquer ? JSON.parse(JSON.stringify(doc.elements)).map(re) : [] };
+  doc.plans.splice(doc.planActif + 1, 0, n); changerPlan(doc, doc.planActif + 1); return n;
+}
+export function supprimerPlan(doc) {
+  if (!doc.plans || doc.plans.length < 2) return; const k = doc.planActif; doc.plans.splice(k, 1); const j = Math.max(0, k - 1);
+  doc.planActif = j; doc.elements = doc.plans[j].elements; doc.duree = doc.plans[j].duree; if (doc.plans.length < 2) { delete doc.plans; delete doc.planActif; }
+}
+// Rendu de toute la séquence à l'instant global t ; une transition occupe le début du plan qui arrive
+export function rendreSequence(doc, t, opts = {}) {
+  const ps = plansDe(doc); if (ps.length < 2 || opts.final || t === null) return rendreScene(doc, t, opts);
+  const T = dureeTotale(doc), tg = clamp(t, 0, T), { i, debut } = planA(doc, tg), tl = tg - debut, p = ps[i], { w: W, h: H } = doc.format;
+  const sc = rendreScene({ ...doc, elements: p.elements, duree: p.duree }, tl, opts), tr = p.transition;
+  if (!i || tr.type === 'coupe' || tl >= tr.duree) return { ...sc, t: tg, duree: T, plan: i };
+  const pr = ps[i - 1], av = rendreScene({ ...doc, elements: pr.elements, duree: pr.duree }, pr.duree, opts).nodes, q = ease.inOut(clamp(tl / tr.duree)), g = (kids, o = {}) => ({ k: 'g', kids, ...o });
+  let nodes;
+  switch (tr.type) {
+    case 'fondu': nodes = [...av, g(sc.nodes, { op: q })]; break;
+    case 'volet': { const o = H * 0.35, x = -o + (W + 2 * o) * q; nodes = [...av, g(sc.nodes, { clip: [-o - 2, -2, x + o, -2, x - o, H + 2, -o - 2, H + 2].map(r1) })]; break; }
+    case 'iris': { const pts = []; for (let k = 0; k < 48; k++) { const a = (k / 48) * Math.PI * 2, R = Math.hypot(W, H) * 0.55 * q; pts.push(r1(W / 2 + Math.cos(a) * R), r1(H / 2 + Math.sin(a) * R)); } nodes = [...av, g(sc.nodes, { clip: pts })]; break; }
+    case 'zoom': nodes = [g(av, { op: 1 - q, tr: { x: 0, y: 0, s: 1 + q * 0.35, r: 0, ox: W / 2, oy: H / 2 } }), g(sc.nodes, { op: q, tr: { x: 0, y: 0, s: 1.25 - 0.25 * q, r: 0, ox: W / 2, oy: H / 2 } })]; break;
+    case 'flash': nodes = [...(q < 0.5 ? av : sc.nodes), { k: 'rect', x: 0, y: 0, w: W, h: H, fill: '#FFFFFF', op: r1((1 - Math.abs(q * 2 - 1)) * 100) / 100 }]; break;
+    case 'glissement': nodes = [g(av, { tr: { x: r1(-q * W), y: 0, s: 1, r: 0, ox: 0, oy: 0 } }), g(sc.nodes, { tr: { x: r1((1 - q) * W), y: 0, s: 1, r: 0, ox: 0, oy: 0 } })]; break;
+    default: nodes = sc.nodes;
+  }
+  return { ...sc, nodes, t: tg, duree: T, plan: i };
+}

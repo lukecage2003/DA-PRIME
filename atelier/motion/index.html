@@ -13,7 +13,8 @@
 <body>
 <header class="entete">
   <a class="retour" href="../">← Atelier</a>
-  <strong class="marque">Motion Studio</strong>
+  <a href="../../" class="marque" title="Accueil">Motion Studio</a>
+  <a class="retour" href="../production/">Production</a>
   <input type="text" id="nom" class="nom" aria-label="Nom de la création" autocomplete="off">
   <div class="groupe-boutons">
     <button type="button" id="annuler" title="Annuler (Ctrl+Z)" aria-label="Annuler" data-icone="annuler"></button>
@@ -57,6 +58,7 @@
       </div>
     </div>
     <div class="sous-scene"><a href="#onglet-controles" id="resume" class="resume" data-niveau="ok">Contrôles</a><span id="aide" class="aide"></span></div>
+    <div class="plans" id="plans" aria-label="Plans de la création"></div>
     <details class="sequenceur" id="sequenceur" open><summary>Séquenceur</summary><div id="pistes" class="pistes"></div></details>
   </section>
   <aside class="panneau" aria-label="Propriétés">

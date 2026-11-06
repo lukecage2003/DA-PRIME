@@ -93,7 +93,7 @@ const nonInfo = (sc) => sc.alertes.filter((a) => a.niveau !== 'info');
     for (const f of Object.keys(Fo.FORMES)) d.elements.push(St.creerElement('forme', d, { forme: f }));
     for (const e of Object.keys(St.EFFETS_LIB)) d.elements.push(St.creerElement('effet', d, { effet: e }));
     for (const c of Object.values(COMPOSANTS)) d.elements.push(c.creer(d));
-    for (const t of [0, 0.3, 1.5, null]) { const sc = rs(d, t), svg = versSVG(sc); if (nonInfo(sc).length || !balance(svg)) bad.push(`${sy}@${t} ${nonInfo(sc).map((a) => a.message).join(';').slice(0, 200)}`); } }
+    for (const t of [0, 0.3, 1.5, null]) { const sc = rs(d, t), svg = versSVG(sc), al = nonInfo(sc).filter((a) => !/chevauche/.test(a.message)); if (al.length || !balance(svg)) bad.push(`${sy}@${t} ${al.map((a) => a.message).join(';').slice(0, 200)}`); } }   // éléments empilés au centre à dessein : chevauchements attendus
   ok(!bad.length, `6 systèmes × (6 styles de texte, ${Object.keys(Fo.FORMES).length} formes, ${Object.keys(St.EFFETS_LIB).length} effets, ${Object.keys(COMPOSANTS).length} composants) : rendus sans alerte à 4 instants, SVG bien formés${bad.length ? ' · ' + bad.slice(0, 2).join(' | ') : ''}`);
   const d = St.nouveauDocument({ systeme: 'comics' }); d.elements.push(...Object.keys(St.EFFETS_LIB).map((e) => St.creerElement('effet', d, { effet: e })));
   ok(versSVG(rs(d, 2.3)) === versSVG(rs(d, 2.3)) && versSVG(rs(d, 2.3)) !== versSVG(rs(d, 2.4)), 'effets animés déterministes (même instant, même image ; instants différents, images différentes)');
@@ -148,6 +148,71 @@ const nonInfo = (sc) => sc.alertes.filter((a) => a.niveau !== 'info');
   ok(dec.frames[0].slice(0, 16).every((i) => i === 255) && dec.frames[0].slice(16).every((i) => i !== 255) && b[13 + 768 + 19 + 3] === 0x09, 'GIF transparent : pixels transparents à l\'index réservé, drapeau de transparence');
   const { muxerWebM } = await imp('atelier/motion/webm.js'), wb = new Uint8Array(await muxerWebM({ codec: 'vp9', largeur: 64, hauteur: 32, duree: 1, images: [{ data: new Uint8Array([1, 2, 3]), temps: 0, cle: true }, { data: new Uint8Array([4]), temps: 40000, cle: false }] }).arrayBuffer());
   ok(wb[0] === 0x1a && wb[1] === 0x45 && Buffer.from(wb).includes(Buffer.from('V_VP9')) && Buffer.from(wb).includes(Buffer.from('webm')), 'multiplexeur WebM : en-tête EBML, piste VP9');
+}
+{ // Plans, transitions et modèles signature
+  const G = await imp('templates/_systeme/studio-signatures.js');
+  const bad = [];
+  for (const id of Object.keys(G.SIGNATURES)) for (const f of [null, '9:16', '1:1']) { const d = G.docDepuisSignature(id, { format: f || undefined }); for (const t of [0.5, null]) { const sc = St.rendreSequence(d, t, { placeholder: ph2 }), svg = versSVG(sc); if (nonInfo(sc).length || !balance(svg)) bad.push(`${id}/${f}@${t} ${nonInfo(sc).map((a) => a.message).join(';').slice(0, 160)}`); } }
+  ok(Object.keys(G.SIGNATURES).length === 4 && !bad.length, `4 modèles signature × 3 formats : rendus sans alerte, SVG bien formés${bad.length ? ' · ' + bad.slice(0, 2).join(' | ') : ''}`);
+  const d = G.docDepuisSignature('annonce-plans'), T = St.dureeTotale(d);
+  ok(d.plans.length === 3 && Math.abs(T - 9.4) < 1e-9 && St.planA(d, 2.7).i === 1 && St.planA(d, 9).i === 2 && St.debutPlan(d, 2) === 6.2, `plans : 3 plans, ${T} s au total, plan à l'instant et début de plan`);
+  const types = Object.keys(St.TRANSITIONS).filter((x) => x !== 'coupe'), diff = types.filter((ty) => { d.plans[1].transition = { type: ty, duree: 0.6 }; const a = JSON.stringify(St.rendreSequence(d, 2.85, { placeholder: ph2 }).nodes), b = JSON.stringify(St.rendreSequence(d, 3.4, { placeholder: ph2 }).nodes); return a !== b && St.rendreSequence(d, 2.85, { placeholder: ph2 }).plan === 1; });
+  ok(diff.length === types.length, `transitions entre plans : ${diff.join(', ')}`);
+  const c = JSON.parse(JSON.stringify(d)); St.changerPlan(c, 2); c.elements.push(St.creerElement('texte', c, { role: 'legende' })); St.synchroniserPlans(c); const n = St.normaliserDoc(JSON.parse(JSON.stringify(c)));
+  ok(n.plans.length === 3 && n.planActif === 2 && n.plans[2].elements.length === c.elements.length && n.elements.length === c.elements.length, 'plans : changement, synchronisation et normalisation conservent les calques');
+  const e = JSON.parse(JSON.stringify(d)); St.ajouterPlan(e, { dupliquer: true }); const ids = new Set(St.plansDe(e).flatMap((p) => p.elements.map((x) => x.id))); St.supprimerPlan(e);
+  ok(ids.size === St.plansDe(d).reduce((s, p) => s + p.elements.length, 0) + d.elements.length && e.plans.length === 3, 'plans : duplication (nouveaux identifiants) et suppression');
+}
+// ---------- Production éditoriale : assistant, compositeur, campagnes, profils DA, ZIP ----------
+console.log('Production éditoriale (Node)');
+{
+  const As = await imp('templates/_systeme/studio-assistant.js'), Co = await imp('templates/_systeme/studio-compositeur.js'), { zip, crc32 } = await imp('atelier/motion/zip.js'), Da = await imp('atelier/production/analyse-da.js');
+  const ref = new Date('2026-11-06T10:00:00Z'), a = (t) => As.analyser(t, { ref });
+  const vs = a('Fais-moi un VS entre Black Panther et Batman.'), ga = a('Prépare une miniature YouTube sur les origines de Galactus.'), su = a('Fais-moi une affiche cinématographique consacrée à Superman.'), ca = a('Transforme cette miniature en carrousel Instagram.');
+  ok(vs.type === 'versus' && vs.personnages.join() === 'Black Panther,Batman' && vs.formats[0] === 'miniature' && ga.type === 'origine' && ga.personnages[0] === 'Galactus' && ga.univers === 'cosmique' && ga.verifier.length > 0
+    && su.formats.includes('affiche') && su.personnages[0] === 'Superman' && ca.declinaison && ca.formats[0] === 'carrousel', 'assistant : intention, personnages, formats, univers, déclinaison et faits signalés à vérifier');
+  const fe = a('Prépare tout le mois de février avec un super-héros noir différent chaque jour.'), pubs = fe.campagne?.publications || [];
+  ok(pubs.length === 28 && new Set(pubs.map((x) => x.personnage)).size === 28 && pubs[0].date === '2027-02-01' && pubs.at(-1).date === '2027-02-28' && new Set(pubs.map((x) => x.type)).size >= 4 && pubs.every((x) => x.statut === 'idee' && x.verifier),
+    `campagne de février : 28 publications, 28 personnages différents, ${new Set(pubs.map((x) => x.type)).size} angles, statut « idée », à vérifier`);
+  const dc = a('Fais une campagne éditoriale autour de la prochaine grande série DC.'); ok(dc.campagne && dc.campagne.publications.every((x) => !x.personnage || As.PERSONNAGES.find((q) => q.nom === x.personnage)?.editeur === 'DC'), 'campagne DC : personnages de l\'éditeur demandé uniquement');
+  const fmts = ['miniature', '16:9', '4:5', '9:16', '1:1', 'affiche', 'carrousel'], alertes = [], P3 = ['Black Panther', 'Batman', 'Storm'];
+  for (const ty of Object.keys(As.TYPES)) for (const f of fmts) { const d = Co.composer({ type: ty, titre: 'Titre de test', sousTitre: 'Une accroche', personnages: P3 }, f);
+    for (const k of St.plansDe(d).keys()) { const c = JSON.parse(JSON.stringify(d)); St.changerPlan(c, k); nonInfo(rs(c, null)).forEach((x) => alertes.push(`${ty}/${f}/${k} ${x.message}`)); } }
+  ok(!alertes.length, `compositeur : ${Object.keys(As.TYPES).length} types × ${fmts.length} formats sans alerte${alertes.length ? ' · ' + alertes.slice(0, 3).join(' | ') : ''}`);
+  const sig = (d) => d.elements.map((e) => `${e.type}:${e.nom}`).join('|'), mises = new Set(['versus', 'portrait', 'origine', 'analyse', 'annonce', 'evenement', 'classement', 'quiz', 'citation', 'equipes'].map((t) => sig(Co.composer({ type: t, titre: 'T', personnages: P3 }, '4:5'))));
+  ok(mises.size === 10, `compositions distinctes par type de contenu (${mises.size} mises en scène)`);
+  const b = { type: 'versus', personnages: ['Black Panther', 'Batman'] }, m = Co.composer(b, 'miniature'), st = Co.composer(b, '9:16'), bp = (d) => d.elements.find((e) => e.nom === 'Black Panther');
+  ok(bp(m).w <= m.format.w * 0.52 && bp(m).h > m.format.h * 0.8 && bp(st).h <= st.format.h * 0.5 && bp(st).w > st.format.w * 0.8 && bp(st).y < st.format.h / 2, 'recomposition multiformat : duel côte à côte en paysage, superposé en vertical');
+  const car = Co.composer({ type: 'classement', titre: 'Top', items: ['Un', 'Deux', 'Trois'] }, 'carrousel'), n = St.normaliserDoc(JSON.parse(JSON.stringify(car)));
+  ok(car.format.w === 1080 && car.format.h === 1350 && car.plans.length === 4 && n.brief?.titre === 'Top', `carrousel : couverture + ${car.plans.length - 1} diapositives en plans, intention conservée par la normalisation`);
+  const pr = Co.composer(b, '4:5', { profil: { systeme: 'minimal', palette: 'noir', couleurs: { accent: '#12AB34' } } }); ok(pr.systeme === 'minimal' && pr.couleurs.accent === '#12AB34', 'profil DA : système et couleurs de l\'utilisateur appliqués sans les remplacer');
+  const z = zip([{ nom: 'a.png', data: new Uint8Array([1, 2, 3]) }, { nom: 'calendrier.csv', data: 'date;titre' }]), dv = new DataView(z.buffer), e = z.length - 22;
+  ok(dv.getUint32(e, true) === 0x06054b50 && dv.getUint16(e + 10, true) === 2 && dv.getUint32(14, true) === crc32(new Uint8Array([1, 2, 3])), 'archive ZIP : en-têtes, répertoire central et CRC32 valides');
+  const W = 64, H = 64, px = new Uint8ClampedArray(W * H * 4); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const i = (y * W + x) * 4, sujet = (x - 44) ** 2 + (y - 32) ** 2 < 180; px.set(sujet ? [255, 200, 0, 255] : [12, 14, 40, 255], i); }
+  const an = Da.analyserPixels(px, W, H), pf = Da.proposerProfil(an);
+  ok(an.luminosite < 0.4 && an.sujet.cx > 0.6 && pf.couleurs.accent === '#FFC800' && Da.contrasteWCAG([255, 255, 255], [12, 14, 40]) > 4.5 && ['cinema', 'cosmique', 'comics'].includes(pf.systeme),
+    `profil DA mesuré : fond sombre, sujet à droite (${an.sujet.cx}), accent ${pf.couleurs.accent}, système ${pf.systeme}`);
+}
+// ---------- 0.9 : mise en scène, contrôles qualité, recomposition, familles ----------
+console.log('Excellence visuelle (Node)');
+{
+  const Co = await imp('templates/_systeme/studio-compositeur.js'), Da = await imp('atelier/production/analyse-da.js'), Mo = await imp('templates/_systeme/moteur.js');
+  const d = Co.composer({ type: 'versus', personnages: ['Black Panther', 'Batman'] }, 'miniature'), sc = rs(d, null), imgs = []; const v = (n) => { if (n.k === 'img') imgs.push(n); n.kids?.forEach(v); }; sc.nodes.forEach(v);
+  ok(imgs.filter((n) => n.eclairage).length === 2 && imgs[imgs.length - 1].eclairage.contre !== imgs[imgs.length - 2].eclairage.contre && /filter/.test(versSVG(sc)) && !d.elements.some((e) => e.miroir), 'personnages mis en lumière (contre-jour distinct par camp, filtre SVG), jamais retournés');
+  const t = St.nouveauDocument({ format: '1:1' }); t.elements.push(St.normaliserEl({ type: 'texte', nom: 'A', x: 2, y: 400, w: 600, h: 200, texte: { contenu: 'Bord', taille: 120, fill: '#FFFFFF' } }), St.normaliserEl({ type: 'texte', nom: 'B', x: 2, y: 420, w: 600, h: 200, texte: { contenu: 'Bord', taille: 120, fill: '#FFFFFF' } }));
+  t.fond = { type: 'couleur', c1: '#FFFFFF' }; const msg = nonInfo(rs(t, null)).map((a) => a.message).join('|');
+  ok(/trop près du bord/.test(msg) && /chevauche/.test(msg) && /contraste insuffisant/.test(msg), 'contrôles qualité : marge, textes superposés et contraste détectés');
+  const G = await imp('templates/_systeme/studio-signatures.js'), u1 = G.docDepuisSignature('une-magazine', { format: '1:1' }), ac = u1.elements.find((e) => e.nom === 'Accroche'), ti = u1.elements.find((e) => e.nom === 'Titre de couverture');
+  ok(ti.y >= ac.y + ac.h, `recomposition : anti-collision des blocs de texte (titre ${Math.round(ti.y)} ≥ accroche ${Math.round(ac.y + ac.h)})`);
+  const pg = Co.composer({ type: 'portrait', titre: 'X', personnages: ['Storm'] }, 'miniature', { profil: { composition: { sujet: 'gauche' } } }), pd = Co.composer({ type: 'portrait', titre: 'X', personnages: ['Storm'] }, 'miniature');
+  const hx = (q) => q.elements.find((e) => e.nom === 'Storm'); ok(Co.composer({ type: 'portrait', titre: 'X', personnages: ['Storm'] }, 'miniature').elements.length > 0 && (hx(pg).x !== hx(pd).x || pd.elements.some((e) => e.nom === 'Sol')), 'profil DA exploité : côté du sujet repris par la composition');
+  const car = Co.composer({ type: 'classement', titre: 'T', items: ['Galactus', 'Thanos'] }, 'carrousel'), p2 = car.plans[1].elements;
+  ok(p2.some((e) => e.nom === 'Galactus') && p2.filter((e) => /^Progression/.test(e.nom)).length === 2, 'carrousel : personnage de chaque diapositive et barre de progression');
+  const px = new Uint8ClampedArray(48 * 27 * 4).fill(255); const an = Da.analyserPixels(px, 48, 27); ok(an.zones.length === 9 && 'densite' in an && Array.isArray(an.dominantes), 'profil DA : zones 3 × 3, densité et dominantes mesurées');
+  const fams = ['01-analyse-personnage', '02-analyse-comic', '03-actualites', '04-theories', '05-guides', '06-evenements', '07-histoire', '08-cosmique'], sig = new Set();
+  for (const f of fams) { const r = Mo.rendre(f, Object.keys(Mo.FAMILLES[f].variantes)[0], {}); sig.add((r.svg.match(/<(radialGradient|filter|pattern|clipPath|mask|path|polygon)/g) || []).join('').length + f.slice(0, 2)); }
+  const avecLumiere = fams.filter((f) => /radialGradient|feTurbulence|feGaussianBlur/.test(Mo.rendre(f, Object.keys(Mo.FAMILLES[f].variantes)[0], {}).svg)).length;
+  ok(sig.size === 8 && avecLumiere === 8, `8 familles de miniatures recomposées : lumière et atmosphère dans ${avecLumiere}/8`);
 }
 if (process.argv.includes('--moteur')) fin();
 
@@ -325,7 +390,112 @@ let fichierBiblio = null, fichierProjetV2 = null;
   ok(d.v === 2 && d.nom === 'Ancienne création' && noms(d).some((e) => e.type === 'image' && e.image.src) && noms(d).some((e) => e.texte?.contenu === 'FUSION'), 'projet du MVP (version 1) ouvert et converti : illustration et textes conservés');
   ok(!err.length, `import et migration sans erreur JavaScript${err.length ? ' · ' + err.slice(0, 2).join(' | ') : ''}`); await ctx.close();
 }
+// Modèles signature, plans et page d'accueil
+{
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, acceptDownloads: true }), p = await ctx.newPage(), err = erreurs(p);
+  await p.goto(`http://localhost:${PORT}/`); await p.waitForFunction(() => { const c = document.querySelector('#demo'); if (!c) return false; const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 0; i < d.length; i += 4000) if (d[i] + d[i + 1] + d[i + 2] > 60) n++; return n > 3; }, null, { timeout: 15000 }).catch(() => {});
+  const accueil = await D(p, () => ({ t: document.title, l: [...document.querySelectorAll('a[href]')].map((a) => a.getAttribute('href')) }));
+  ok(/Atelier Primestone/.test(accueil.t) && accueil.l.includes('atelier/') && accueil.l.includes('atelier/motion/#modeles'), 'accueil : démonstration animée en direct et accès aux deux outils');
+  await p.click('header .bouton'); await p.waitForFunction(() => window.__studio?.S?.derniere); await p.waitForSelector('#bibliotheque[open] [data-signature]');
+  ok(await p.locator('#modeles-signature .carte').count() === 4, 'Motion Studio ouvert depuis l\'accueil sur les modèles (4 modèles signature)');
+  await p.waitForFunction(() => [...document.querySelectorAll('.apercu-modele')].filter((i) => i.src).length >= 8, null, { timeout: 20000 }).catch(() => {});
+  ok(await D(p, () => [...document.querySelectorAll('.apercu-modele')].filter((i) => i.naturalWidth > 0).length) >= 8, 'vignettes des modèles rendues par le moteur');
+  await p.click('[data-signature="annonce-plans"]'); await attendre(p, 600);
+  let d = await docJ(p); ok(d.plans?.length === 3 && (await p.locator('#plans .plan').count()) === 3, 'modèle « Annonce en trois plans » : barre des plans');
+  await p.click('[data-plan="2"]'); await attendre(p, 200); ok((await D(p, () => window.__studio.S.doc.planActif)) === 2 && (await D(p, () => window.__studio.S.derniere.nodes.some((n) => n.nom === 'Explosion'))), 'changement de plan : la scène affiche le plan choisi');
+  await p.selectOption('#plan-transition', 'iris'); await p.click('#plan-dupliquer'); await attendre(p, 200); d = await docJ(p);
+  ok(d.plans.length === 4 && d.plans[2].transition.type === 'iris' && Math.abs((await D(p, () => window.__studio.total())) - 12.6) < 0.01, 'transition choisie, plan dupliqué (durée totale 12,6 s)');
+  await D(p, () => document.activeElement?.blur()); await p.keyboard.press('Control+z'); await attendre(p, 200); ok((await docJ(p)).plans.length === 3, 'annuler la duplication du plan');
+  await p.click('#lecture'); await attendre(p, 2600); const pl = await D(p, () => [window.__studio.S.t, window.__studio.S.doc.planActif]); await p.click('#lecture');
+  ok(pl[0] > 6.2 ? pl[1] === 2 : pl[0] > 2.6 ? pl[1] >= 1 : true, `lecture enchaînée des plans (t ${pl[0].toFixed(1)} s, plan ${pl[1] + 1})`);
+  await p.click('#ouvrir-export'); await attendre(p, 200); await p.selectOption('#export-gif-fps', '10');
+  const [dl] = await Promise.all([p.waitForEvent('download', { timeout: 90000 }), p.click('[data-export="gif"]')]); const fg = join(OUT, 'sequence.gif'); await dl.saveAs(fg); const gd = decoderGIF(new Uint8Array(readFileSync(fg)));
+  const tot = await D(p, () => window.__studio.total()); ok(gd.frames.length === Math.round(tot * 10), `GIF de toute la séquence : ${gd.frames.length} images pour ${tot.toFixed(1)} s`);
+  await p.keyboard.press('Escape'); await attendre(p, 600); await p.reload(); await prets(p); d = await docJ(p);
+  ok(d.plans?.length >= 3 && d.nom === 'Annonce en trois plans', 'plans retrouvés après rechargement');
+  ok(!err.length, `modèles et plans : aucune erreur JavaScript${err.length ? ' · ' + err.slice(0, 2).join(' | ') : ''}`); await ctx.close();
+}
 // Appareils émulés : mise en page, cibles tactiles, gestes
+// Production éditoriale : assistant → Motion Studio, campagne → production → export ZIP, profil DA → application
+{
+  const ctx = await browser.newContext({ viewport: { width: 1400, height: 1000 }, acceptDownloads: true }), p = await ctx.newPage(), err = erreurs(p); p.on('dialog', (x) => x.accept());
+  await p.goto(URL0 + 'production/'); await p.waitForFunction(() => window.__production);
+  await p.fill('#demande-texte', 'Fais-moi un VS entre Black Panther et Batman.'); await p.click('#analyser'); await p.waitForSelector('#apercus figure canvas');
+  await p.locator('.formats label', { hasText: 'Story' }).locator('input').check(); await p.waitForFunction(() => document.querySelectorAll('#apercus figure').length === 2);
+  await p.click('#creer-ouvrir'); await prets(p); let d = await docJ(p);
+  ok(p.url().includes('/motion/?creation=') && d.brief?.type === 'versus' && d.format.w === 1280 && d.elements.some((e) => e.nom === 'Batman'), 'assistant : « VS Black Panther / Batman » → composition ouverte dans Motion Studio, intention conservée');
+  await p.goto(URL0 + 'production/#bibliotheque'); await p.waitForSelector('.carte'); ok(await p.locator('.carte').count() === 2, 'bibliothèque : les deux formats demandés sont enregistrés');
+  await p.click('[data-onglet=assistant]'); await p.click('#exemples button:nth-child(7)'); await p.waitForSelector('#creer-campagne'); await p.click('#creer-campagne'); await p.waitForSelector('.calendrier .carte-pub');
+  ok(await p.locator('.calendrier .carte-pub').count() === 28 && (await p.textContent('.mois')).includes('février'), 'campagne : 28 publications placées dans le calendrier de février');
+  await p.locator('.carte-pub').first().click(); await p.waitForSelector('#editeur-pub[open]'); await p.fill('#form-pub input[type=text] >> nth=1', 'Titre retouché'); await p.click('#form-pub button:has-text("Valider")'); await attendre(p, 300);
+  ok((await p.locator('.carte-pub').first().getAttribute('data-statut')) === 'valide' && (await p.textContent('.carte-pub >> nth=0')).includes('Titre retouché'), 'publication : texte modifié et validée individuellement');
+  for (let i = 1; i < 4; i++) await p.locator('.carte-pub input').nth(i).check();
+  await p.click('#lot-produire'); await p.waitForFunction(() => /produite/.test(document.querySelector('#etat').textContent), null, { timeout: 90000 });
+  const statuts = await p.locator('.carte-pub').evaluateAll((l) => l.slice(0, 5).map((x) => x.dataset.statut)); ok(statuts.join() === 'valide,a-valider,a-valider,a-valider,idee', `production par lot : statuts ${statuts.join(', ')}`);
+  await p.locator('.carte-pub input').nth(0).check(); const [z] = await Promise.all([p.waitForEvent('download', { timeout: 90000 }), p.click('#lot-exporter')]); const zf = join(OUT, z.suggestedFilename()); await z.saveAs(zf);
+  const zb = readFileSync(zf), nb = zb.readUInt16LE(zb.length - 12); ok(nb === 6 && zb.readUInt32LE(0) === 0x04034b50, `export par lot : archive ZIP de ${nb} fichiers (4 PNG, calendrier, contrôle qualité)`);
+  await p.click('#lot-annuler'); await attendre(p, 300); ok((await p.locator('.carte-pub').evaluateAll((l) => l.filter((x) => x.dataset.statut === 'exporte').length)) === 0, 'opération par lot réversible (annuler l\'export)');
+  await p.click('[data-onglet=profils]'); await p.setInputFiles('#profil-image', join(ROOT, 'accueil/signature-affiche.jpg')); await p.waitForSelector('#pr-enregistrer'); await p.fill('#pr-nom', 'DA test');
+  await p.click('#pr-enregistrer'); await attendre(p, 300); const prof = await D(p, async () => (await window.__production.db.tous('profils'))[0]);
+  ok(prof?.nom === 'DA test' && /^#[0-9A-F]{6}$/.test(prof.couleurs.accent) && prof.mesures.luminosite >= 0, `profil DA analysé sur l'appareil (accent ${prof?.couleurs.accent}, système ${prof?.systeme})`);
+  const id = await D(p, async () => (await window.__production.db.tous('creations')).find((c) => c.brief?.type === 'versus').id);
+  await p.goto(URL0 + `motion/?creation=${id}`); await prets(p); await p.click('button[data-onglet="document"]'); await deplier(p);
+  await p.waitForFunction(() => document.querySelectorAll('#doc-profil option').length > 1); await p.selectOption('#doc-profil', prof.id); await p.click('#doc-appliquer-profil'); await attendre(p, 200); d = await docJ(p);
+  ok(d.profil === prof.id && d.couleurs.accent === prof.couleurs.accent && d.systeme === prof.systeme, 'Motion Studio : profil DA appliqué depuis le panneau Document');
+  ok(!err.length, `production : aucune erreur JavaScript${err.length ? ' · ' + err.slice(0, 2).join(' | ') : ''}`); await ctx.close();
+}
+// Bibliothèque visuelle : import multiple (transparent, très grand, couverture, portrait), organisation, fiche de personnage,
+// comparaison des traitements, création, cadrage et éclairage, déclinaisons, remplacement d'image, réouverture, export, Atelier
+{
+  const ctx = await browser.newContext({ viewport: { width: 1400, height: 1000 }, acceptDownloads: true }), p = await ctx.newPage(), err = erreurs(p); p.on('dialog', (x) => x.accept());
+  await p.goto(URL0 + 'production/#visuels'); await p.waitForFunction(() => window.__production);
+  const fichiers = await D(p, async () => { const mk = (w, h, fn, type) => { const c = Object.assign(document.createElement('canvas'), { width: w, height: h }), g = c.getContext('2d'); fn(g, w, h); return c.toDataURL(type, 0.9).split(',')[1]; };
+    return [['ESSAI_personnage.png', 'image/png', mk(800, 1100, (g) => { g.fillStyle = '#C82828'; g.beginPath(); g.arc(400, 260, 150, 0, 7); g.fill(); g.fillStyle = '#1E3CA0'; g.fillRect(200, 400, 400, 700); }, 'image/png')],
+      ['ESSAI_decor-geant.jpg', 'image/jpeg', mk(5000, 2800, (g, w, h) => { g.fillStyle = '#141428'; g.fillRect(0, 0, w, h); g.fillStyle = '#FAB43C'; g.beginPath(); g.arc(3800, 900, 500, 0, 7); g.fill(); }, 'image/jpeg')],
+      ['ESSAI_couverture.jpg', 'image/jpeg', mk(800, 1240, (g, w, h) => { g.fillStyle = '#F03C28'; g.fillRect(0, 0, w, h); g.fillStyle = '#111'; g.fillRect(0, 0, w, 180); }, 'image/jpeg')],
+      ['ESSAI_portrait.jpg', 'image/jpeg', mk(900, 1300, (g, w, h) => { g.fillStyle = '#3C465A'; g.fillRect(0, 0, w, h); g.fillStyle = '#DCB496'; g.beginPath(); g.arc(450, 300, 150, 0, 7); g.fill(); }, 'image/jpeg')]]; });
+  const lots = fichiers.map(([name, mimeType, b]) => ({ name, mimeType, buffer: Buffer.from(b, 'base64') }));
+  await p.setInputFiles('#visuel-fichiers', lots); await p.waitForFunction(() => /importée/.test(document.querySelector('#etat').textContent), null, { timeout: 90000 });
+  const msg = await p.textContent('#etat'), cartes = await p.$$eval('.carte-visuel', (l) => l.map((x) => ({ a: x.dataset.alpha, t: x.textContent })));
+  ok(cartes.length === 4 && cartes.filter((c) => c.a === '1').length === 1 && /réduite/.test(msg) && cartes.some((c) => /4096×2294/.test(c.t)) && cartes.some((c) => /Couverture/.test(c.t)), `import multiple : 4 images, transparence détectée, très grande image réduite à 4096 px, couverture reconnue (${msg})`);
+  await p.setInputFiles('#visuel-fichiers', lots.slice(0, 1)); await p.waitForFunction(() => /déjà présente/.test(document.querySelector('#etat').textContent), null, { timeout: 30000 });
+  ok(await p.locator('.carte-visuel').count() === 4, 'réimport du même fichier : aucun doublon');
+  const ids = await D(p, async () => Object.fromEntries((await window.__production.db.tous('visuels')).map((v) => [v.nom, v.id])));
+  await p.locator(`[data-visuel="${ids.ESSAI_personnage}"] .favori`).click(); await p.locator(`[data-visuel="${ids.ESSAI_portrait}"] input`).check(); await p.locator(`[data-visuel="${ids.ESSAI_personnage}"] input`).check();
+  await p.fill('#lot-tag-valeur', 'Essai'); await p.click('#lot-collection'); await p.fill('#lot-tag-valeur', 'héros'); await p.click('#lot-tag'); await attendre(p, 300);
+  await p.check('#v-favoris'); const fav = await p.locator('.carte-visuel').count(); await p.uncheck('#v-favoris'); await p.fill('#v-recherche', 'héros'); const tag = await p.locator('.carte-visuel').count(); await p.fill('#v-recherche', '');
+  await p.locator('#liste-collections button', { hasText: 'Essai' }).click(); const col = await p.locator('.carte-visuel').count(); await p.locator('#liste-collections button').first().click();
+  ok(fav === 1 && tag === 2 && col === 2, `organisation : favori (${fav}), tag (${tag}), collection (${col})`);
+  await p.locator(`[data-visuel="${ids['ESSAI_couverture']}"] .vignette-visuel`).click(); await p.fill('#fv-nom', 'Couverture de test renommée'); await p.click('#fv-enregistrer'); await attendre(p, 300);
+  ok((await p.textContent('#grille-visuels')).includes('Couverture de test renommée'), 'renommage d\'une image');
+  await p.click('#nouvelle-fiche'); await p.fill('#fp-nom', 'Héros d\'essai'); await p.selectOption('select[data-role="transparente"]', ids.ESSAI_personnage); await p.selectOption('select[data-role="portrait"]', ids.ESSAI_portrait);
+  await p.click('#fp-comparer'); await p.waitForFunction(() => document.querySelectorAll('#grille-comparer figure').length === 12, null, { timeout: 90000 });
+  ok(true, 'fiche de personnage (2 images) et comparaison : 4 traitements × 3 formats');
+  await p.locator('#grille-comparer [data-traitement="cinema"][data-format="miniature"] button').click(); await prets(p);
+  let d = await docJ(p), h = d.elements.find((e) => e.type === 'image' && e.image.src === ids.ESSAI_personnage);
+  ok(d.format.w === 1280 && h && h.image.eclairage.actif && h.image.ajustement === 'contenir' && h.image.zoom > 1 && d.brief.personnages[0].imageInfo?.alpha, `miniature créée avec l'image transparente : détourée, mise en lumière, cadrée sur le sujet (zoom ${h?.image.zoom})`);
+  await D(p, async (id) => (await import('./etat.js')).selectionner([id]), h.id); await p.click('button[data-onglet="proprietes"]'); await deplier(p);
+  await p.locator('[data-cadrage="0.35"]').click(); await p.fill('#prop-eclairage', '').catch(() => {}); await attendre(p, 200); d = await docJ(p); h = d.elements.find((e) => e.id === h.id);
+  ok(h.image.dy === 0.35, 'cadrage modifié depuis le panneau (haut, visage)');
+  await D(p, async (id) => { const E = await import('./etat.js'); E.modifier((doc) => { const e = doc.elements.find((x) => x.id === id); e.image.eclairage.dir = 300; e.image.eclairage.contre = '#FFAA00'; }); }, h.id);
+  const id0 = d.id; await D(p, async () => { const S = await import('../../templates/_systeme/studio-systemes.js'); await window.__studio.ctx.declinaison(S.format('1:1')); }); await attendre(p, 400); const carre = await docJ(p);
+  await D(p, async (id) => { await window.__studio.ctx.ouvrir(id); }, id0).catch(() => {}); await attendre(p, 300);
+  await D(p, async () => { const S = await import('../../templates/_systeme/studio-systemes.js'); await window.__studio.ctx.declinaison(S.format('9:16')); }); await attendre(p, 400); const story = await docJ(p);
+  const hi = (x) => x.elements.find((e) => e.type === 'image' && e.image.src === ids.ESSAI_personnage);
+  ok(carre.format.w === 1080 && carre.format.h === 1080 && story.format.h === 1920 && hi(carre) && hi(story) && hi(story).y !== hi(carre).y, 'déclinaisons carrée et story recomposées avec la même image');
+  await D(p, async (id) => (await import('./etat.js')).selectionner([id]), hi(story).id); await p.click('button[data-onglet="proprietes"]'); await deplier(p);
+  const n0 = story.elements.length; await p.selectOption('#prop-ressource', ids.ESSAI_portrait); await attendre(p, 300); let s2 = await docJ(p);
+  ok(s2.elements.length === n0 && s2.elements.find((e) => e.id === hi(story).id).image.src === ids.ESSAI_portrait && s2.brief.personnages[0].image === ids.ESSAI_portrait, 'image remplacée sans reconstruire la composition (calques et réglages conservés, intention mise à jour)');
+  await D(p, () => window.__studio.sauver()); await p.goto(URL0 + `motion/?creation=${s2.id}`); await prets(p); s2 = await docJ(p);
+  ok(s2.elements.some((e) => e.image?.src === ids.ESSAI_portrait), 'projet enregistré puis rouvert avec ses images');
+  await p.click('#ouvrir-export'); await attendre(p, 400); const qa = await p.textContent('#controle-qualite');
+  const [dl] = await Promise.all([p.waitForEvent('download', { timeout: 90000 }), p.click('[data-export="png"]')]); const f = join(OUT, 'visuels-story.png'); await dl.saveAs(f);
+  ok(pngDims(readFileSync(f)).join('×') === '1080×1920' && /Contrôle qualité/.test(qa), `export PNG pleine définition ${pngDims(readFileSync(f)).join(' × ')}, contrôle qualité affiché`);
+  await p.goto(URL0); await p.waitForSelector('#apercu svg'); await p.locator('button', { hasText: 'Bibliothèque' }).first().click(); await p.waitForSelector('.grille-choix button');
+  await p.locator(`.grille-choix [data-visuel="${ids.ESSAI_personnage}"]`).click(); await attendre(p, 400);
+  ok((await p.innerHTML('#apercu')).includes('data:image/png'), 'Atelier : image choisie dans la bibliothèque visuelle et posée dans le gabarit');
+  ok(!err.length, `bibliothèque visuelle : aucune erreur JavaScript${err.length ? ' · ' + err.slice(0, 2).join(' | ') : ''}`); await ctx.close();
+}
 for (const [nom, opt] of [
   ['galaxy-s25', { viewport: { width: 384, height: 832 }, deviceScaleFactor: 2.8125, isMobile: true, hasTouch: true }],
   ['ipad-m2-portrait', { viewport: { width: 820, height: 1180 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true }],

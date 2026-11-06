@@ -1,8 +1,9 @@
 // Motion Studio · stockage durable sur l'appareil (IndexedDB) et fichiers de projet / de bibliothèque.
-// Magasins : créations, ressources (images, polices), versions, modèles, composants, préréglages d'animation.
-import { parcourir, convertirV1, estV1, normaliserDoc, nouvelId } from '../../templates/_systeme/studio.js';
+// Magasins : créations, ressources (images, polices), versions, modèles, composants, préréglages d'animation,
+// campagnes, profils DA, visuels (fiches légères des images : vignette, catégorie, tags…) et fiches de personnages.
+import { parcourir, convertirV1, estV1, normaliserDoc, nouvelId, plansDe, synchroniserPlans } from '../../templates/_systeme/studio.js';
 
-const BASE = 'primestone-motion', VERSION = 2, MAGASINS = ['creations', 'ressources', 'versions', 'modeles', 'composants', 'presets'];
+const BASE = 'primestone-motion', VERSION = 4, MAGASINS = ['creations', 'ressources', 'versions', 'modeles', 'composants', 'presets', 'campagnes', 'profils', 'visuels', 'personnages'];
 let base = null;
 const ouvrir = () => base || (base = new Promise((ok, ko) => {
   const r = indexedDB.open(BASE, VERSION);
@@ -12,6 +13,7 @@ const ouvrir = () => base || (base = new Promise((ok, ko) => {
 const tx = async (mag, mode, fn) => { const db = await ouvrir(); return new Promise((ok, ko) => { const t = db.transaction(mag, mode), r = fn(t.objectStore(mag)); t.oncomplete = () => ok(r?.result); t.onerror = () => ko(t.error); t.onabort = () => ko(t.error); }); };
 export const db = {
   tous: (m) => tx(m, 'readonly', (s) => s.getAll()).then((x) => x || []),
+  cles: (m) => tx(m, 'readonly', (s) => s.getAllKeys()).then((x) => x || []),
   lire: (m, id) => tx(m, 'readonly', (s) => s.get(id)),
   ecrire: (m, o) => tx(m, 'readwrite', (s) => s.put(o)),
   suppr: (m, id) => tx(m, 'readwrite', (s) => s.delete(id)),
@@ -30,7 +32,7 @@ export function migrer(d, placeholder) {
 
 // ---------- Fichiers ----------
 export function paquetProjet(doc, ressources) {
-  const r = Object.fromEntries(ressourcesUtilisees(doc.elements).map((id) => [id, ressources.get(id)]).filter(([, v]) => v));
+  synchroniserPlans(doc); const r = Object.fromEntries(ressourcesUtilisees(plansDe(doc).flatMap((p) => p.elements)).map((id) => [id, ressources.get(id)]).filter(([, v]) => v));
   return { format: 'primestone-motion', version: 2, exporte: new Date().toISOString(), creation: doc, ressources: r };
 }
 // Lit un fichier de projet (version 1 ou 2) ou une bibliothèque complète

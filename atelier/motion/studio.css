@@ -165,3 +165,15 @@ dialog.tiroir { border-radius:12px; border-color:#30303A; box-shadow:0 30px 80px
 .carte { border-radius:10px; background:var(--surface); transition:border-color .12s, transform .12s; }
 .carte:hover { border-color:#3A3A45; }
 .carte img, .carte > div:first-child { border-radius:6px; }
+
+/* Plans */
+.plans { display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:6px 8px; border-top:1px solid var(--ligne); background:#0B0B0D; }
+.plans .plan { font-size:12.5px; }
+.plans .champ.en-ligne { flex-direction:row; align-items:center; gap:6px; }
+.plans .champ.en-ligne select, .plans .champ.en-ligne input { width:auto; min-width:70px; }
+.carte .apercu-modele { width:100%; aspect-ratio:16/10; object-fit:contain; background:#0B0B0D; border-radius:6px; display:block; min-height:90px; }
+.marque { text-decoration:none; }
+
+.controle-qualite { border-left:3px solid var(--vert, #4DD68C); background:var(--surface); padding:8px 10px; margin-bottom:10px; font-size:13px; }
+.controle-qualite[data-niveau="attention"] { border-color:var(--ambre); } .controle-qualite[data-niveau="erreur"] { border-color:var(--rouge); }
+.controle-qualite ul { margin:6px 0 0; padding-left:18px; color:var(--doux); }

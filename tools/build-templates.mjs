@@ -74,6 +74,7 @@ for (const r of bad) console.log(`  alerte ${r.fid}/${r.vid} : ${r.alertes.map((
 {
   const liste = ['./', 'index.html', 'atelier.css', 'polices.css', 'atelier.js', 'manifest.webmanifest',
     'motion/', ...readdirSync(join(ROOT, 'atelier/motion')).sort().map((f) => `motion/${f}`),
+    'production/', ...readdirSync(join(ROOT, 'atelier/production')).sort().map((f) => `production/${f}`),
     ...readdirSync(SYS).filter((f) => f.endsWith('.js')).sort().map((f) => `../templates/_systeme/${f}`),
     ...readdirSync(join(ROOT, 'brand/03_fonts/web')).map((f) => `../brand/03_fonts/web/${f}`),
     ...Object.values(PH).map((p) => `../${p.src}`),

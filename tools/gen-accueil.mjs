@@ -21,4 +21,18 @@ for (const [nom, modele, direction, w, h] of [['motion-personnage', 'personnage'
   }, [modele, direction, w, h]);
   writeFileSync(join(OUT, `${nom}.jpg`), Buffer.from(b64, 'base64')); console.log(`accueil/${nom}.jpg`);
 }
+// Modèles signature (format natif)
+for (const [nom, id] of [['signature-affiche', 'affiche-cinema'], ['signature-magazine', 'une-magazine'], ['signature-manifeste', 'manifeste']]) {
+  const b64 = await p.evaluate(async (id) => { const G = await import('../../templates/_systeme/studio-signatures.js'); await window.__studio.charger(G.docDepuisSignature(id));
+    const sc = await window.__studio.scenePrete(null, { final: true }), k = Math.min(1, 1200 / Math.max(sc.w, sc.h)), c = Object.assign(document.createElement('canvas'), { width: Math.round(sc.w * k), height: Math.round(sc.h * k) });
+    await window.__studio.ctx.rendu.precharger(sc); window.__studio.ctx.rendu.dessiner(c.getContext('2d'), sc, k); return c.toDataURL('image/jpeg', 0.84).split(',')[1]; }, id);
+  writeFileSync(join(OUT, `${nom}.jpg`), Buffer.from(b64, 'base64')); console.log(`accueil/${nom}.jpg`);
+}
+// Compositions de l'assistant de production
+for (const [nom, brief, f] of [['production-duel', { type: 'versus', personnages: ['Black Panther', 'Batman'] }, 'miniature']]) {
+  const b64 = await p.evaluate(async ([brief, f]) => { const C = await import('../../templates/_systeme/studio-compositeur.js'); await window.__studio.charger(C.composer(brief, f));
+    const sc = await window.__studio.scenePrete(null, { final: true }), c = Object.assign(document.createElement('canvas'), { width: sc.w, height: sc.h });
+    await window.__studio.ctx.rendu.precharger(sc); window.__studio.ctx.rendu.dessiner(c.getContext('2d'), sc, 1); return c.toDataURL('image/jpeg', 0.84).split(',')[1]; }, [brief, f]);
+  writeFileSync(join(OUT, `${nom}.jpg`), Buffer.from(b64, 'base64')); console.log(`accueil/${nom}.jpg`);
+}
 await b.close(); srv.close();

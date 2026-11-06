@@ -140,9 +140,22 @@ function blocImage(c) {
   const zoom = document.createElement('input'); zoom.type = 'range'; zoom.min = '0.3'; zoom.max = '4'; zoom.step = '0.01'; zoom.value = img.zoom ?? 1; zoom.id = `zoom-${c.id}`;
   zoom.setAttribute('aria-label', `Zoom ${c.label}`);
   zoom.addEventListener('input', () => { etat.donnees[c.id].zoom = +zoom.value; etat.actif = c.id; dessiner(); sauver(); });
-  col.append(titre, btn('Importer', () => fichier.click()), btn('Recentrer', () => { Object.assign(etat.donnees[c.id], { zoom: 1, dx: 0, dy: 0 }); zoom.value = 1; dessiner(); sauver(); }),
+  col.append(titre, btn('Importer', () => fichier.click()), btn('Bibliothèque', () => choisirVisuel(c)), btn('Recentrer', () => { Object.assign(etat.donnees[c.id], { zoom: 1, dx: 0, dy: 0 }); zoom.value = 1; dessiner(); sauver(); }),
     btn('Substitution', () => { etat.donnees[c.id] = imagePlaceholder(c); construirePanneau(); dessiner(); sauver(); }), btn(etat.actif === c.id ? 'Recadrage actif' : 'Recadrer', () => { etat.actif = c.id; construirePanneau(); }), zoom, fichier);
   box.append(vign, col); return box;
+}
+
+// Choix d'une image de la bibliothèque visuelle locale (partagée avec Production et Motion Studio)
+async function choisirVisuel(c) {
+  const { db } = await import('./motion/stockage.js'), vs = (await db.tous('visuels').catch(() => [])).sort((a, b) => (b.favori - a.favori) || b.ajoute - a.ajoute);
+  const dlg = document.createElement('dialog'); dlg.className = 'choix-visuel'; dlg.setAttribute('aria-label', 'Choisir une image de la bibliothèque');
+  const q = Object.assign(document.createElement('input'), { type: 'search', placeholder: 'Rechercher une image…' }), grille = document.createElement('div'); grille.className = 'grille-choix';
+  const fermer = Object.assign(document.createElement('button'), { type: 'button', textContent: 'Fermer' }); fermer.onclick = () => dlg.close();
+  const rendre = () => { const t = q.value.toLowerCase(); grille.replaceChildren(...vs.filter((v) => !t || [v.nom, ...v.tags, ...v.collections].join(' ').toLowerCase().includes(t)).slice(0, 120).map((v) => {
+    const b = Object.assign(document.createElement('button'), { type: 'button', title: v.nom }); b.dataset.visuel = v.id; b.innerHTML = `<img src="${v.vignette}" alt="" loading="lazy"><span></span>`; b.querySelector('span').textContent = v.nom;
+    b.onclick = async () => { const r = await db.lire('ressources', v.id); if (!r) return; etat.donnees[c.id] = { href: r.href, w: r.w, h: r.h, nom: v.nom, zoom: 1, dx: 0, dy: 0 }; etat.actif = c.id; dlg.close(); construirePanneau(); dessiner(); sauver(); };
+    return b; })); if (!vs.length) grille.textContent = 'Bibliothèque vide : importer des images dans Production › Visuels.'; };
+  q.oninput = rendre; dlg.append(q, fermer, grille); document.body.append(dlg); dlg.addEventListener('close', () => dlg.remove()); rendre(); dlg.showModal();
 }
 
 // Lecture d'un fichier image, réduite si nécessaire ; garde la transparence des PNG/WebP

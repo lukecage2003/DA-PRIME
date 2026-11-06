@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Production éditoriale · Atelier Primestone</title>
+<meta name="theme-color" content="#111111">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png">
+<link rel="stylesheet" href="../polices.css">
+<link rel="stylesheet" href="production.css">
+</head>
+<body>
+<header class="entete">
+  <a class="retour" href="../">← Atelier</a>
+  <a href="../../" class="marque" title="Accueil">Production</a>
+  <nav class="onglets" role="tablist" aria-label="Espaces de production">
+    <button type="button" role="tab" id="t-assistant" data-onglet="assistant" aria-selected="true" aria-controls="assistant">Assistant</button>
+    <button type="button" role="tab" id="t-visuels" data-onglet="visuels" aria-selected="false" aria-controls="visuels">Visuels</button>
+    <button type="button" role="tab" id="t-campagnes" data-onglet="campagnes" aria-selected="false" aria-controls="campagnes">Campagnes</button>
+    <button type="button" role="tab" id="t-profils" data-onglet="profils" aria-selected="false" aria-controls="profils">Profils DA</button>
+    <button type="button" role="tab" id="t-bibliotheque" data-onglet="bibliotheque" aria-selected="false" aria-controls="bibliotheque">Bibliothèque</button>
+  </nav>
+  <a class="retour" href="../motion/">Motion Studio →</a>
+  <span id="etat" class="etat" role="status" aria-live="polite"></span>
+</header>
+
+<main>
+  <!-- Assistant éditorial local -->
+  <section id="assistant" role="tabpanel" aria-labelledby="t-assistant" class="panneau">
+    <form id="demande" class="demande">
+      <label for="demande-texte" class="titre-section">Exprimer une idée</label>
+      <textarea id="demande-texte" rows="3" placeholder="Ex. : Fais-moi un VS entre Black Panther et Batman." autocomplete="off"></textarea>
+      <div class="rangee"><button type="submit" class="accent" id="analyser">Proposer une composition</button>
+        <p class="note">Assistant local : il comprend l'intention, les personnages de sa base, les formats et les périodes. Rien n'est envoyé hors de l'appareil.</p></div>
+      <div class="exemples" id="exemples" aria-label="Exemples de demandes"></div>
+    </form>
+    <div id="proposition" class="proposition" hidden></div>
+  </section>
+
+  <!-- Bibliothèque visuelle locale -->
+  <section id="visuels" role="tabpanel" aria-labelledby="t-visuels" class="panneau" hidden>
+    <aside class="cote">
+      <h2 class="titre-section">Visuels</h2>
+      <label class="bouton accent" for="visuel-fichiers">Importer des images…</label>
+      <input type="file" id="visuel-fichiers" accept="image/*" multiple class="masque">
+      <select id="import-categorie" aria-label="Catégorie des images importées"></select>
+      <p id="stockage" class="note"></p>
+      <h3>Collections</h3><ul id="liste-collections" class="liste"></ul>
+      <h3>Personnages</h3><button type="button" id="nouvelle-fiche">Nouvelle fiche de personnage</button><ul id="liste-personnages" class="liste"></ul>
+    </aside>
+    <div>
+      <div class="filtres">
+        <input type="search" id="v-recherche" placeholder="Rechercher : nom, tag, collection, personnage…" aria-label="Rechercher une image">
+        <select id="v-categorie" aria-label="Catégorie"><option value="">Toutes catégories</option></select>
+        <select id="v-tri" aria-label="Tri"><option value="recent">Plus récentes</option><option value="nom">Nom</option><option value="taille">Poids</option></select>
+        <label class="bascule"><input type="checkbox" id="v-favoris"> Favoris</label>
+        <label class="bascule"><input type="checkbox" id="v-transparents"> Transparentes</label>
+        <button type="button" id="v-tout">Tout sélectionner</button>
+      </div>
+      <div class="barre-lot" id="barre-visuels" role="toolbar" aria-label="Actions sur les images sélectionnées" hidden>
+        <input type="text" id="lot-tag-valeur" placeholder="Tag ou collection" aria-label="Tag ou collection" style="width:auto">
+        <button type="button" id="lot-tag">Ajouter le tag</button><button type="button" id="lot-collection">Ajouter à la collection</button>
+        <select id="lot-categorie" aria-label="Changer la catégorie"></select>
+        <button type="button" id="lot-supprimer" class="danger">Supprimer</button>
+      </div>
+      <p id="v-resume" class="note"></p>
+      <ul id="grille-visuels" class="grille-visuels"></ul>
+    </div>
+  </section>
+
+  <!-- Campagnes et calendrier éditorial -->
+  <section id="campagnes" role="tabpanel" aria-labelledby="t-campagnes" class="panneau" hidden>
+    <aside class="cote">
+      <h2 class="titre-section">Campagnes</h2>
+      <ul id="liste-campagnes" class="liste"></ul>
+      <details class="nouvelle" id="nouvelle-campagne"><summary>Nouvelle campagne</summary>
+        <form id="form-campagne" class="pile">
+          <label class="champ">Nom<input type="text" id="nc-nom" value="Nouvelle campagne" required></label>
+          <label class="champ">Début<input type="date" id="nc-debut" required></label>
+          <label class="champ">Nombre de publications<input type="number" id="nc-jours" min="1" max="62" value="7"></label>
+          <label class="champ">Thème des personnages<select id="nc-filtre"><option value="">Libre (base complète)</option><option value="tag:noir">Super-héros noirs</option><option value="tag:cosmique">Personnages cosmiques</option><option value="tag:vilain">Antagonistes</option><option value="editeur:Marvel">Marvel</option><option value="editeur:DC">DC</option></select></label>
+          <label class="champ">Format principal<select id="nc-format"></select></label>
+          <button type="submit" class="accent">Planifier</button>
+        </form></details>
+    </aside>
+    <div id="campagne" class="campagne"><p class="vide">Choisir une campagne, en créer une, ou la demander à l'assistant (« Prépare tout le mois de février avec un super-héros noir différent chaque jour »).</p></div>
+  </section>
+
+  <!-- Profils de direction artistique -->
+  <section id="profils" role="tabpanel" aria-labelledby="t-profils" class="panneau" hidden>
+    <aside class="cote">
+      <h2 class="titre-section">Profils DA</h2>
+      <label class="bouton accent" for="profil-image">Analyser une référence…</label>
+      <input type="file" id="profil-image" accept="image/*" class="masque">
+      <button type="button" id="profil-vide">Profil sans image</button>
+      <ul id="liste-profils" class="liste"></ul>
+    </aside>
+    <div id="profil" class="profil"><p class="vide">Importer une miniature de référence : sa palette, sa lumière, son contraste et la position du sujet sont mesurés sur l'appareil pour créer un profil réutilisable (marque, campagne ou création).</p></div>
+  </section>
+
+  <!-- Bibliothèque centralisée -->
+  <section id="bibliotheque" role="tabpanel" aria-labelledby="t-bibliotheque" class="panneau" hidden>
+    <div class="filtres">
+      <input type="search" id="recherche" placeholder="Rechercher : titre, personnage, dossier…" aria-label="Rechercher dans la bibliothèque">
+      <select id="filtre-format" aria-label="Format"><option value="">Tous les formats</option></select>
+      <select id="filtre-origine" aria-label="Origine"><option value="">Toutes origines</option><option value="assistant">Assistant</option><option value="campagne">Campagne</option><option value="manuel">Motion Studio</option></select>
+      <select id="filtre-campagne" aria-label="Campagne"><option value="">Toutes campagnes</option></select>
+      <button type="button" id="biblio-export" disabled>Exporter la sélection (ZIP)</button>
+    </div>
+    <p id="biblio-resume" class="note"></p>
+    <ul id="creations" class="grille-cartes"></ul>
+  </section>
+</main>
+
+<dialog id="dialogue-visuel" class="dialogue" aria-label="Fiche"><form method="dialog" id="form-visuel"></form></dialog>
+<dialog id="dialogue-comparer" class="dialogue large" aria-labelledby="comparer-titre"><div class="pile" style="padding:16px"><div class="rangee"><h2 class="titre-section" id="comparer-titre">Comparer</h2><button type="button" id="fermer-comparer">Fermer</button></div><div id="grille-comparer"></div></div></dialog>
+<dialog id="editeur-pub" class="dialogue" aria-labelledby="ep-titre"><form method="dialog" id="form-pub"></form></dialog>
+<script type="module" src="production.js"></script>
+</body>
+</html>
