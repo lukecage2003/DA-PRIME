@@ -45,14 +45,14 @@ Briques partagées : `briques.js` (formats, texte, formes, images, filtres) et `
 
 | Famille | Variantes | Images |
 |---|---|---|
-| 01 · Analyse de personnage | Fond jaune · Fond noir · Personnage à gauche | personnage détouré |
-| 02 · Analyse de comic | Couverture inclinée · Fond jaune · Deux couvertures | 1 ou 2 couvertures (note 0 à 5 en étoiles vectorielles) |
-| 03 · Actualités Marvel et DC | Bandeau noir · Bandeau jaune | personnage détouré (pastille rouge ACTU, éditeur) |
-| 04 · Théories | Point d'interrogation · Titre à gauche | image plein cadre, assombrie |
-| 05 · Guides de lecture | Trois couvertures · Deux couvertures · Fond noir | 2 ou 3 couvertures numérotées |
-| 06 · Événements | Titre en bas · Titre en haut | 2 personnages, un par univers |
-| 07 · Histoire des comics | Bichromie · Image en couleur | personnage détouré (année géante) |
-| 08 · Dossiers cosmiques et multiversels | Décor seul · Personnage en surimpression | décor plein cadre (+ personnage) |
+| 01 · Analyse de personnage | Fond jaune · Fond noir · Personnage à gauche | portrait héroïque : personnage monumental à contre-jour, rayons, trame, écho typographique |
+| 02 · Analyse de comic | Couverture inclinée · Fond jaune · Deux couvertures | objet de collection : projecteur, ombre douce, reflet au sol, note x/5 |
+| 03 · Actualités Marvel et DC | Bandeau noir · Bandeau jaune | flash d'actu : lignes de vitesse, bandeau incliné à filet rouge, pastille ACTU |
+| 04 · Théories | Point d'interrogation · Titre à gauche | enquête nocturne : teinte bleue, faisceau, brume, « ? » lumineux ou loupe |
+| 05 · Guides de lecture | Trois couvertures · Deux couvertures · Fond noir | parcours : couvertures en escalier montant, chemin pointillé numéroté |
+| 06 · Événements | Titre en bas · Titre en haut | choc de deux univers : lumière chaude contre froide, collision d'énergie |
+| 07 · Histoire des comics | Bichromie · Image en couleur | archive : année monumentale derrière le personnage, Ben-Day, frise |
+| 08 · Dossiers cosmiques et multiversels | Décor seul · Personnage en surimpression | échelle cosmique : nébuleuse, étoiles, lumière dorée, aura violette |
 | 09 · Affiche cinéma | Nuit argentée · Ambre | image plein cadre assombrie, bandes de format scope, accroche en italique, titre espacé |
 | 10 · Duel | Coupe jaune · Coupe rouge | 2 images en coupe diagonale, badge central, noms des deux combattants |
 | 11 · Une éditoriale | Papier · Encre | visuel encadré à ombre décalée, filets, accroche en italique, numéro |
@@ -80,7 +80,13 @@ Les textes sont en majuscules dans le fichier (la casse est appliquée par le mo
 - **Figma** (navigateur, tous appareils) : glisser le SVG dans un fichier ; les calques deviennent des groupes, les textes restent modifiables si les polices sont disponibles dans Figma.
 - Un SVG exporté par l'Atelier contient ses images et ses polices : il s'affiche à l'identique partout, mais il est plus lourd.
 
+## Lumière et atmosphère (0.9)
+
+`templates/_systeme/ambiances.js` : briques SVG déterministes (halos, rayons, lignes de vitesse, trame Ben-Day, grain, étoiles, nébuleuse, ville, sol technologique, brume, faisceau, choc d'énergie) et `filtreHeros()` : contour d'encre, ombre portée, aura, lumière de contour côté source, modelé côté opposé. L'image d'un personnage n'est jamais déformée ni retournée.
+
 ## Contrôles intégrés au moteur
+
+- 0.9 : un texte qui chevauche le sceau Primestone est une erreur.
 
 | Contrôle | Niveau |
 |---|---|

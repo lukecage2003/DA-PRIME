@@ -1,5 +1,5 @@
 {
- "version": "0.1.1-854faed192",
+ "version": "0.1.1-db5292dc5f",
  "fichiers": [
   "./",
   "index.html",
@@ -29,6 +29,7 @@
   "production/index.html",
   "production/production.css",
   "production/production.js",
+  "../templates/_systeme/ambiances.js",
   "../templates/_systeme/briques.js",
   "../templates/_systeme/editorial.js",
   "../templates/_systeme/exemples.js",

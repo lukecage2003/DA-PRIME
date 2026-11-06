@@ -1,5 +1,16 @@
 # Journal des versions
 
+## 0.9.0 · 2026-11-06 · excellence visuelle et direction artistique
+
+- Les 8 familles historiques de miniatures recomposées en profondeur, chacune avec un usage et une mise en scène propres : portrait héroïque à contre-jour (01), couverture-objet sous projecteur avec reflet (02), flash d'actualité à bandeau incliné (03), enquête nocturne avec faisceau, brume, « ? » lumineux ou loupe (04), parcours de lecture en escalier (05), choc de deux univers chaud/froid avec collision d'énergie (06), archive avec année monumentale derrière le personnage (07), échelle cosmique avec nébuleuse et aura (08). Palette, typographies, sceau et grille Primestone conservés.
+- Nouvelle bibliothèque d'ambiances SVG (`ambiances.js`) : halos, rayons, vitesse, trame, grain, étoiles, nébuleuse, ville, sol technologique, brume, faisceau, choc ; filtre de mise en lumière des personnages (contour d'encre, ombre portée, aura, lumière de contour, modelé).
+- Motion Studio : « Mise en lumière du personnage » (propriété d'image, rendu canvas et SVG) avec lumière de contour, aura, direction de la lumière et ombre portée ; jamais de déformation ni de retournement.
+- Compositeur : lumière adaptée à l'univers (cosmique, urbain, mystique, technologique), duel éclairé chaud contre froid, variante « monumentale » pour les portraits (variété dans les campagnes), caméra en poussée lente (parallaxe), titres en révélation plutôt qu'en tampon, listes et carrousels lisibles (fond sombre, personnage par diapositive, barre de progression), couleurs de texte choisies par contraste mesuré.
+- Recomposition multiformat : anti-collision des blocs de texte et respect des marges de sécurité lors des déclinaisons.
+- Contrôles qualité : textes trop près du bord, textes superposés, contraste insuffisant, texte sur le sceau (gabarits) ; bilan affiché dans le panneau Exporter et fichier `controle-qualite.txt` joint aux exports ZIP de campagne.
+- Profils DA : répartition des zones (3 × 3), densité graphique, dominantes colorées, zone calme pour le texte ; le compositeur reprend le côté du sujet et la sobriété du profil ; les couleurs modifiées dans une création sont conservées quand un profil est appliqué.
+- Tests : 136 tests Motion Studio, 54 de l'Atelier, 15 du moteur.
+
 ## 0.8.0 · 2026-11-06 · studio créatif éditorial : assistant, compositeur, campagnes, profils DA
 
 - Production éditoriale (`atelier/production/`), quatre espaces : Assistant, Campagnes, Profils DA, Bibliothèque ; accessible depuis l'accueil (« Exprimer une idée »), l'Atelier et Motion Studio.

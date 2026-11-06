@@ -24,7 +24,12 @@ export function initExports(ctx) {
   async function construire() {
     const { w, h } = S.doc.format, wc = await codecWebCodecs(Math.min(3840, w) & ~1, Math.round(h * Math.min(1, 3840 / w)) & ~1);
     const echelles = Object.fromEntries([1, 2, 4].filter((k) => w * k <= MAX_COTE && h * k <= MAX_COTE).map((k) => [k, `×${k} · ${w * k} × ${h * k}`]));
+    // Contrôle qualité avant export : les problèmes de la composition sont signalés ici (l'export reste possible)
+    const qa = (await ctx.scenePrete(null, { final: true })).alertes.filter((a) => a.niveau !== 'info'), err = qa.filter((a) => a.niveau === 'erreur').length;
+    const bloc = el('div', { className: 'controle-qualite', id: 'controle-qualite', dataset: { niveau: err ? 'erreur' : qa.length ? 'attention' : 'ok' } }, el('b', { textContent: qa.length ? `Contrôle qualité : ${qa.length} point(s) à vérifier avant l'export` : 'Contrôle qualité : composition conforme (marges, lisibilité, contraste, chevauchements, débordements).' }),
+      qa.length ? el('ul', {}, ...qa.slice(0, 8).map((a) => el('li', { textContent: a.message }))) : null);
     corps.replaceChildren(
+      bloc,
       el('h3', { textContent: 'Image fixe' }), el('div', { className: 'grille2' }, sel('export-moment', 'Instant', { final: 'Composition complète', curseur: `Position du curseur (${S.t.toFixed(1).replace('.', ',')} s)` }, 'moment'), sel('export-echelle', 'Définition', echelles, 'echelle')),
       chk('export-transparent', 'Fond transparent (PNG, SVG, GIF)', 'transparent'), chk('export-limite', 'JPG limité à 2 Mo (miniature YouTube)', 'limite2'),
       el('div', { className: 'rangee' }, bouton('PNG', () => lancer('png'), { dataset: { export: 'png' } }), bouton('JPG', () => lancer('jpg'), { dataset: { export: 'jpg' } }), bouton('SVG', () => lancer('svg'), { dataset: { export: 'svg' } })),

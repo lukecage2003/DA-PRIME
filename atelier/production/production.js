@@ -45,7 +45,7 @@ async function fichiersPNG(doc, base) {
 }
 
 // ---------- Création et enregistrement ----------
-const profilDoc = (p) => (p ? { id: p.id, systeme: p.systeme, palette: p.palette, couleurs: p.couleurs } : undefined);
+const profilDoc = (p) => (p ? { id: p.id, systeme: p.systeme, palette: p.palette, couleurs: p.couleurs, composition: p.composition, sobriete: p.sobriete, mesures: p.mesures } : undefined);
 function briefDe(o) {
   return { type: o.type, titre: o.titre, sousTitre: o.sousTitre || '', rubrique: o.rubrique || '', univers: o.univers || null, repere: o.repere || '', items: o.items || [], citation: o.citation || '',
     personnages: (o.personnages || (o.personnage ? [o.personnage] : [])).filter(Boolean).map((n) => ({ nom: n, univers: trouverPersonnage(n)?.univers || null })) };
@@ -216,7 +216,7 @@ async function vignettesPubs(c) {
 async function reappliquerProfil(c, pubs, a) {
   // Les créations déjà produites gardent leur composition : seules les couleurs et le système changent
   for (const p of pubs) { if (!p.creation) continue; const d = await db.lire('creations', p.creation); if (!d) continue; a.creations.push(JSON.parse(JSON.stringify(d)));
-    const pr = profils.find((x) => x.id === (p.profil || c.profil)); if (pr) { d.systeme = pr.systeme; if (pr.palette) d.palette = pr.palette; d.couleurs = { ...pr.couleurs }; d.profil = pr.id; } else { d.couleurs = {}; delete d.profil; }
+    const pr = profils.find((x) => x.id === (p.profil || c.profil)); if (pr) { d.systeme = pr.systeme; if (pr.palette) d.palette = pr.palette; d.couleurs = { ...pr.couleurs, ...(d.couleursPropres || {}) }; d.profil = pr.id; } else { d.couleurs = { ...(d.couleursPropres || {}) }; delete d.profil; }
     d.apercu = await vignette(normaliserDoc(d)); await db.ecrire('creations', d); }
 }
 async function annuler(c) {
@@ -231,11 +231,14 @@ async function produireLot(c, pubs) {
 }
 async function exporterLot(c, pubs) {
   const fichiers = [], refusees = pubs.filter((p) => p.refus); let i = 0;
-  for (const p of pubs) { info(`Export ${++i}/${pubs.length}…`); const d = normaliserDoc(await docPub(c, p)); fichiers.push(...await fichiersPNG(d, `${p.date}_${slug(p.titre)}`)); }
+  const qa = [];
+  for (const p of pubs) { info(`Export ${++i}/${pubs.length}…`); const d = normaliserDoc(await docPub(c, p)); fichiers.push(...await fichiersPNG(d, `${p.date}_${slug(p.titre)}`));
+    plansDe(d).forEach((_, k) => { const x = JSON.parse(JSON.stringify(d)); if (k) changerPlan(x, k); rendreScene(x, null, opts).alertes.filter((a) => a.niveau !== 'info').forEach((a) => qa.push(`${p.date} · ${p.titre}${k ? ` · diapositive ${k + 1}` : ''} : ${a.message}`)); }); }
+  fichiers.push({ nom: 'controle-qualite.txt', data: qa.length ? `Points à vérifier avant publication (${qa.length}) :\n${qa.join('\n')}\n` : 'Contrôle qualité : aucune anomalie détectée (marges, lisibilité, contraste, chevauchements, débordements).\n' });
   fichiers.push({ nom: 'calendrier.csv', data: csv({ ...c, publications: pubs }) });
   telecharger(zip(fichiers), `${slug(c.nom)}.zip`);
   await lot(c, `${pubs.length} publication(s) exportée(s)`, async () => { pubs.forEach((p) => { if (!p.refus) p.statut = 'exporte'; }); });
-  if (refusees.length) info(`${refusees.length} publication(s) refusée(s) exportée(s) sans changer leur statut.`);
+  info(`${qa.length ? `Export terminé · ${qa.length} point(s) qualité à vérifier (voir controle-qualite.txt)` : 'Export terminé · contrôle qualité conforme'}${refusees.length ? ` · ${refusees.length} refusée(s) sans changement de statut` : ''}.`);
 }
 const csv = (c) => '﻿date;titre;personnage;type;format;statut;note\n' + c.publications.map((p) => [p.date, p.titre, p.personnage, NOMS_TYPES[p.type] || p.type, FORMATS[p.format] || p.format, STATUTS[p.statut], (p.note || '').replace(/\n/g, ' ')].map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\n');
 
@@ -288,7 +291,7 @@ function editerProfil(p0) {
   nom.addEventListener('input', () => { p.nom = nom.value; }); niveau.addEventListener('change', () => { p.niveau = niveau.value; }); sy.addEventListener('change', () => { p.systeme = sy.value; p.palette = Object.keys(SYSTEMES[sy.value].palettes)[0]; rendreApercus(); });
   const typo = el('textarea', { rows: 2, value: [p.typographie?.note, p.traitement?.note].filter(Boolean).join(' ') || '' }); typo.addEventListener('input', () => { p.notes = typo.value; });
   const m = p.mesures, jauge = (n, v, t) => [el('span', { textContent: n }), el('meter', { min: 0, max: 1, value: Math.abs(v) }), el('span', { textContent: t })];
-  const rendreApercus = async () => { const pr = { systeme: p.systeme, palette: p.palette, couleurs: p.couleurs }, figs = [];
+  const rendreApercus = async () => { const pr = profilDoc(p), figs = [];
     for (const [b, f] of [[{ type: 'portrait', titre: 'Titre d\'impact', sousTitre: 'Une accroche éditoriale', personnages: [{ nom: 'Personnage' }] }, 'miniature'], [{ type: 'versus', personnages: [{ nom: 'Héros' }, { nom: 'Rival' }] }, '4:5'], [{ type: 'classement', titre: 'Le classement' }, '9:16']])
       figs.push(el('figure', {}, await image(composer(b, f, { profil: pr }), 420), el('figcaption', { textContent: `${NOMS_TYPES[b.type]} · ${FORMATS[f]}` })));
     apercus.replaceChildren(...figs); };
@@ -297,7 +300,9 @@ function editerProfil(p0) {
       p.nuancier ? el('div', {}, el('h3', { textContent: 'Palette mesurée' }), el('div', { className: 'nuancier' }, ...p.nuancier.map((x) => el('span', { style: `background:${x}`, title: x })))) : null,
       m ? el('div', {}, el('h3', { textContent: 'Mesures' }), el('div', { className: 'jauges' }, ...jauge('Luminosité', m.luminosite, Math.round(m.luminosite * 100) + ' %'), ...jauge('Contraste', m.contraste * 2, Math.round(m.contraste * 100) + ' %'), ...jauge('Saturation', m.saturation, Math.round(m.saturation * 100) + ' %'),
         ...jauge('Texture', Math.min(1, m.texture * 3), Math.round(m.texture * 100) + ' %'), ...jauge('Température', (m.temperature + 1) / 2, m.temperature > 0.1 ? 'chaude' : m.temperature < -0.1 ? 'froide' : 'neutre')),
-        el('p', { className: 'note', textContent: `Lumière ${m.lumiere} · sujet ${p.composition?.sujet || 'indéterminé'} (masse ${Math.round((m.sujet?.masse || 0) * 100)} %) · ${m.orientation}.` })) : null,
+        el('p', { className: 'note', textContent: `Lumière ${m.lumiere} · sujet ${p.composition?.sujet || 'indéterminé'} (masse ${Math.round((m.sujet?.masse || 0) * 100)} %) · ${m.orientation}.` }),
+        m.zones ? el('div', { className: 'zones', role: 'img', 'aria-label': `Répartition des zones : texte conseillé en ${p.zoneTexte}` }, ...m.zones.map((z) => el('span', { style: `background:rgb(${Math.round(z.lum * 255)},${Math.round(z.lum * 255)},${Math.round(z.lum * 255)});outline:${Math.round(z.densite * 20)}px solid rgba(255,229,0,.55);outline-offset:-${Math.round(z.densite * 20)}px` }))) : null,
+        m.zones ? el('p', { className: 'note', textContent: `Zone calme pour le texte : ${p.zoneTexte} · densité ${p.sobriete}${m.dominantes?.length ? ` · dominantes : ${m.dominantes.map((x) => `${x.famille} ${Math.round(x.part * 100)} %`).join(', ')}` : ''}.` }) : null) : null,
       el('ul', { className: 'messages' }, ...(p.alertes || []).map((x) => el('li', { dataset: { niveau: 'manque' }, textContent: x })), el('li', { dataset: { niveau: 'verifier' }, textContent: 'Polices, traitement des personnages et intention ne se mesurent pas : ils restent vos choix (notes ci-contre).' }))),
     el('div', { className: 'pile' }, el('div', { className: 'grille2' }, champ('Nom du profil', nom), champ('Niveau', niveau), champ('Système graphique de base', sy)), el('h3', { textContent: 'Couleurs (jetons de la composition)' }), el('div', { className: 'grille2' }, ...couleurs),
       champ('Typographie et traitement (notes)', typo),

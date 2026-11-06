@@ -2,6 +2,7 @@
 // versSVG(scene, { polices }) -> chaîne SVG ; chaque calque est un groupe nommé (Inkscape, Figma, Illustrator).
 import M from './metrics.js';
 import { r1 } from './motion-base.js';
+import { filtreHeros } from './ambiances.js';
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 export function versSVG(scene, { polices = '', titre = 'Création Motion Studio' } = {}) {
@@ -41,6 +42,7 @@ export function versSVG(scene, { polices = '', titre = 'Création Motion Studio'
       case 'img': {
         let f = '';
         if (x.contour) { const id = uid('e'); defs.push(`<filter id="${id}" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feMorphology in="SourceAlpha" operator="dilate" radius="${x.contour.w}" result="d"/><feFlood flood-color="${x.contour.c}"/><feComposite in2="d" operator="in" result="c"/><feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`); f = ` filter="url(#${id})"`; }
+        if (x.eclairage) { const ec = x.eclairage, id = uid('h'); defs.push(filtreHeros(id, { encre: x.contour?.c || '#111111', epaisseur: x.contour?.w || 0.01, contour: ec.contre, aura: ec.aura, auraOp: ec.af, ombre: ec.ombre, lumiere: [ec.lx, ec.ly] })); f = ` filter="url(#${id})"`; }
         return `<image x="${x.x}" y="${x.y}" width="${x.w}" height="${x.h}" preserveAspectRatio="none" href="${esc(x.href)}"${f}/>`;
       }
       case 'dots': { let s = ''; for (let i = 0; i < x.pts.length; i += 3) s += `<circle cx="${x.pts[i]}" cy="${x.pts[i + 1]}" r="${x.pts[i + 2]}"/>`; return `<g fill="${x.fill}"${op(x.op)}${bl(x)}>${s}</g>`; }

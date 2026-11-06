@@ -33,6 +33,8 @@ Ouvrir → **Assistant** (« Exprimer une idée ») → proposition modifiable (
 
 `atelier/production/analyse-da.js`. Mesuré sur l'image (réduite à 480 px, jamais envoyée) : palette par coupe médiane, luminosité, contraste, saturation, température, densité de texture, masse et centre du sujet (écart à la couleur dominante), répartition haute/basse de la lumière, orientation. Proposé : six jetons (`fond`, `papier`, `encre`, `texte`, `accent`, `accent2`), texte choisi pour le meilleur contraste WCAG sur le fond, système graphique le plus proche. **Non mesurable** sans IA : polices exactes, traitement précis des personnages, intention — notes déclaratives. Niveaux : identité de marque, direction de campagne, direction de création.
 
+Depuis 0.9 : répartition des zones (grille 3 × 3 de luminosité et de densité), densité graphique globale, dominantes colorées et zone calme suggérée pour le texte. Le compositeur reprend le côté du sujet et la sobriété du profil (moins de matière pour un profil épuré). Appliquer un profil conserve les couleurs modifiées à la main dans une création.
+
 ## Campagnes
 
 Statuts : idée → à produire → en cours → à valider → validé → exporté (refus : retour « à produire », marqué refusé). Produire une publication crée la création dans la bibliothèque (dossier = nom de la campagne) ; les retouches faites ensuite dans Motion Studio sont celles qui s'exportent. Une opération par lot est annulable (dernière opération). Export ZIP : un PNG par publication (un par diapositive de carrousel) nommé `date_titre.png` + `calendrier.csv`.

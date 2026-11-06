@@ -27,6 +27,7 @@ export function rendre(familleId, varianteId, donnees = {}, { guides: avecGuides
     if (t.titre) {
       if (t.f.cap < G.capMin) ctx.alertes.push({ niveau: 'attention', champ: t.id, message: `${t.label} : capitales de ${Math.round(t.f.cap)} px, sous le minimum de ${G.capMin} px. ${G.format === 'miniature' ? 'Peu lisible à 168 px de large (smartphone).' : 'Peu lisible dans le fil sur téléphone.'}` });
     }
+    if (t.boite && G.format === 'miniature' && inter(t.boite, { x: G.m, y: H - G.m - G.seal, w: G.seal, h: G.seal })) ctx.alertes.push({ niveau: 'erreur', champ: t.id, message: `${t.label} chevauche le sceau Primestone (bas gauche).` });
     if (t.boite && G.dead && inter(t.boite, G.dead)) ctx.alertes.push({ niveau: 'erreur', champ: t.id, message: `${t.label} empiète sur le coin bas droit, masqué par la durée YouTube.` });
   }
   for (const [id, z] of Object.entries(ctx.zones)) {

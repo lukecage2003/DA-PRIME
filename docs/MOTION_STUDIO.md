@@ -117,6 +117,10 @@ Chaque calque a sa propre animation, en trois parties combinables :
 
 **Séquenceur** : une piste par calque ; faire glisser la barre bleue change le délai d'entrée, son bord droit sa durée ; la barre rouge règle la sortie ; la tête de lecture se déplace sur la règle des temps. Ce n'est pas une timeline de montage : pas de clips, de pistes audio ni d'images clés libres.
 
+## Mise en lumière et contrôle qualité (0.9)
+
+Une image détourée (« Image entière ») peut recevoir une mise en lumière : lumière de contour du côté de la source, aura colorée, ombre portée, modelé du côté opposé, direction réglable. Le compositeur l'applique selon l'univers. Le panneau Exporter affiche un contrôle qualité (débordements, marges, textes superposés, contraste, lisibilité) avant chaque export ; l'export reste possible. Les déclinaisons par ancrages réespacent les textes qui se chevaucheraient et les gardent dans les marges.
+
 ## Plans et transitions
 
 Une création peut enchaîner plusieurs **plans** : des états visuels successifs (teaser, révélation, date…), chacun avec ses propres calques, animations et durée. La barre *Plans*, sous la scène, permet d'ajouter un plan vide, de dupliquer le plan actif, de le supprimer, de le renommer (double-clic) et de choisir sa **transition d'entrée** : coupe franche, fondu enchaîné, volet diagonal, iris, zoom traversant, éclair blanc, glissement (0,1 à 3 s). Le curseur de temps et la lecture parcourent toute la séquence ; le séquenceur montre le plan actif. Les exports animés (GIF, WebM, MP4) couvrent toute la séquence ; les images fixes montrent le plan actif.

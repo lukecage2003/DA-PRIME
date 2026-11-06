@@ -9,7 +9,7 @@
     {
       "id": "01-analyse-personnage",
       "nom": "Analyse de personnage",
-      "description": "Personnage détouré, titre-concept en capitales.",
+      "description": "Portrait héroïque : personnage monumental à contre-jour, rayons, titre-concept en bloc.",
       "champs": [
         {
           "id": "titre",
@@ -55,7 +55,7 @@
     {
       "id": "02-analyse-comic",
       "nom": "Analyse de comic",
-      "description": "La couverture entière en case-cadre, avec la note de la rédaction.",
+      "description": "La couverture comme objet de collection : projecteur, ombre, reflet, note de la rédaction.",
       "champs": [
         {
           "id": "titre",
@@ -111,7 +111,7 @@
     {
       "id": "03-actualites",
       "nom": "Actualités Marvel et DC",
-      "description": "Pastille rouge réservée à l’actu, éditeur en haut à droite, bandeau de titre.",
+      "description": "Flash d’actualité : personnage propulsé, bandeau incliné à filet rouge, éditeur en haut à droite.",
       "champs": [
         {
           "id": "titre",
@@ -157,7 +157,7 @@
     {
       "id": "04-theories",
       "nom": "Théories",
-      "description": "Image plein cadre assombrie, titre en question.",
+      "description": "Enquête nocturne : image assombrie et teintée, faisceau, brume, point d’interrogation lumineux.",
       "champs": [
         {
           "id": "titre",
@@ -198,7 +198,7 @@
     {
       "id": "05-guides",
       "nom": "Guides de lecture",
-      "description": "Couvertures numérotées en escalier : l’ordre de lecture se lit sans texte.",
+      "description": "Parcours de lecture : couvertures en escalier montant, reliées par un chemin numéroté.",
       "champs": [
         {
           "id": "titre",
@@ -254,7 +254,7 @@
     {
       "id": "06-evenements",
       "nom": "Événements",
-      "description": "Deux univers séparés par l’incision à 8°.",
+      "description": "Choc de deux univers : lumière chaude contre lumière froide, collision d’énergie sur l’incision à 8°.",
       "champs": [
         {
           "id": "titre",
@@ -300,7 +300,7 @@
     {
       "id": "07-histoire",
       "nom": "Histoire des comics",
-      "description": "Année géante, bichromie noir et jaune : la seule famille qui recolore l’image.",
+      "description": "Archive : année monumentale derrière le personnage, trame Ben-Day, papier vieilli, frise du temps.",
       "champs": [
         {
           "id": "annee",
@@ -345,7 +345,7 @@
     {
       "id": "08-cosmique",
       "nom": "Dossiers cosmiques et multiversels",
-      "description": "Décor plein cadre, voile noir à gauche, jaune utilisé comme lumière.",
+      "description": "Échelle cosmique : nébuleuse et étoiles en profondeur, lumière dorée, personnage monumental en surimpression.",
       "champs": [
         {
           "id": "titre",

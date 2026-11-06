@@ -4,7 +4,7 @@ Dépôt de l'identité visuelle de **Primestone Media** : système graphique, de
 
 Direction artistique de référence : **Signal** (YouTube, accroches, communication) + **Kiosque** (éditorial, dossiers, carrousels, infographies, bibliothèque). Direction sombre et cinématographique en usage secondaire.
 
-## État : studio créatif éditorial (accueil, Production, Atelier, Motion Studio) · version 0.8.0 provisoire
+## État : studio créatif éditorial (accueil, Production, Atelier, Motion Studio) · version 0.9.0 provisoire
 
 | Élément | Emplacement | Statut |
 |---|---|---|

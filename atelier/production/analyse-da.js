@@ -37,11 +37,20 @@ export function analyserPixels(data, w, h) {
   // Sujet : pixels éloignés de la couleur dominante (le fond) → masse et centre
   for (let y = 0; y < h; y += pas) for (let x = 0; x < w; x += pas) { const i = (y * w + x) * 4; if (data[i + 3] < 128) continue; const dist = Math.hypot(data[i] - fondRgb[0], data[i + 1] - fondRgb[1], data[i + 2] - fondRgb[2]) / 441; if (dist > 0.22) { mx += x * dist; my += y * dist; mp += dist; } }
   const couleurs = boites.filter((c) => c.part > 0.01).map((c) => ({ hex: hex(...c.rgb), part: +c.part.toFixed(3), lum: +lum(c.rgb).toFixed(2), sat: +sat(c.rgb).toFixed(2), teinte: Math.round(teinte(c.rgb)) }));
+  // Répartition des zones visuelles (grille 3 × 3) : luminosité et densité graphique de chaque zone
+  const zones = Array.from({ length: 9 }, () => ({ l: 0, b: 0, n: 0 }));
+  for (let y = 0; y < h - pas; y += pas) for (let x = 0; x < w - pas; x += pas) { const i = (y * w + x) * 4; if (data[i + 3] < 128) continue; const z = zones[Math.min(2, Math.floor((3 * y) / h)) * 3 + Math.min(2, Math.floor((3 * x) / w))], l = L(x, y);
+    z.l += l; z.n++; if (Math.abs(L(x + pas, y) - l) + Math.abs(L(x, y + pas) - l) > 0.18) z.b++; }
+  // Dominantes colorées : familles de teintes des pixels saturés
+  const FAM = [['rouge', 345, 15], ['orange', 15, 45], ['jaune', 45, 70], ['vert', 70, 165], ['cyan', 165, 200], ['bleu', 200, 255], ['violet', 255, 300], ['magenta', 300, 345]], fam = Object.fromEntries(FAM.map(([n]) => [n, 0])); let ns = 0;
+  for (const p of px) { if (sat(p) < 0.3 || lum(p) < 0.12) continue; const t = teinte(p), f = FAM.find(([, a, b]) => (a > b ? t >= a || t < b : t >= a && t < b)); fam[f[0]]++; ns++; }
+  const dominantes = Object.entries(fam).filter(([, v]) => ns && v / ns > 0.12).sort((a, b) => b[1] - a[1]).map(([n, v]) => ({ famille: n, part: +(v / ns).toFixed(2) }));
   const total = Math.max(1, haut + bas);
   return {
     w, h, couleurs, luminosite: +moy.toFixed(2), contraste: +ecart.toFixed(2), saturation: +(ss / n).toFixed(2), temperature: +(chaud / n).toFixed(2), texture: +(bords / n).toFixed(2),
     sujet: mp ? { cx: +(mx / mp / w).toFixed(2), cy: +(my / mp / h).toFixed(2), masse: +Math.min(1, mp / n / 0.5).toFixed(2) } : null, lumiere: haut / total > 0.58 ? 'haute' : bas / total > 0.58 ? 'basse' : 'équilibrée',
     orientation: w / h > 1.2 ? 'paysage' : h / w > 1.2 ? 'portrait' : 'carré',
+    zones: zones.map((z) => ({ lum: z.n ? +(z.l / z.n).toFixed(2) : 0, densite: z.n ? +(z.b / z.n).toFixed(2) : 0 })), dominantes, densite: +(bords / n).toFixed(2),
   };
 }
 
@@ -62,8 +71,11 @@ export function proposerProfil(a, { nom = 'Profil importé', niveau = 'marque' }
   if (!vifs.length) alertes.push('Image peu saturée : l\'accent proposé est une valeur, pas une couleur vive.');
   return {
     nom, niveau, systeme, couleurs: { fond: fond.hex, papier: papier.hex, encre: encre.hex, texte: texte.x, accent: accent.hex, accent2: accent2.hex },
-    mesures: { luminosite: a.luminosite, contraste: a.contraste, saturation: a.saturation, temperature: a.temperature, texture: a.texture, lumiere: a.lumiere, sujet: a.sujet, orientation: a.orientation },
+    mesures: { luminosite: a.luminosite, contraste: a.contraste, saturation: a.saturation, temperature: a.temperature, texture: a.texture, lumiere: a.lumiere, sujet: a.sujet, orientation: a.orientation, zones: a.zones, dominantes: a.dominantes, densite: a.densite },
     nuancier: a.couleurs.map((c) => c.hex),
+    // Zone la plus calme (faible densité) : emplacement naturel du texte dans les compositions de ce profil
+    zoneTexte: a.zones ? ['haut-gauche', 'haut', 'haut-droite', 'gauche', 'centre', 'droite', 'bas-gauche', 'bas', 'bas-droite'][a.zones.map((z, i) => [z.densite, i]).sort((x, y) => x[0] - y[0])[0][1]] : null,
+    sobriete: a.densite < 0.08 ? 'épurée' : a.densite > 0.22 ? 'chargée' : 'équilibrée',
     composition: { sujet: a.sujet ? (a.sujet.cx < 0.4 ? 'gauche' : a.sujet.cx > 0.6 ? 'droite' : 'centre') : 'indéterminé', masse: a.sujet?.masse ?? 0, lumiere: a.lumiere },
     // Déclaratif : non déductible de façon fiable par une analyse locale
     typographie: { titres: 'display', texte: 'textBold', casse: 'upper', note: 'À confirmer : les polices ne se reconnaissent pas automatiquement.' },

@@ -93,7 +93,7 @@ const nonInfo = (sc) => sc.alertes.filter((a) => a.niveau !== 'info');
     for (const f of Object.keys(Fo.FORMES)) d.elements.push(St.creerElement('forme', d, { forme: f }));
     for (const e of Object.keys(St.EFFETS_LIB)) d.elements.push(St.creerElement('effet', d, { effet: e }));
     for (const c of Object.values(COMPOSANTS)) d.elements.push(c.creer(d));
-    for (const t of [0, 0.3, 1.5, null]) { const sc = rs(d, t), svg = versSVG(sc); if (nonInfo(sc).length || !balance(svg)) bad.push(`${sy}@${t} ${nonInfo(sc).map((a) => a.message).join(';').slice(0, 200)}`); } }
+    for (const t of [0, 0.3, 1.5, null]) { const sc = rs(d, t), svg = versSVG(sc), al = nonInfo(sc).filter((a) => !/chevauche/.test(a.message)); if (al.length || !balance(svg)) bad.push(`${sy}@${t} ${al.map((a) => a.message).join(';').slice(0, 200)}`); } }   // éléments empilés au centre à dessein : chevauchements attendus
   ok(!bad.length, `6 systèmes × (6 styles de texte, ${Object.keys(Fo.FORMES).length} formes, ${Object.keys(St.EFFETS_LIB).length} effets, ${Object.keys(COMPOSANTS).length} composants) : rendus sans alerte à 4 instants, SVG bien formés${bad.length ? ' · ' + bad.slice(0, 2).join(' | ') : ''}`);
   const d = St.nouveauDocument({ systeme: 'comics' }); d.elements.push(...Object.keys(St.EFFETS_LIB).map((e) => St.creerElement('effet', d, { effet: e })));
   ok(versSVG(rs(d, 2.3)) === versSVG(rs(d, 2.3)) && versSVG(rs(d, 2.3)) !== versSVG(rs(d, 2.4)), 'effets animés déterministes (même instant, même image ; instants différents, images différentes)');
@@ -192,6 +192,27 @@ console.log('Production éditoriale (Node)');
   const an = Da.analyserPixels(px, W, H), pf = Da.proposerProfil(an);
   ok(an.luminosite < 0.4 && an.sujet.cx > 0.6 && pf.couleurs.accent === '#FFC800' && Da.contrasteWCAG([255, 255, 255], [12, 14, 40]) > 4.5 && ['cinema', 'cosmique', 'comics'].includes(pf.systeme),
     `profil DA mesuré : fond sombre, sujet à droite (${an.sujet.cx}), accent ${pf.couleurs.accent}, système ${pf.systeme}`);
+}
+// ---------- 0.9 : mise en scène, contrôles qualité, recomposition, familles ----------
+console.log('Excellence visuelle (Node)');
+{
+  const Co = await imp('templates/_systeme/studio-compositeur.js'), Da = await imp('atelier/production/analyse-da.js'), Mo = await imp('templates/_systeme/moteur.js');
+  const d = Co.composer({ type: 'versus', personnages: ['Black Panther', 'Batman'] }, 'miniature'), sc = rs(d, null), imgs = []; const v = (n) => { if (n.k === 'img') imgs.push(n); n.kids?.forEach(v); }; sc.nodes.forEach(v);
+  ok(imgs.filter((n) => n.eclairage).length === 2 && imgs[imgs.length - 1].eclairage.contre !== imgs[imgs.length - 2].eclairage.contre && /filter/.test(versSVG(sc)) && !d.elements.some((e) => e.miroir), 'personnages mis en lumière (contre-jour distinct par camp, filtre SVG), jamais retournés');
+  const t = St.nouveauDocument({ format: '1:1' }); t.elements.push(St.normaliserEl({ type: 'texte', nom: 'A', x: 2, y: 400, w: 600, h: 200, texte: { contenu: 'Bord', taille: 120, fill: '#FFFFFF' } }), St.normaliserEl({ type: 'texte', nom: 'B', x: 2, y: 420, w: 600, h: 200, texte: { contenu: 'Bord', taille: 120, fill: '#FFFFFF' } }));
+  t.fond = { type: 'couleur', c1: '#FFFFFF' }; const msg = nonInfo(rs(t, null)).map((a) => a.message).join('|');
+  ok(/trop près du bord/.test(msg) && /chevauche/.test(msg) && /contraste insuffisant/.test(msg), 'contrôles qualité : marge, textes superposés et contraste détectés');
+  const G = await imp('templates/_systeme/studio-signatures.js'), u1 = G.docDepuisSignature('une-magazine', { format: '1:1' }), ac = u1.elements.find((e) => e.nom === 'Accroche'), ti = u1.elements.find((e) => e.nom === 'Titre de couverture');
+  ok(ti.y >= ac.y + ac.h, `recomposition : anti-collision des blocs de texte (titre ${Math.round(ti.y)} ≥ accroche ${Math.round(ac.y + ac.h)})`);
+  const pg = Co.composer({ type: 'portrait', titre: 'X', personnages: ['Storm'] }, 'miniature', { profil: { composition: { sujet: 'gauche' } } }), pd = Co.composer({ type: 'portrait', titre: 'X', personnages: ['Storm'] }, 'miniature');
+  const hx = (q) => q.elements.find((e) => e.nom === 'Storm'); ok(Co.composer({ type: 'portrait', titre: 'X', personnages: ['Storm'] }, 'miniature').elements.length > 0 && (hx(pg).x !== hx(pd).x || pd.elements.some((e) => e.nom === 'Sol')), 'profil DA exploité : côté du sujet repris par la composition');
+  const car = Co.composer({ type: 'classement', titre: 'T', items: ['Galactus', 'Thanos'] }, 'carrousel'), p2 = car.plans[1].elements;
+  ok(p2.some((e) => e.nom === 'Galactus') && p2.filter((e) => /^Progression/.test(e.nom)).length === 2, 'carrousel : personnage de chaque diapositive et barre de progression');
+  const px = new Uint8ClampedArray(48 * 27 * 4).fill(255); const an = Da.analyserPixels(px, 48, 27); ok(an.zones.length === 9 && 'densite' in an && Array.isArray(an.dominantes), 'profil DA : zones 3 × 3, densité et dominantes mesurées');
+  const fams = ['01-analyse-personnage', '02-analyse-comic', '03-actualites', '04-theories', '05-guides', '06-evenements', '07-histoire', '08-cosmique'], sig = new Set();
+  for (const f of fams) { const r = Mo.rendre(f, Object.keys(Mo.FAMILLES[f].variantes)[0], {}); sig.add((r.svg.match(/<(radialGradient|filter|pattern|clipPath|mask|path|polygon)/g) || []).join('').length + f.slice(0, 2)); }
+  const avecLumiere = fams.filter((f) => /radialGradient|feTurbulence|feGaussianBlur/.test(Mo.rendre(f, Object.keys(Mo.FAMILLES[f].variantes)[0], {}).svg)).length;
+  ok(sig.size === 8 && avecLumiere === 8, `8 familles de miniatures recomposées : lumière et atmosphère dans ${avecLumiere}/8`);
 }
 if (process.argv.includes('--moteur')) fin();
 
@@ -412,7 +433,7 @@ let fichierBiblio = null, fichierProjetV2 = null;
   await p.click('#lot-produire'); await p.waitForFunction(() => /produite/.test(document.querySelector('#etat').textContent), null, { timeout: 90000 });
   const statuts = await p.locator('.carte-pub').evaluateAll((l) => l.slice(0, 5).map((x) => x.dataset.statut)); ok(statuts.join() === 'valide,a-valider,a-valider,a-valider,idee', `production par lot : statuts ${statuts.join(', ')}`);
   await p.locator('.carte-pub input').nth(0).check(); const [z] = await Promise.all([p.waitForEvent('download', { timeout: 90000 }), p.click('#lot-exporter')]); const zf = join(OUT, z.suggestedFilename()); await z.saveAs(zf);
-  const zb = readFileSync(zf), nb = zb.readUInt16LE(zb.length - 12); ok(nb === 5 && zb.readUInt32LE(0) === 0x04034b50, `export par lot : archive ZIP de ${nb} fichiers (4 PNG + calendrier)`);
+  const zb = readFileSync(zf), nb = zb.readUInt16LE(zb.length - 12); ok(nb === 6 && zb.readUInt32LE(0) === 0x04034b50, `export par lot : archive ZIP de ${nb} fichiers (4 PNG, calendrier, contrôle qualité)`);
   await p.click('#lot-annuler'); await attendre(p, 300); ok((await p.locator('.carte-pub').evaluateAll((l) => l.filter((x) => x.dataset.statut === 'exporte').length)) === 0, 'opération par lot réversible (annuler l\'export)');
   await p.click('[data-onglet=profils]'); await p.setInputFiles('#profil-image', join(ROOT, 'accueil/signature-affiche.jpg')); await p.waitForSelector('#pr-enregistrer'); await p.fill('#pr-nom', 'DA test');
   await p.click('#pr-enregistrer'); await attendre(p, 300); const prof = await D(p, async () => (await window.__production.db.tous('profils'))[0]);

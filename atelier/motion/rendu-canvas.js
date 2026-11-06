@@ -21,6 +21,15 @@ export function creerRendu() {
     if (x.fill && x.fill !== 'none') { g.fillStyle = peint(g, x.fill); g.fill(p, regle); }
     if (x.stroke) { g.strokeStyle = peint(g, x.stroke); g.lineWidth = x.lw || 1; g.lineJoin = 'round'; g.stroke(p); }
   }
+  // Bande lumineuse (ou d'ombre) : silhouette privée d'elle-même décalée, adoucie puis contenue dans la silhouette
+  const bandes = new Map();
+  function bande(im, c, dx, dy, flou) {
+    const cle = [im.src.slice(-64), im.src.length, c, Math.round(dx), Math.round(dy), Math.round(flou)].join(); if (bandes.has(cle)) return bandes.get(cle);
+    const w = im.naturalWidth, h = im.naturalHeight, a = Object.assign(document.createElement('canvas'), { width: w, height: h }), ga = a.getContext('2d');
+    ga.drawImage(im, 0, 0); ga.globalCompositeOperation = 'source-in'; ga.fillStyle = c; ga.fillRect(0, 0, w, h); ga.globalCompositeOperation = 'destination-out'; ga.drawImage(im, dx, dy);
+    const b = Object.assign(document.createElement('canvas'), { width: w, height: h }), gb = b.getContext('2d'); gb.filter = `blur(${Math.max(0.5, flou)}px)`; gb.drawImage(a, 0, 0); gb.filter = 'none'; gb.globalCompositeOperation = 'destination-in'; gb.drawImage(im, 0, 0);
+    bandes.set(cle, b); return b;
+  }
   function silhouette(im, c) {
     const cle = im.src.slice(-64) + im.src.length + c; if (silhouettes.has(cle)) return silhouettes.get(cle);
     const k = Math.min(1, 1200 / Math.max(im.naturalWidth, im.naturalHeight)), cv = Object.assign(document.createElement('canvas'), { width: Math.round(im.naturalWidth * k), height: Math.round(im.naturalHeight * k) }), g = cv.getContext('2d');
@@ -73,8 +82,13 @@ export function creerRendu() {
         case 'text': texte(g, x, e); break;
         case 'img': {
           const im = images.get(x.href); if (!im) break;
+          const ec = x.eclairage, kk = x.w / im.naturalWidth;
+          if (ec) { g.save(); g.filter = `blur(${16 * ec.u}px)`; g.globalAlpha *= ec.ombre; g.drawImage(silhouette(im, '#000000'), x.x - ec.lx * 22 * ec.u, x.y - ec.ly * 18 * ec.u + 8 * ec.u, x.w, x.h); g.restore();
+            if (ec.aura) { g.save(); g.filter = `blur(${26 * ec.u}px)`; g.globalAlpha *= ec.af; const sa = silhouette(im, ec.aura); g.drawImage(sa, x.x, x.y, x.w, x.h); g.drawImage(sa, x.x, x.y, x.w, x.h); g.restore(); } }
           if (x.contour) { const s = silhouette(im, x.contour.c), n = 16; for (let i = 0; i < n; i++) { const a = (i / n) * 6.2832; g.drawImage(s, x.x + Math.cos(a) * x.contour.w, x.y + Math.sin(a) * x.contour.w, x.w, x.h); } }
-          g.drawImage(im, x.x, x.y, x.w, x.h); break;
+          g.drawImage(im, x.x, x.y, x.w, x.h);
+          if (ec) { g.save(); g.globalAlpha *= 0.3; g.drawImage(bande(im, '#000000', (ec.lx * 26 * ec.u) / kk, (ec.ly * 26 * ec.u) / kk, (14 * ec.u) / kk), x.x, x.y, x.w, x.h); g.restore(); g.drawImage(bande(im, ec.contre, (-ec.lx * 9 * ec.u) / kk, (-ec.ly * 9 * ec.u) / kk, (1.6 * ec.u) / kk), x.x, x.y, x.w, x.h); }
+          break;
         }
         case 'dots': if (x.blend) g.globalCompositeOperation = x.blend; points(g, x, e); break;
         case 'grain': {
