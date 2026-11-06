@@ -30,8 +30,9 @@ function kit(d) {
 }
 // Ambiance d'univers : fond, lumière, matière ; centrée sur le sujet (cx, cy en fractions)
 function ambiance(k, univers, cx = 0.6, cy = 0.45, { fondImage = true, intensite = 1 } = {}) {
-  if (k.minimal) fondImage = false;
+  if (k.minimal || k.reel) fondImage = false;
   const { W, H, E, I } = k, out = [], plein = { x: 0, y: 0, w: W, h: H };
+  if (!fondImage && !k.minimal) out.push(E('degrade', { couleur: '@papier', couleur2: '@fond', intensite: 0.9, angle: 100 }, { ...plein, nom: 'Fond profond', prof: 0.1 }));
   if (fondImage) out.push(I(null, FOND_UNIVERS[univers] || 'noir', { ...plein, nom: 'Décor', prof: 0.15, verrou: false, op: univers === 'techno' ? 0.3 : univers === 'mystique' ? 0.6 : 0.85 }, {}, { entree: { type: 'fondu', duree: 1.2, delai: 0 } }));
   if (univers === 'cosmique') out.push(E('nebuleuse', { couleur: '@accent2', couleur2: '@papier', intensite: 0.5 * intensite, densite: 0.5 }, { ...plein, nom: 'Nébuleuse', prof: 0.25 }), E('etoiles', { intensite: 0.7, densite: 0.45 }, { ...plein, nom: 'Étoiles', prof: 0.1 }), E('energie', { couleur: '@accent', couleur2: '@accent2', intensite: 0.55 * intensite, cx, cy }, { ...plein, nom: 'Énergie', prof: 0.5 }));
   if (univers === 'urbain') out.push(E('lumiere', { mode: 'projecteur', couleur: '#DDE6FF', intensite: 0.4 * intensite, densite: 0.35, cx: cx - 0.1, cy: -0.05, angle: 12 }, { ...plein, nom: 'Faisceau' }), E('brume', { couleur: '#AEB8D6', intensite: 0.4 * intensite }, { ...plein, nom: 'Brume', prof: 0.6 }));
@@ -40,7 +41,8 @@ function ambiance(k, univers, cx = 0.6, cy = 0.45, { fondImage = true, intensite
   out.push(E('lumiere', { mode: 'halo', couleur: univers === 'urbain' ? '#9FB2E6' : '@accent', intensite: 0.45 * intensite, densite: 0.4, cx, cy }, { ...plein, nom: 'Halo du sujet', prof: 0.4 }), E('vignette', { intensite: 0.65 }, { ...plein, nom: 'Vignettage' }));
   if (!k.sobre) out.push(E('grain', { intensite: 0.28 }, { ...plein, nom: 'Grain' }));
   // Profil épuré : on retire la matière secondaire (particules, flux), la lumière reste
-  return k.sobre ? out.filter((e) => !['Étincelles', 'Flux', 'Brume'].includes(e.nom)) : out;
+  const retirer = [...(k.sobre ? ['Étincelles', 'Flux', 'Brume'] : []), ...(k.reel ? ['Énergie'] : [])];
+  return out.filter((e) => !retirer.includes(e.nom));
 }
 const perso = (brief, i) => brief.personnages?.[i] || null;
 const nomDe = (brief, i, defaut) => perso(brief, i)?.nom || defaut;
@@ -75,9 +77,13 @@ const MISES = {
     const { W, H, u, m, P, T, F, I, en } = k, ua = perso(b, 0)?.univers || b.univers, ub = perso(b, 1)?.univers || b.univers, o = (P ? H : W) * 0.12, out = [];
     const pa = P ? [0, 0, 0.5 + o / W, 0, 0.5 - o / W, 1, 0, 1] : [0, 0, 1, 0, 1, 0.5 - o / H, 0, 0.5 + o / H], pb = P ? [0.5 + o / W, 0, 1, 0, 1, 1, 0.5 - o / W, 1] : [0, 0.5 + o / H, 1, 0.5 - o / H, 1, 1, 0, 1];
     const opq = (i) => perso(b, i)?.image && perso(b, i).imageInfo && !perso(b, i).imageInfo.alpha ? perso(b, i).image : null;
-    out.push(I(opq(0), FOND_UNIVERS[ua] || 'pop', { nom: opq(0) ? nomDe(b, 0, 'Héros') : 'Décor A', x: 0, y: 0, w: W, h: H, prof: 0.15 }, { masque: { forme: 'polygone', pts: pa } }, en('glisse', 0, 0.8, 'forte', { dir: P ? 'gauche' : 'haut', force: 0.4 })),
-      I(opq(1), FOND_UNIVERS[ub] === FOND_UNIVERS[ua] ? 'pop' : FOND_UNIVERS[ub] || 'cosmos', { nom: opq(1) ? nomDe(b, 1, 'Rival') : 'Décor B', x: 0, y: 0, w: W, h: H, prof: 0.15 }, { masque: { forme: 'polygone', pts: pb }, traitement: { contraste: 0.1 } }, en('glisse', 0, 0.8, 'forte', { dir: P ? 'droite' : 'bas', force: 0.4 })),
-      k.E('vitesse', { couleur: '#FFFFFF', intensite: 0.45, densite: 0.5, cx: 0.5, cy: 0.5 }, { x: 0, y: 0, w: W, h: H, nom: 'Lignes de vitesse', op: 0.35 }), k.E('energie', { couleur: '@accent', couleur2: '#FFFFFF', intensite: 0.6, cx: 0.5, cy: 0.5 }, { x: 0, y: 0, w: W, h: H, nom: 'Choc' }),
+    const reels = b.personnages.slice(0, 2).every((p) => p?.image && p.imageInfo?.alpha);
+    if (reels) out.push(F('polygone', { nom: 'Décor A', x: 0, y: 0, w: W, h: H, prof: 0.15 }, { fill: '@accent', stroke: 'none', lw: 0, pts: pa, trame: { actif: true, couleur: '@encre', cellule: Math.round(14 * u), intensite: 0.35 } }, en('glisse', 0, 0.8, 'forte', { dir: P ? 'gauche' : 'haut', force: 0.4 })),
+      F('polygone', { nom: 'Décor B', x: 0, y: 0, w: W, h: H, prof: 0.15 }, { fill: '@accent2', stroke: 'none', lw: 0, pts: pb, trame: { actif: true, couleur: '@encre', cellule: Math.round(14 * u), intensite: 0.35 } }, en('glisse', 0, 0.8, 'forte', { dir: P ? 'droite' : 'bas', force: 0.4 })),
+      k.E('vignette', { intensite: 0.55 }, { x: 0, y: 0, w: W, h: H, nom: 'Vignettage' }));
+    else out.push(I(opq(0), FOND_UNIVERS[ua] || 'pop', { nom: opq(0) ? nomDe(b, 0, 'Héros') : 'Décor A', x: 0, y: 0, w: W, h: H, prof: 0.15 }, { masque: { forme: 'polygone', pts: pa } }, en('glisse', 0, 0.8, 'forte', { dir: P ? 'gauche' : 'haut', force: 0.4 })),
+      I(opq(1), FOND_UNIVERS[ub] === FOND_UNIVERS[ua] ? 'pop' : FOND_UNIVERS[ub] || 'cosmos', { nom: opq(1) ? nomDe(b, 1, 'Rival') : 'Décor B', x: 0, y: 0, w: W, h: H, prof: 0.15 }, { masque: { forme: 'polygone', pts: pb }, traitement: { contraste: 0.1 } }, en('glisse', 0, 0.8, 'forte', { dir: P ? 'droite' : 'bas', force: 0.4 })));
+    out.push(k.E('vitesse', { couleur: '#FFFFFF', intensite: 0.45, densite: 0.5, cx: 0.5, cy: 0.5 }, { x: 0, y: 0, w: W, h: H, nom: 'Lignes de vitesse', op: 0.35 }), k.E('energie', { couleur: '@accent', couleur2: '#FFFFFF', intensite: 0.6, cx: 0.5, cy: 0.5 }, { x: 0, y: 0, w: W, h: H, nom: 'Choc' }),
       F('polygone', { nom: 'Séparation', x: 0, y: 0, w: W, h: H }, { fill: '@accent', stroke: 'none', lw: 0, pts: P ? [0.5 + o / W - 0.006, 0, 0.5 + o / W + 0.006, 0, 0.5 - o / W + 0.006, 1, 0.5 - o / W - 0.006, 1] : [0, 0.5 + o / H - 0.006, 1, 0.5 - o / H - 0.006, 1, 0.5 - o / H + 0.006, 0, 0.5 + o / H + 0.006] }, en('revelation', 0.3, 0.5, 'forte', { dir: P ? 'haut' : 'gauche' })),
       ...(P ? [heros(k, b, 0, { x: -W * 0.02, y: H * 0.08, w: W * 0.52, h: H * 0.92 }, {}, en('glisse', 0.4, 0.7, 'forte', { dir: 'gauche', force: 0.5 }), { contre: '#FFFFFF', aura: '@accent', auraForce: 0.45, dir: 340 }), heros(k, b, 1, { x: W * 0.5, y: H * 0.08, w: W * 0.52, h: H * 0.92 }, {}, en('glisse', 0.5, 0.7, 'forte', { dir: 'droite', force: 0.5 }), { contre: '#9FE6FF', aura: '@accent2', auraForce: 0.55, dir: 200 })]
         : [heros(k, b, 0, { x: W * 0.05, y: H * 0.03, w: W * 0.9, h: H * 0.47 }, {}, en('glisse', 0.4, 0.7, 'forte', { dir: 'haut', force: 0.4 }), { contre: '#FFFFFF', aura: '@accent', auraForce: 0.45, dir: 70 }), heros(k, b, 1, { x: W * 0.05, y: H * 0.5, w: W * 0.9, h: H * 0.47 }, {}, en('glisse', 0.5, 0.7, 'forte', { dir: 'bas', force: 0.4 }), { contre: '#9FE6FF', aura: '@accent2', auraForce: 0.55, dir: 250 })]));
@@ -118,7 +124,7 @@ const MISES = {
     const out = [...ambiance(k, b.univers, 0.5, P ? 0.35 : 0.32, { intensite: 1.1 })];
     out.splice(2, 0, E('rayons', { couleur: '@accent', intensite: 0.5, densite: 0.45, cx: 0.5, cy: P ? 0.3 : 0.28 }, { x: 0, y: 0, w: W, h: H, nom: 'Rayons', prof: 0.2 }, { entree: { type: 'fondu', duree: 1.4, delai: 0.2 }, boucle: { type: 'aucune' } }));
     out.push(heros(k, b, 0, hz, {}, { entree: { type: 'zoom-arriere', delai: 0.2, duree: 1.4, courbe: 'forte', force: 0.3 }, boucle: { type: 'flottement', amplitude: 0.3, periode: 6 } }, { dir: 270 }),
-      E('degrade', { couleur: '@fond', couleur2: '@fond', intensite: 0.95, angle: 90 }, { nom: 'Sol', x: 0, y: H * (P ? 0.62 : 0.66), w: W, h: H * (P ? 0.38 : 0.34) }, { entree: { type: 'fondu', duree: 0.6, delai: 0 } }));
+      E('degrade', { couleur: '@fond', couleur2: '@fond', intensite: 0.96, angle: 90, fondu: true }, { nom: 'Sol', x: 0, y: H * (P ? 0.45 : 0.5), w: W, h: H * (P ? 0.55 : 0.5) }, { entree: { type: 'fondu', duree: 0.6, delai: 0 } }));
     const ty = H * (P ? 0.7 : V ? 0.76 : 0.74);
     out.push(rubrique(k, b.rubrique || TYPES[b.type]?.nom || 'Portrait', { x: W / 2 - W * 0.2, y: ty - 64 * u, w: W * 0.4, h: 50 * u }, en('revelation', 0.9, 0.5, 'forte')),
       T('titre', nom, { x: m, y: ty, w: W - 2 * m, h: H * (P ? 0.17 : 0.14) }, { taille: (P ? 150 : 180) * u, align: 'middle', valign: 'haut', lueur: { c: '@accent', b: 20 * u } }, en('lettres', 1, 1, 'douce')),
@@ -128,9 +134,14 @@ const MISES = {
   // Une éditoriale : titraille, filets, visuel encadré, note pour une critique
   une(k, b) {
     const { W, H, u, m, P, V, T, F, I, E, en } = k, out = [E('papier', { intensite: 0.4 }, { x: 0, y: 0, w: W, h: H, nom: 'Papier' })];
-    const iz = P ? { x: W * 0.55, y: m * 1.2, w: W * 0.45 - m * 1.4, h: H - m * 2.4 } : V ? { x: m, y: H * 0.1, w: W - 2 * m, h: H * 0.42 } : { x: W * 0.5, y: m * 1.4, w: W * 0.5 - m * 1.3, h: H * 0.6 };
+    let iz = P ? { x: W * 0.55, y: m * 1.2, w: W * 0.45 - m * 1.4, h: H - m * 2.4 } : V ? { x: m, y: H * 0.1, w: W - 2 * m, h: H * 0.42 } : { x: W * 0.5, y: m * 1.4, w: W * 0.5 - m * 1.3, h: H * 0.6 };
+    // Image réelle : détourée → mise en scène sans cadre ; opaque (planche, couverture, photo) → cadre aux proportions de l'image, jamais recadrée
+    const pr = perso(b, 0), inf = pr?.image && pr.imageInfo;
+    if (inf?.alpha) { out.push(imageReelle(k, pr, iz, {}, en('revelation', 0.3, 0.9, 'entree-sortie', { dir: 'bas' }), {}, pr.univers || b.univers)); }
+    else { if (inf && P && inf.w > inf.h) iz = { x: W * 0.46, y: m * 1.4, w: W * 0.54 - m, h: H - m * 3.4 };
+    if (inf) { const ra = inf.w / inf.h, bw = Math.min(iz.w, iz.h * ra), bh = bw / ra; iz = { x: iz.x + (iz.w - bw) / 2, y: iz.y + (iz.h - bh) / 2, w: bw, h: bh }; }
     out.push(F('rect', { nom: 'Ombre', x: iz.x + 16 * u, y: iz.y + 16 * u, w: iz.w, h: iz.h }, { fill: '@accent', stroke: 'none', lw: 0 }, en('fondu', 0.5, 0.6)),
-      I(perso(b, 0)?.image || null, FOND_UNIVERS[b.univers] || 'cosmos', { nom: 'Visuel', ...iz }, { contour: { c: '@encre', w: Math.round(5 * u) } }, en('revelation', 0.3, 0.9, 'entree-sortie', { dir: 'bas' })));
+      I(perso(b, 0)?.image || null, FOND_UNIVERS[b.univers] || 'cosmos', { nom: 'Visuel', ...iz }, { contour: { c: '@encre', w: Math.round(5 * u) } }, en('revelation', 0.3, 0.9, 'entree-sortie', { dir: 'bas' }))); }
     const col = P ? { x: m, y: m * 1.2, w: W * 0.47, h: H - m * 2.4 } : V ? { x: m, y: H * 0.55, w: W - 2 * m, h: H * 0.42 } : { x: m, y: m * 1.4, w: W * 0.44, h: H - m * 2.8 };
     out.push(rubrique(k, b.rubrique || TYPES[b.type]?.nom || 'Analyse', { x: col.x, y: col.y, w: col.w * 0.6, h: 50 * u }, en('revelation', 0, 0.5, 'forte')),
       F('rect', { nom: 'Filet', x: col.x, y: col.y + 74 * u, w: col.w, h: Math.max(2, 3 * u) }, { fill: '@texte', stroke: 'none', lw: 0 }, en('revelation', 0.2, 0.6, 'forte')),
@@ -220,7 +231,7 @@ export function composer(brief, formatId = 'miniature', { profil, traitement } =
   const f = fmt(FORMATS_COMPOSITEUR[formatId] || formatId), d = nouveauDocument({ format: f.id, w: f.w, h: f.h, systeme: sy, palette: pal, nom: b.titre || TYPES[b.type]?.nom || 'Création' });
   if (profil?.couleurs) d.couleurs = { ...profil.couleurs }; if (profil?.id) d.profil = profil.id;
   d.duree = mise === 'liste' ? 7 : 6; d.brief = JSON.parse(JSON.stringify({ ...brief, personnages: b.personnages })); d.origine = { compositeur: b.type, format: formatId };
-  const k = kit(d); k.sujet = profil?.composition?.sujet; k.sobre = !!tr?.sobre || profil?.sobriete === 'épurée' || (profil?.mesures?.densite ?? 1) < 0.08; k.lateral = !!tr && mise === 'heros'; k.minimal = traitement === 'minimal'; if (tr) d.origine.traitement = traitement; d.elements = sansVides((MISES[mise] || MISES.heros)(k, b));
+  const k = kit(d); k.sujet = profil?.composition?.sujet; k.sobre = !!tr?.sobre || profil?.sobriete === 'épurée' || (profil?.mesures?.densite ?? 1) < 0.08; k.lateral = !!tr && mise === 'heros'; k.minimal = traitement === 'minimal'; k.reel = b.personnages.some((p) => p.image); if (tr) d.origine.traitement = traitement; d.elements = sansVides((MISES[mise] || MISES.heros)(k, b));
   if (['duel', 'heros', 'heros-repere', 'annonce', 'evenement'].includes(mise)) d.camera = { type: 'poussee', intensite: 0.3 };
   if (carrousel) composerCarrousel(d, b);
   return d;

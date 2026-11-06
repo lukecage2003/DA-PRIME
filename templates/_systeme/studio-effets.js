@@ -87,7 +87,7 @@ export function effetNoeuds(type, prm, w, h, t, col, u = 1) {
       if (e.mode === 'reflet') for (let i = 1; i <= 4; i++) { const k = i * 0.35; out.push(halo(fx + (w / 2 - fx) * k * 2, fy + (h / 2 - fy) * k * 2, Math.min(w, h) * (0.03 + i * 0.015), c1, 0.35 * I)); }
       return out;
     }
-    case 'degrade': { const a = (e.angle * Math.PI) / 180, dx = Math.cos(a) / 2, dy = Math.sin(a) / 2; return [{ k: 'rect', x: 0, y: 0, w, h, fill: { lin: [r1(w * (0.5 - dx)), r1(h * (0.5 - dy)), r1(w * (0.5 + dx)), r1(h * (0.5 + dy))], st: [[0, c1, I], [1, c2, I]] } }]; }
+    case 'degrade': { const a = (e.angle * Math.PI) / 180, dx = Math.cos(a) / 2, dy = Math.sin(a) / 2; return [{ k: 'rect', x: 0, y: 0, w, h, fill: { lin: [r1(w * (0.5 - dx)), r1(h * (0.5 - dy)), r1(w * (0.5 + dx)), r1(h * (0.5 + dy))], st: e.fondu ? [[0, c1, 0], [0.55, c2, I * 0.75], [1, c2, I]] : [[0, c1, I], [1, c2, I]] } }]; }
     case 'vignette': return [{ k: 'rect', x: 0, y: 0, w, h, fill: { rad: [w / 2, h / 2, R * 0.6], st: [[0.45 + (1 - I) * 0.3, c1, 0], [1, c1, 0.9 * I]] } }];
     case 'particules': {
       const rnd = hasard(g), n = Math.round(15 + D * 160), out = [], m = e.mode;
