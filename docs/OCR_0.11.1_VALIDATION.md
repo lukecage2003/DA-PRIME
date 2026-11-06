@@ -1,6 +1,6 @@
 # DA-PRIME 0.11.1 — Rapport de validation de l'OCR local (anglais)
 
-Établi le 2026-11-06. Moteur : Tesseract.js 7.0.0, modèle anglais *fast* (tessdata_fast 4.1.0), dans le navigateur (Chromium, Linux). **Seul l'anglais est validé sur des comics réels.** Le français est chargé et fonctionne techniquement, mais sa précision n'est pas validée (aucun comic français disponible).
+Établi le 2026-11-06, **mis à jour après l'itération 2** (§8 : texte clair sur fond coloré). Moteur : Tesseract.js 7.0.0, modèle anglais *fast* (tessdata_fast 4.1.0), dans le navigateur (Chromium, Linux). **Seul l'anglais est validé sur des comics réels.** Le français est chargé et fonctionne techniquement, mais sa précision n'est pas validée (aucun comic français disponible).
 
 ## 1. Vérification fonctionnelle (interface réelle, données relues après chaque étape)
 Comic réel jamais utilisé auparavant : *New Avengers* (2013) #2, PDF de 28 pages, importé par le bouton de l'application.
@@ -61,7 +61,7 @@ Langue : anglais uniquement. Aucune statistique de langues différentes n'est fu
 | **Page entière** (usage par défaut) | 88,7 % · WER 18 % · CER 11 % | **73,3 %** · WER 31 % · CER 24 % | 87,3 % · WER 19 % · CER 13 % | **82,4 %** |
 | Case par case (cases détectées automatiquement) | 85,7 % · WER 22 % · CER 15 % | 73,1 % · WER 31 % · CER 25 % | 86,4 % · WER 21 % · CER 13 % | **81,7 %** |
 
-**Conclusion** : l'objectif de 85 % des mots sur le lettrage courant n'est **pas atteint** sur l'ensemble des pages de contrôle en page entière (82,4 %). Il est atteint sur les nouvelles séries (87,3 %), mais pas sur le contrôle A (73,3 %). Les chiffres du réglage (88,7 %) étaient optimistes : ce sont ceux des contrôles qu'il faut retenir.
+**Conclusion de la première itération** (sans second passage) : l'objectif de 85 % des mots sur le lettrage courant n'est **pas atteint** sur l'ensemble des pages de contrôle en page entière (82,4 %). Voir §8 pour l'itération 2, qui l'atteint (88,5 % sur trois contrôles). Il est atteint sur les nouvelles séries (87,3 %), mais pas sur le contrôle A (73,3 %). Les chiffres du réglage (88,7 %) étaient optimistes : ce sont ceux des contrôles qu'il faut retenir.
 
 ## 4. Par catégorie (page entière, réglages par défaut)
 
@@ -91,7 +91,7 @@ Temps et mémoire :
 - pic de mémoire du navigateur entre 0,6 et 1,2 Go.
 
 ## 5. Limites précises de l'OCR anglais
-1. **Cartouches en texte clair sur fond coloré** : par exemple du texte blanc sur un cartouche vert (*Immortal Hulk* #2 p18). En page entière, ils ne sont pas détectés du tout, d'où la narration à 38,5 % sur le contrôle A. En zone délimitée, ils sont lus (93 %).
+1. **Cartouches en texte clair sur fond coloré** : par exemple du texte blanc sur un cartouche vert (*Immortal Hulk* #2 p18). En page entière, ils n'étaient pas détectés (narration à 38,5 % sur le contrôle A). **Corrigé en grande partie par l'itération 2** (§8) : 73 % sur un contrôle jamais vu, des lignes restant parfois fragmentées.
 2. **Bulles entières manquées** en page entière : de petites bulles isolées, comme « I FIGURED. », « HELP ME! SOMEBODY HELP! » ou « Can we trust him? ».
 3. **Lettrages particuliers** :
    - petites capitales sur fond sépia (*New Avengers* #1 p2) ;
@@ -136,3 +136,47 @@ node tools/mesurer-ocr.mjs ~/corpus-ocr-controle --mode=cases
 ```
 
 Ne jamais régler un paramètre en regardant un corpus de contrôle. Après tout changement, constituer un **nouveau** contrôle avec des pages jamais vues.
+
+## 8. Itération 2 — texte clair sur fond coloré (cartouches)
+
+**Cause.**
+- En page entière, Tesseract applique un seul seuil à toute la page. Le fond d'un cartouche coloré passe en noir et avale son texte blanc.
+- Inverser l'image ne suffit pas : le texte n'est toujours pas trouvé.
+- En revanche, inverser l'image **puis** la seuiller localement (méthode de Bradley, un seuil par voisinage) le fait ressortir, sombre sur blanc.
+
+**Traitement.** C'est un second passage sur une copie de la page : gris, inversion, seuillage local. On ne garde que les blocs **nouveaux** (sans recouvrement avec le premier passage), contenant au moins deux lettres et d'une confiance ≥ 0,7. Ils sont marqués `texteClair` dans la provenance. Le passage est activé par défaut et désactivable dans le panneau OCR. Il double le temps de traitement.
+
+**Réglage, sur le corpus de réglage uniquement.** Le réglage a été complété par 2 pages contenant ce type de cartouches (*Immortal Hulk* #2 p16 et p17). Il compte donc 111 textes sur 12 pages, dont 16 cartouches en texte clair.
+
+| Réglage du second passage | Lettrage courant | Textes clairs | Autres textes |
+|---|---|---|---|
+| sans | 63,0 % | 1,1 % | 84,4 % |
+| inversion seule (seuils 0,5 à 0,8) | 63,0 % | 1,1 % | 84,4 % |
+| inversion + seuillage local, voisinage 1/24, seuil 0,7 | 77,8 % | 57,5 % | 84,8 % |
+| voisinage 1/12 | 68,0 % | 19,0 % | 85,0 % |
+| **voisinage 1/48, seuil 0,7 (retenu)** | **80,0 %** | **66,1 %** | 84,8 % |
+| voisinage 1/96 | 79,1 % | 61,5 % | 85,2 % |
+
+Le seuil 0,7 a été retenu parce qu'il ne dégrade pas les autres textes. Ces paramètres ont été figés avant toute mesure de contrôle.
+
+**Contrôle C, indépendant et jamais vu.** 6 pages, 68 textes, dont 13 textes clairs sur fond vert :
+- *Immortal Hulk* #2 p13, p15, p19 et p20 ;
+- *Secret Wars* #2 p14 et p27.
+
+Ces pages n'ont servi à aucun réglage.
+
+| Page entière, réglages par défaut | Sans second passage | Avec second passage |
+|---|---|---|
+| Lettrage courant, contrôle C | 80,6 % · WER 23 % | **91,3 % · WER 13 %** |
+| Textes clairs, contrôle C | 0 % | **73,1 %** |
+| Autres textes, contrôle C | 94,2 % | 94,4 % |
+| Contrôle A | 73,3 % | 84,9 % |
+| Contrôle B | 87,3 % | 88,3 % |
+| **Contrôles A + B + C** (17 pages, 1 650 mots) | 81,8 % · WER 23 % · CER 18 % | **88,5 % · WER 17 % · CER 11 %** |
+| dont dialogues | 87,2 % | 89,0 % |
+| dont narration | 60,3 % | **86,4 %** |
+| Temps moyen par page | 4,8 s | 11,3 s |
+
+Les contrôles A et B avaient déjà servi de contrôle à l'itération 1, mais ils n'ont servi à aucun réglage de l'itération 2. Le contrôle C est le contrôle strict.
+
+**Conclusion.** Avec le second passage, l'objectif de 85 % est **atteint** sur les trois contrôles réunis (88,5 %) et sur chacun d'eux (84,9 %, 88,3 %, 91,3 %), à 0,1 point près pour le contrôle A. Restent non fiables : lettrage stylisé, effets sonores, couvertures, textes du décor, et les petites bulles isolées parfois manquées.

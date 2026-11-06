@@ -25,7 +25,7 @@ if (!DOS || !existsSync(join(DOS, 'corpus.json'))) { console.error('Usage : node
 if (DOS.startsWith(ROOT + '/')) console.warn('Attention : corpus dans le dépôt. Ne jamais committer d\'images de comics.');
 const arg = (k, d) => (process.argv.find((a) => a.startsWith(`--${k}=`)) || `=${d}`).split('=')[1];
 const O = await import(pathToFileURL(join(ROOT, 'templates/_systeme/ocr.js')));
-const PRE = arg('pretraitements', 'original,x2,x2-gris,x2-contraste,x2-binaire').split(',').filter((k) => O.PRETRAITEMENTS[k]), LANGS = arg('langues', '').split(',').filter(Boolean), MODE = arg('mode', 'zone'), SEG = arg('segmentation', MODE === 'zone' ? 'bloc' : 'epars');
+const PRE = arg('pretraitements', 'original,x2,x2-gris,x2-contraste,x2-binaire').split(',').filter((k) => O.PRETRAITEMENTS[k]), LANGS = arg('langues', '').split(',').filter(Boolean), MODE = arg('mode', 'zone'), CLAIR = arg('texte-clair', '') === '' ? null : +arg('texte-clair', ''), SEG = arg('segmentation', MODE === 'zone' ? 'bloc' : 'epars');
 const corpus = JSON.parse(readFileSync(join(DOS, 'corpus.json'), 'utf8')).echantillons;
 const TESS = process.env.DA_PRIME_TESSDATA || join(ROOT, '.cache/tessdata'); mkdirSync(TESS, { recursive: true });
 for (const [code, m] of Object.entries(O.MODELES.langues)) { const f = join(TESS, `${code}.traineddata`); if (!existsSync(f)) execFileSync('curl', ['-sSfL', '-o', f, O.urlModele(code)]);
@@ -52,13 +52,13 @@ const combis = [...new Set(LANGS.length ? LANGS : corpus.map((e) => e.langue || 
 console.log(`${corpus.length} échantillon(s) × ${PRE.length} prétraitement(s) × ${LANGS.length ? combis.length : 1} langue(s) · segmentation ${SEG}`);
 for (const comb of LANGS.length ? combis : [null]) {
   for (const pre of PRE) {
-    const res = await p.evaluate(async ({ corpus, pre, comb, seg, mode }) => {
+    const res = await p.evaluate(async ({ corpus, pre, comb, seg, mode, clair }) => {
       const M = await import('/atelier/script/ocr.js'), O = await import('/templates/_systeme/ocr.js'), out = [], moteurs = {}, pages = {};
       try {
         // Mode « page » (réaliste) : la page entière est reconnue une fois ; chaque zone de référence reçoit les blocs dont le centre y tombe
         if (mode === 'page' || mode === 'cases') { const C = mode === 'cases' ? await import('/atelier/script/comics.js') : null; for (const e of corpus) { const lang = comb || e.langue || 'eng'; moteurs[lang] ||= await M.creerMoteur(lang).then(async (m) => { await m.parametrer(seg); return m; });
             const k = `${lang}|${e.image}`; if (!pages[k]) { const blob = await (await fetch(`http://corpus.invalid/${encodeURI(e.image)}`)).blob(), t0 = performance.now(); const bmC = C ? await createImageBitmap(blob) : null, cases = C ? C.detecterCases(bmC).cases : []; bmC?.close();
-              pages[k] = { r: await M.ocrPage(moteurs[lang], { blob, cases }, { pretraitement: pre, zone: C ? 'cases' : 'page' }), cases: cases.length, ms: performance.now() - t0, n: corpus.filter((x) => x.image === e.image).length }; }
+              pages[k] = { r: await M.ocrPage(moteurs[lang], { blob, cases }, { pretraitement: pre, zone: C ? 'cases' : 'page', texteClair: clair }), cases: cases.length, ms: performance.now() - t0, n: corpus.filter((x) => x.image === e.image).length }; }
             const z = e.zone || { x: 0, y: 0, w: 1, h: 1 }, m = 0.01, dans = pages[k].r.blocs.filter((b) => { const cx = b.zone.x + b.zone.w / 2, cy = b.zone.y + b.zone.h / 2; return cx >= z.x - m && cx <= z.x + z.w + m && cy >= z.y - m && cy <= z.y + z.h + m; }), texte = dans.map((b) => b.texte).join(' ');
             out.push({ ...e, langue: lang, pretraitement: pre, texte, ms: Math.round(pages[k].ms / pages[k].n), confiance: dans.length ? dans.reduce((s, b) => s + b.confiance, 0) / dans.length : 0, mesure: O.mesurer(e.reference, texte) }); }
           return out; }
@@ -72,7 +72,7 @@ for (const comb of LANGS.length ? combis : [null]) {
         }
       } finally { for (const m of Object.values(moteurs)) await m.terminer(); }
       return out;
-    }, { corpus, pre, comb, seg: SEG, mode: MODE });
+    }, { corpus, pre, comb, seg: SEG, mode: MODE, clair: CLAIR });
     lignes.push(...res); process.stdout.write(`  ${pre}${comb ? ` · ${comb}` : ''} : lettrage courant ${Math.round((O.agreger(res.filter(O.estLettrageCourant).map((x) => x.mesure)).exactitude ?? 0) * 100)} % des mots\n`);
   }
 }
@@ -98,6 +98,6 @@ for (const [lang, LL] of grp((l) => l.langue)) {
 const parPreTous = grp((l) => l.pretraitement), meilleur = [...parPreTous].map(([k, ls]) => [k, O.agreger(ls.filter(O.estLettrageCourant).map((x) => x.mesure)).exactitude ?? -1]).sort((a, b) => b[1] - a[1])[0];
 md += `\n## Détail (toutes les lignes, du pire au meilleur, pour le meilleur prétraitement : ${O.PRETRAITEMENTS[meilleur[0]].nom})\n\n| Image | Catégorie | Exactitude | Référence | Reconnu |\n|---|---|---|---|---|\n`;
 for (const l of lignes.filter((x) => x.pretraitement === meilleur[0]).sort((a, b) => (a.mesure.exactitude ?? 0) - (b.mesure.exactitude ?? 0))) md += `| ${l.image} | ${O.CATEGORIES_MESURE[O.categorieRapport(l)]} · ${O.NATURES_TEXTE[O.axesEchantillon(l).nature] || ''} | ${pc(l.mesure.exactitude)} | ${l.reference.replace(/\|/g, '/')} | ${(l.texte || '(rien)').replace(/\|/g, '/')} |\n`;
-const suf = MODE === 'zone' ? '' : `-${MODE}`; writeFileSync(join(DOS, `rapport-ocr${suf}.md`), md); writeFileSync(join(DOS, `rapport-ocr${suf}.json`), JSON.stringify({ date: Date.now(), mode: MODE, segmentation: SEG, memoire: { base, pic }, externes, lignes }, null, 1));
+const suf = (MODE === 'zone' ? '' : `-${MODE}`) + (CLAIR !== null ? `-clair${CLAIR}` : ''); writeFileSync(join(DOS, `rapport-ocr${suf}.md`), md); writeFileSync(join(DOS, `rapport-ocr${suf}.json`), JSON.stringify({ date: Date.now(), mode: MODE, segmentation: SEG, memoire: { base, pic }, externes, lignes }, null, 1));
 console.log(`Lettrage courant, meilleur prétraitement (${O.PRETRAITEMENTS[meilleur[0]].nom}) : ${pc(meilleur[1])} des mots. Rapport : ${join(DOS, `rapport-ocr${MODE === 'zone' ? '' : `-${MODE}`}.md`)}`);
 console.log(externes.length ? `ATTENTION : ${externes.length} requête(s) externe(s).` : 'Aucune requête externe.');

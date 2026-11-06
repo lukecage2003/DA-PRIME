@@ -35,7 +35,10 @@ export function lirePlage(texte, total) {
   if (!out.size) throw new Error('aucune page indiquée'); return [...out].sort((x, y) => x - y);
 }
 // Réglages par défaut choisis d'après les mesures sur pages réelles (docs/SCRIPT_STUDIO.md) : ×2 + gris + contraste, découpage épars
-export const REGLAGES_OCR0 = { langues: 'eng', pretraitement: 'x2-contraste', zone: 'page', segmentation: 'epars' };
+// texteClair : second passage sur une copie inversée et seuillée localement (cartouches en texte clair sur fond coloré),
+// seuil de confiance 0,7 choisi sur le corpus de réglage ; double le temps de traitement, désactivable
+export const SEUIL_TEXTE_CLAIR = 0.7;
+export const REGLAGES_OCR0 = { langues: 'eng', pretraitement: 'x2-contraste', zone: 'page', segmentation: 'epars', texteClair: true };
 
 // Seuil d'Otsu sur un histogramme de 256 niveaux
 export function seuilOtsu(hist) {
@@ -46,13 +49,29 @@ export function seuilOtsu(hist) {
   return seuil;
 }
 // Traitement en place d'un tampon RGBA (copie) : gris, contraste (étirement 2-98 %), binarisation
-export function traiterPixels(d, { gris, contraste, binaire } = {}) {
-  if (!gris && !contraste && !binaire) return d;
+// Seuillage local adaptatif (Bradley) : chaque pixel est comparé à la moyenne de son voisinage (image intégrale).
+// Un cartouche coloré n'est plus avalé par un seuil global : son texte ressort, sombre sur blanc.
+export function seuilLocal(d, w, h, { fenetre = Math.max(15, Math.round(Math.min(w, h) / 48)), t = 0.15 } = {}) {
+  const I = new Float64Array((w + 1) * (h + 1));
+  for (let y = 0; y < h; y++) { let ligne = 0; for (let x = 0; x < w; x++) { ligne += d[(y * w + x) * 4]; I[(y + 1) * (w + 1) + x + 1] = I[y * (w + 1) + x + 1] + ligne; } }
+  const r = fenetre >> 1, out = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) { const y0 = Math.max(0, y - r), y1 = Math.min(h - 1, y + r);
+    for (let x = 0; x < w; x++) { const x0 = Math.max(0, x - r), x1 = Math.min(w - 1, x + r), n = (x1 - x0 + 1) * (y1 - y0 + 1);
+      const somme = I[(y1 + 1) * (w + 1) + x1 + 1] - I[y0 * (w + 1) + x1 + 1] - I[(y1 + 1) * (w + 1) + x0] + I[y0 * (w + 1) + x0];
+      out[y * w + x] = d[(y * w + x) * 4] * n <= somme * (1 - t) ? 0 : 255; } }
+  for (let i = 0; i < w * h; i++) d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = out[i];
+  return d;
+}
+export function traiterPixels(d, { gris, contraste, binaire, inverser, adaptatif, largeur, hauteur } = {}) {
+  if (!gris && !contraste && !binaire && !inverser && !adaptatif) return d;
   const n = d.length / 4, hist = new Uint32Array(256);
   for (let i = 0; i < d.length; i += 4) { const y = Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]); d[i] = d[i + 1] = d[i + 2] = y; hist[y]++; }
   if (contraste) { let c = 0, lo = 0, hi = 255; for (let i = 0; i < 256; i++) { c += hist[i]; if (c >= n * 0.02) { lo = i; break; } } c = 0; for (let i = 255; i >= 0; i--) { c += hist[i]; if (c >= n * 0.02) { hi = i; break; } }
     const k = hi > lo ? 255 / (hi - lo) : 1; hist.fill(0); for (let i = 0; i < d.length; i += 4) { const v = Math.max(0, Math.min(255, Math.round((d[i] - lo) * k))); d[i] = d[i + 1] = d[i + 2] = v; hist[v]++; } }
   if (binaire) { const s = seuilOtsu(hist); for (let i = 0; i < d.length; i += 4) d[i] = d[i + 1] = d[i + 2] = d[i] > s ? 255 : 0; }
+  // Négatif : un texte clair sur fond coloré ou sombre (cartouches) devient sombre sur fond clair, lisible par Tesseract
+  if (inverser) for (let i = 0; i < d.length; i += 4) d[i] = d[i + 1] = d[i + 2] = 255 - d[i];
+  if (adaptatif && largeur && hauteur) seuilLocal(d, largeur, hauteur);
   return d;
 }
 
@@ -118,6 +137,13 @@ export function regrouperLignes(blocs) {
     const lignes = rangees.map((r) => r.m.sort((a, b) => a.zone.x - b.zone.x));
     return { ...g, texte: lignes.map((l) => l.map((m) => m.texte).join(' ')).join(' '), texteBrut: lignes.map((l) => l.map((m) => m.texteBrut).join(' ')).join(' '), lignes: lignes.map((l) => l.map((m) => m.texte).join(' ')) };
   });
+}
+// Second passage sur l'image inversée : ne garder que les blocs NOUVEAUX (aucun recouvrement avec le premier passage)
+// et assez sûrs ; le dessin sombre inversé produit sinon des fragments parasites.
+export function blocsTexteClair(premiers, inverses, { seuil = 0.6 } = {}) {
+  const dedans = (b, a) => { const cx = b.zone.x + b.zone.w / 2, cy = b.zone.y + b.zone.h / 2; return cx >= a.zone.x && cx <= a.zone.x + a.zone.w && cy >= a.zone.y && cy <= a.zone.y + a.zone.h; };
+  const recouvre = (a, b) => Math.max(0, Math.min(a.zone.x + a.zone.w, b.zone.x + b.zone.w) - Math.max(a.zone.x, b.zone.x)) * Math.max(0, Math.min(a.zone.y + a.zone.h, b.zone.y + b.zone.h) - Math.max(a.zone.y, b.zone.y)) > 0.3 * Math.min(a.zone.w * a.zone.h, b.zone.w * b.zone.h);
+  return inverses.filter((b) => b.confiance >= seuil && (String(b.texte).match(/\p{L}/gu) || []).length >= 2 && !premiers.some((a) => dedans(b, a) || dedans(a, b) || recouvre(a, b))).map((b) => ({ ...b, texteClair: true }));
 }
 // Ordre de lecture : par case quand elles existent (ordre des cases), puis par rangées (haut → bas), gauche → droite
 // (droite → gauche en manga). Sur une page entière sans cases, l'ordre reste APPROXIMATIF et est signalé comme tel.

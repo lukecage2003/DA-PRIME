@@ -38,6 +38,13 @@ console.log('OCR : prétraitement, blocs, ordre de lecture, mesures (Node)');
   const Z = (t, x, y, w) => ({ texte: t, zone: { x, y, w, h: 0.009 }, case: null, confiance: 0.9, mots: 1, motsFaibles: 0 });
   const gr = O.regrouperLignes([Z('THAT', 0.071, 0.0423, 0.03), Z('GETS THEIR', 0.12, 0.0429, 0.077), Z('ATTENTION. THEY', 0.072, 0.0529, 0.121), Z('BY THE PHONE', 0.083, 0.0633, 0.103), Z('SERIOUS', 0.05, 0.2, 0.08), Z('GOING TO', 0.145, 0.2, 0.08)]);
   ok(gr.some((b) => b.texte === 'THAT GETS THEIR ATTENTION. THEY BY THE PHONE') && gr.some((b) => b.texte === 'SERIOUS') && gr.some((b) => b.texte === 'GOING TO'), 'mot en gras isolé par Tesseract remis à sa place dans la ligne (cas réel) ; bulles côte à côte non réunies');
+  // Seuillage local : un texte clair sur un cartouche coloré (fond 140, texte 250, page noire) devient sombre sur blanc après inversion
+  { const w = 60, h = 20, d = new Uint8ClampedArray(w * h * 4); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = (y * w + x) * 4, cartouche = x >= 10 && x < 50 && y >= 4 && y < 16, texte = cartouche && x % 6 < 2 && y >= 8 && y < 12; d[i] = d[i + 1] = d[i + 2] = texte ? 250 : cartouche ? 140 : 0; d[i + 3] = 255; }
+    const g = d.slice(); O.traiterPixels(g, { gris: true, inverser: true }); const sansLocal = g[(10 * w + 24) * 4] === g[(10 * w + 26) * 4] || g[(10 * w + 24) * 4] > 128;
+    O.traiterPixels(d, { gris: true, inverser: true, adaptatif: true, largeur: w, hauteur: h }); const texte = d[(10 * w + 24) * 4], fond = d[(10 * w + 26) * 4];
+    ok(texte === 0 && fond === 255, `texte clair sur cartouche coloré : après inversion et seuillage local, texte noir (${texte}) sur fond blanc (${fond})`); }
+  const P1 = [{ texte: 'HELLO THERE', zone: { x: 0.1, y: 0.1, w: 0.2, h: 0.05 }, confiance: 0.9 }], I1 = [{ texte: 'HELLO THERE', zone: { x: 0.11, y: 0.1, w: 0.18, h: 0.05 }, confiance: 0.95 }, { texte: 'I BEGAN TO THINK', zone: { x: 0.5, y: 0.5, w: 0.2, h: 0.05 }, confiance: 0.9 }, { texte: 'x |', zone: { x: 0.8, y: 0.8, w: 0.05, h: 0.02 }, confiance: 0.95 }, { texte: 'MAYBE NOISE', zone: { x: 0.6, y: 0.7, w: 0.1, h: 0.03 }, confiance: 0.4 }];
+  const tc = O.blocsTexteClair(P1, I1, { seuil: 0.7 }); ok(tc.length === 1 && tc[0].texte === 'I BEGAN TO THINK' && tc[0].texteClair, 'second passage : seuls les blocs nouveaux et sûrs sont gardés (doublon, fragment, bloc peu sûr écartés), marqués « texte clair »');
   const m1 = O.mesurer('You will, Tigra.', 'YOU WILL TIGRA'), m2 = O.mesurer('THE STORM IS COMING', 'THE STORN IS COMING'), m3 = O.mesurer('Il n’est pas là', "IL N'EST PAS LA");
   ok(m1.exactitude === 1 && m1.wer === 0 && m2.exactitude === 0.75 && m2.wer === 0.25 && m2.cer > 0 && m2.cer < 0.1 && m3.exactitude === 0.75, `mesures indépendantes de la confiance : exactitude des mots, WER, CER (casse et apostrophes normalisées ; accent manquant compté) · ${JSON.stringify([m2.exactitude, m2.wer, +m2.cer.toFixed(3)])}`);
   const ag = O.agreger([O.mesurer('A B C D', 'A B C D'), O.mesurer('E F', 'X Y')]); ok(Math.abs(ag.exactitude - 4 / 6) < 1e-9 && ag.mots === 6, 'agrégation pondérée par le nombre de mots (pas une moyenne de pourcentages)');
@@ -115,14 +122,17 @@ const PAGES = await D(async () => {
   const page = async (lignes, type = 'image/png') => { const c = Object.assign(document.createElement('canvas'), { width: 1000, height: 1400 }), g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, 1000, 1400); g.lineWidth = 6; g.strokeStyle = '#111';
     [[30, 30], [515, 30], [30, 715], [515, 715]].forEach(([x, y], i) => { g.strokeRect(x, y, 455, 655); g.fillStyle = '#111'; g.font = 'bold 34px Arial, sans-serif'; (lignes[i] || []).forEach((l, k) => g.fillText(l, x + 30, y + 90 + k * 44)); });
     return new Uint8Array(await (await new Promise((r) => c.toBlob(r, type, 0.92))).arrayBuffer()); };
+  // Page 4 : cartouche vert, texte blanc (texte clair sur fond coloré), sur fond noir
+  const p4 = await (async () => { const c = Object.assign(document.createElement('canvas'), { width: 1000, height: 1400 }), g = c.getContext('2d'); g.fillStyle = '#000'; g.fillRect(0, 0, 1000, 1400); g.fillStyle = '#6a9a2a'; g.fillRect(80, 100, 560, 150); g.fillStyle = '#fff'; g.font = 'bold 40px Arial, sans-serif'; g.fillText('THE NIGHT IS HIS TIME.', 110, 190);
+    return new Uint8Array(await (await new Promise((r) => c.toBlob(r, 'image/png'))).arrayBuffer()); })();
   const p1 = await page([['WHERE IS THE', 'GAMMA BOMB?'], ['I BURIED IT', 'DEEP.'], ['THEN WE DIG.'], ['NOT TONIGHT.']]), p2 = await page([['OÙ EST LA', 'BOMBE ?'], ['JE L\'AI', 'ENTERRÉE.'], ['ALORS ON', 'CREUSE.'], ['PAS CE SOIR.']]), p3 = await page([['THE STORM', 'IS COMING.'], [], ['RUN!'], []], 'image/jpeg');
   const b64 = (u) => btoa(Array.from(u, (x) => String.fromCharCode(x)).join(''));
-  return { cbz: b64(zip([{ nom: 'Essai OCR 01/p01.png', data: p1 }, { nom: 'Essai OCR 01/p02.png', data: p2 }, { nom: 'Essai OCR 01/p03.jpg', data: p3 }])), png: b64(p1) };
+  return { cbz: b64(zip([{ nom: 'Essai OCR 01/p01.png', data: p1 }, { nom: 'Essai OCR 01/p02.png', data: p2 }, { nom: 'Essai OCR 01/p03.jpg', data: p3 }, { nom: 'Essai OCR 01/p04.png', data: p4 }])), png: b64(p1) };
 });
 const REF = { 1: 'WHERE IS THE GAMMA BOMB? I BURIED IT DEEP. THEN WE DIG. NOT TONIGHT.', 2: 'OÙ EST LA BOMBE ? JE L\'AI ENTERRÉE. ALORS ON CREUSE. PAS CE SOIR.', 3: 'THE STORM IS COMING. RUN!' };
 await p.click('[data-espace="comics"]'); await p.setInputFiles('#import-comics', { name: 'Essai OCR 01.cbz', mimeType: 'application/zip', buffer: Buffer.from(PAGES.cbz, 'base64') });
-await attendreQue(async () => (await window.__script.db.tous('comics')).some((c) => c.pages?.length === 3));
-const C = await D(async () => (await window.__script.db.tous('comics')).find((c) => c.pages?.length === 3));
+await attendreQue(async () => (await window.__script.db.tous('comics')).some((c) => c.pages?.length === 4));
+const C = await D(async () => (await window.__script.db.tous('comics')).find((c) => c.pages?.length === 4));
 await p.click(`[data-comic="${C.id}"]`); await p.waitForSelector('#ocr-panneau'); await att(800);
 const etatTxt = await (await p.waitForFunction(() => { const t = document.querySelector('#ocr-etat-modeles')?.textContent || ''; return /Modèles installés|Aucun modèle|indisponible/.test(t) && t; }, null, { timeout: 20000 })).jsonValue();
 ok(/Modèles installés : (Anglais, Français|Français, Anglais)/.test(etatTxt), `panneau OCR du lecteur : modèles installés signalés, réglages proposés (${etatTxt.slice(0, 60)})`);
@@ -178,6 +188,14 @@ const ps3 = await D(async (id) => (await window.__script.db.tous('ocr-passes')).
 ok(ps3.zoneMode === 'page' && /sans case/.test(msgSans), `page sans case en mode « case par case » : signalé à l'utilisateur, provenance exacte (« ${ps3.zoneMode} ») · message : ${msgSans}`);
 await p.click('.vignette-page[data-page="2"]'); await p.waitForFunction(() => /Page 2 · cases/.test(document.querySelector('#lecteur')?.textContent || '')); await p.selectOption('#ocr-langues', 'fra');
 
+// Texte clair sur fond coloré (page 4) : lu grâce au second passage ; ignoré quand l'option est décochée
+await p.click('.vignette-page[data-page="4"]'); await p.waitForFunction(() => /Page 4 · cases/.test(document.querySelector('#lecteur')?.textContent || ''));
+await p.selectOption('#ocr-langues', 'eng'); await p.selectOption('#ocr-zone', 'page'); await p.selectOption('#ocr-segmentation', 'epars');
+const lancer4 = async () => { const n = await D(async () => (await window.__script.db.tous('ocr-passes')).length); await p.click('#ocr-page'); await attendreQue(async (k) => (await window.__script.db.tous('ocr-passes')).length > k, n, 90000);
+  return D(async (id) => { const ps = (await window.__script.db.tous('ocr-passes')).filter((x) => x.pageId === id).sort((a, b) => b.date - a.date)[0], as = (await window.__script.db.tous('connaissances')).filter((a) => a.ocr?.passe === ps.id); return { texte: ps.texte, clair: as.some((a) => a.ocr.texteClair), option: ps.texteClair }; }, C.pages[3]); };
+const avec = await lancer4(); await p.uncheck('#ocr-texte-clair'); await att(300); const sans = await lancer4(); await p.check('#ocr-texte-clair'); await att(300);
+ok(/NIGHT IS HIS TIME/.test(avec.texte) && avec.clair && avec.option === true && !/NIGHT/.test(sans.texte) && sans.option === false, `cartouche en texte clair : lu avec le second passage (« ${avec.texte.replace(/\n/g, ' ')} »), ignoré sans (« ${sans.texte.replace(/\n/g, ' ') || 'rien'} »), option enregistrée dans la provenance`);
+
 // D. Numéro complet en arrière-plan : annulation, interruption (page fermée), reprise sans doublon ni perte
 await p.selectOption('#ocr-langues', 'eng'); await p.selectOption('#ocr-zone', 'page'); await p.selectOption('#ocr-segmentation', 'epars');
 const cdp = await ctx.newCDPSession(p); await cdp.send('Emulation.setCPUThrottlingRate', { rate: 8 });
@@ -189,10 +207,10 @@ const tB = await D(async (c) => (await window.__script.file.ajouter('ocr-pages',
 await attendreQue(async (id) => ((await window.__script.db.lire('taches', id))?.curseur || 0) >= 1, tB, 90000);
 await p.reload(); await pret(); await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 }).catch(() => {});
 const tI = await D(async (id) => window.__script.db.lire('taches', id), tB), passesAvant = await D(async (id) => (await window.__script.db.tous('ocr-passes')).filter((x) => x.tache === id).length, tB);
-ok(tI.etat === 'interrompu' && passesAvant >= 1, `page rechargée pendant l'OCR : tâche « interrompue » à ${tI.curseur}/3, ${passesAvant} page(s) déjà enregistrée(s) — rien de perdu`);
+ok(tI.etat === 'interrompu' && passesAvant >= 1, `page rechargée pendant l'OCR : tâche « interrompue » à ${tI.curseur}/4, ${passesAvant} page(s) déjà enregistrée(s) — rien de perdu`);
 await D(async (id) => window.__script.file.reprendre(id), tB); await attendreQue(async (id) => (await window.__script.db.lire('taches', id))?.etat === 'termine', tB, 120000);
 const fin1 = await D(async (id) => { const ps = (await window.__script.db.tous('ocr-passes')).filter((x) => x.tache === id), as = (await window.__script.db.tous('connaissances')).filter((a) => a.ocr?.tache === id); return { pages: ps.length, attendus: ps.reduce((s, x) => s + x.blocs, 0), as: as.length, ids: new Set(as.map((a) => a.id)).size }; }, tB);
-ok(fin1.pages === 3 && fin1.as === fin1.attendus && fin1.ids === fin1.as, `reprise contrôlée : 3 pages traitées, ${fin1.as} blocs, aucun doublon`);
+ok(fin1.pages === 4 && fin1.as === fin1.attendus && fin1.ids === fin1.as, `reprise contrôlée : 4 pages traitées, ${fin1.as} blocs, aucun doublon`);
 
 // E. Connaissances : provenance, page source, relance ; matière de script
 await p.click('[data-espace="connaissances"]'); await p.selectOption('#kb-filtre-categorie', 'texte'); await att(300);

@@ -89,12 +89,12 @@ export async function creerMoteur(combinaison, { surProgres } = {}) {
 
 // ---------- Prétraitement (copie temporaire) ----------
 const MAX_COTE = 5000;   // limite mémoire : une zone agrandie ne dépasse pas 5000 px de côté
-export async function pretraiter(bitmap, rect, preset) {
-  const P = O.PRETRAITEMENTS[preset] || O.PRETRAITEMENTS.original, e = Math.max(1, Math.min(P.echelle || 1, MAX_COTE / Math.max(rect.w, rect.h)));
+export async function pretraiter(bitmap, rect, preset, extra = {}) {
+  const P = { ...(O.PRETRAITEMENTS[preset] || O.PRETRAITEMENTS.original), ...extra }, e = Math.max(1, Math.min(P.echelle || 1, MAX_COTE / Math.max(rect.w, rect.h)));
   const w = Math.max(1, Math.round(rect.w * e)), h = Math.max(1, Math.round(rect.h * e));
   const cv = typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(w, h) : Object.assign(document.createElement('canvas'), { width: w, height: h }), g = cv.getContext('2d', { willReadFrequently: true });
   g.fillStyle = '#fff'; g.fillRect(0, 0, w, h); g.imageSmoothingQuality = 'high'; g.drawImage(bitmap, rect.x, rect.y, rect.w, rect.h, 0, 0, w, h);
-  if (P.gris || P.contraste || P.binaire) { const d = g.getImageData(0, 0, w, h); O.traiterPixels(d.data, P); g.putImageData(d, 0, 0); }
+  if (P.gris || P.contraste || P.binaire || P.inverser || P.adaptatif) { const d = g.getImageData(0, 0, w, h); O.traiterPixels(d.data, { ...P, largeur: w, hauteur: h }); g.putImageData(d, 0, 0); }
   const blob = cv.convertToBlob ? await cv.convertToBlob({ type: 'image/png' }) : await new Promise((r) => cv.toBlob(r, 'image/png'));
   cv.width = cv.height = 1;   // libère la mémoire du canevas
   return { blob, echelle: e, w, h };
@@ -105,13 +105,18 @@ export function regions(page, W, H, zone) {
   return [{ x: 0, y: 0, w: W, h: H, caseNo: null }];
 }
 // OCR d'une page : blocs ordonnés, coordonnées dans la page d'origine
-export async function ocrPage(moteur, page, { pretraitement = 'x2-contraste', zone = 'page', sens = 'gd', signal, progres = () => {} } = {}) {
+// texteClair : seuil de confiance du second passage sur l'image inversée (cartouches en texte clair), ou null pour ne pas le faire
+export async function ocrPage(moteur, page, { pretraitement = 'x2-contraste', zone = 'page', sens = 'gd', signal, progres = () => {}, texteClair = null } = {}) {
   const t0 = performance.now(), bm = await createImageBitmap(page.blob), W = bm.width, H = bm.height, rs = regions(page, W, H, zone); let blocs = [], ignores = 0;
   try {
     for (const [i, r] of rs.entries()) {
       moteur.surProgres((p) => progres((i + p) / rs.length));
       const pre = await pretraiter(bm, r, pretraitement), data = await moteur.reconnaitre(pre.blob, signal);
       const res = O.blocsDepuisTesseract(data, { echelle: pre.echelle, decalage: { x: r.x, y: r.y }, largeur: W, hauteur: H, caseNo: r.caseNo }); blocs.push(...res.blocs); ignores += res.ignores;
+      if (texteClair !== null && texteClair !== undefined) {
+        const inv = await pretraiter(bm, r, pretraitement, { gris: true, inverser: true, adaptatif: true }), d2 = await moteur.reconnaitre(inv.blob, signal);
+        blocs.push(...O.blocsTexteClair(res.blocs, O.blocsDepuisTesseract(d2, { echelle: inv.echelle, decalage: { x: r.x, y: r.y }, largeur: W, hauteur: H, caseNo: r.caseNo }).blocs, { seuil: texteClair }));
+      }
     }
   } finally { bm.close?.(); }
   const o = O.ordreLecture(O.regrouperLignes(blocs), { sens });

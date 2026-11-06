@@ -18,9 +18,9 @@ export function initOcr({ file, kb, ouvrirMoteurs, ouvrirPage }) {
   // ---------- Traitement (file existante) : page par page, résultats enregistrés au fur et à mesure ----------
   async function enregistrer(t, c, p, idx, pre, r, mod) {
     const P = t.params, passe = `${t.id}:${p.id}:${pre}`, date = Date.now(), moteur = `${mod.VERSION_MOTEUR} · fast ${O.MODELES.version}`;
-    const meta = { langues: P.langues, pretraitement: pre, segmentation: P.segmentation, zoneMode: P.zone, tache: t.id, passe, date, moteur };
+    const meta = { langues: P.langues, pretraitement: pre, segmentation: P.segmentation, zoneMode: P.zone, texteClair: P.texteClair !== false, tache: t.id, passe, date, moteur };
     const as = r.blocs.map((b) => ({ b, sug: O.suggererNature(b.texte, { naturePage: p.nature || '' }) })).map(({ b, sug }) => K.normaliser({ id: `ocr:${passe}:${b.ordre}`, contenu: b.texte, categorie: b.confiance < 0.5 ? 'incertain' : 'texte', comic: c.id, page: idx, case: b.case, zone: b.zone, methode: 'ocr:tesseract-fast', moteur, confiance: b.confiance, statut: 'a-verifier',
-      origine: { genre: 'ocr', passe, pageId: p.id, tache: t.id }, ocr: { ...meta, texteBrut: b.texteBrut ?? b.texte, texteInitial: b.texte, retires: b.retires || [], nature: null, natureSuggeree: sug?.nature || null, natureRaison: sug?.raison || null, lignes: b.lignes, ordre: b.ordre, ordreCertain: r.ordreCertain, mots: b.mots, motsFaibles: b.motsFaibles } }));
+      origine: { genre: 'ocr', passe, pageId: p.id, tache: t.id }, ocr: { ...meta, texteBrut: b.texteBrut ?? b.texte, texteInitial: b.texte, retires: b.retires || [], texteClair: !!b.texteClair, nature: null, natureSuggeree: sug?.nature || null, natureRaison: sug?.raison || null, lignes: b.lignes, ordre: b.ordre, ordreCertain: r.ordreCertain, mots: b.mots, motsFaibles: b.motsFaibles } }));
     await db.ecrire('ocr-passes', { id: passe, ...meta, comic: c.id, pageId: p.id, page: idx, blocs: as.length, ignores: r.ignores, ordreCertain: r.ordreCertain, regions: r.regions, duree: r.duree, largeur: r.largeur, hauteur: r.hauteur, texte: r.blocs.map((b) => b.texte).join('\n'), ids: as.map((a) => a.id) });
     await kb.ajouterLot(as); return as.length;
   }
@@ -37,7 +37,7 @@ export function initOcr({ file, kb, ouvrirMoteurs, ouvrirPage }) {
         progres(k / total, `${lib} : reconnaissance…`, k);
         // Mode « case par case » sur une page sans case : traitée en page entière, et enregistrée comme telle (provenance exacte)
         const zone = P.zone === 'cases' && p.cases?.length ? 'cases' : 'page';
-        const r = await mod.ocrPage(moteur, p, { pretraitement: pre, zone, sens: c.sens, signal, progres: (x) => progres((k + x) / total) });
+        const r = await mod.ocrPage(moteur, p, { pretraitement: pre, zone, sens: c.sens, signal, progres: (x) => progres((k + x) / total), texteClair: P.texteClair === false ? null : O.SEUIL_TEXTE_CLAIR });
         const n = await enregistrer({ ...t, params: { ...P, zone } }, c, p, idx, pre, r, mod); blocs += n; if (zone !== P.zone) sansCase++;
         progres((k + 1) / total, `${lib} : ${n} bloc(s) de texte${r.ignores ? `, ${r.ignores} fragment(s) sans lettre ignoré(s)` : ''}.`, k + 1);
       }
@@ -52,7 +52,7 @@ export function initOcr({ file, kb, ouvrirMoteurs, ouvrirPage }) {
     if (manquants.length) { info(`Modèle OCR absent (${manquants.map((x) => O.MODELES.langues[x].nom).join(', ')}) : à installer dans Moteurs › OCR local.`); return null; }
     let avert = '';
     if (reglages.zone === 'cases') { const sans = (await Promise.all(pageIds.map((id) => db.lire('pages', id)))).filter((x) => !x?.cases?.length).length; avert = sans ? ` ${sans} page(s) sans case détectée ou tracée : reconnue(s) en page entière (indiqué dans la provenance).` : ''; }
-    const t = await file.ajouter('ocr-pages', { comic: c.id, pages: pageIds, langues: reglages.langues, pretraitement: reglages.pretraitement, zone: reglages.zone, segmentation: reglages.segmentation, ...(comparer ? { comparer } : {}) },
+    const t = await file.ajouter('ocr-pages', { comic: c.id, pages: pageIds, langues: reglages.langues, pretraitement: reglages.pretraitement, zone: reglages.zone, segmentation: reglages.segmentation, texteClair: reglages.texteClair !== false, ...(comparer ? { comparer } : {}) },
       { nom: nom || `OCR · ${c.serie || 'Sans série'} #${c.numero || '?'} · ${pageIds.length} page(s)` });
     info(`OCR lancé en arrière-plan (${pageIds.length} page(s)) : progression ci-dessous et dans Moteurs ; annulable.${avert}`); return t;
   }
@@ -136,6 +136,9 @@ export function initOcr({ file, kb, ouvrirMoteurs, ouvrirPage }) {
     }
     z.append(el('h3', { textContent: 'Texte reconnu (OCR local)' }), etatM,
       el('div', { className: 'grille2' }, champ('Langue', reg('langues', O.COMBINAISONS)), champ('Prétraitement', reg('pretraitement', Object.fromEntries(Object.entries(O.PRETRAITEMENTS).map(([k, v]) => [k, v.nom])))), champ('Zone', reg('zone', O.ZONES)), champ('Découpage du texte', reg('segmentation', Object.fromEntries(Object.entries(O.SEGMENTATIONS).map(([k, v]) => [k, v.nom]))))),
+      (() => { const x = el('input', { type: 'checkbox', checked: reglages.texteClair !== false, id: 'ocr-texte-clair' }); x.addEventListener('change', () => { reglages.texteClair = x.checked; sauverReglages(); });
+        chargerReglages().then(() => { x.checked = reglages.texteClair !== false; });
+        return el('label', { className: 'bascule' }, x, 'Second passage pour le texte clair sur fond coloré (cartouches) — plus lent'); })(),
       el('div', { className: 'rangee' }, bouton('Reconnaître cette page', () => lancer(c, [p.id]), { className: 'accent', id: 'ocr-page' }), champ('Pages', plage), bouton('Reconnaître ces pages', () => { try { lancer(c, O.lirePlage(plage.value, c.pages.length).map((i) => c.pages[i])); } catch (e) { info(e.message); } }, { id: 'ocr-selection' }),
         bouton('Tout le numéro (arrière-plan)', () => lancer(c, [...c.pages]), { id: 'ocr-numero' })),
       el('div', { className: 'rangee' }, champ('Comparer avec', pre2), bouton('Comparer les prétraitements sur cette page', () => { if (pre2.value === reglages.pretraitement) return info('Choisir un prétraitement différent pour comparer.'); lancer(c, [p.id], { comparer: [reglages.pretraitement, pre2.value], nom: `OCR · comparaison · p. ${pageIdx + 1}` }); }, { id: 'ocr-comparer' })),

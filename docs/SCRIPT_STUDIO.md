@@ -93,7 +93,7 @@ Trois moteurs indépendants et remplaçables : **OCR Engine**, **Comic Vision En
 
 ### Utilisation
 1. **Moteurs › OCR local** : télécharger le modèle français et/ou anglais (confirmation demandée ; une seule fois), ou importer un fichier `.traineddata` déjà présent sur l'appareil. « Tester le moteur » vérifie qu'un texte de contrôle est reconnu (état « Prêt »).
-2. **Comics › un numéro › une page › Texte reconnu (OCR local)** : choisir la langue (anglais, français, ou les deux pour des textes mêlés — plus lent), le prétraitement, la zone (page entière, ou case par case si les cases sont détectées ou tracées) et le découpage (épars, automatique, un bloc). Réglages par défaut, choisis d'après les mesures : page entière, ×2 + gris + contraste, épars.
+2. **Comics › un numéro › une page › Texte reconnu (OCR local)** : choisir la langue (anglais, français, ou les deux pour des textes mêlés — plus lent), le prétraitement, la zone (page entière, ou case par case si les cases sont détectées ou tracées) et le découpage (épars, automatique, un bloc). Réglages par défaut, choisis d'après les mesures : page entière, ×2 + gris + contraste, épars, second passage pour le texte clair sur fond coloré (désactivable, plus lent).
 3. Lancer sur la page, sur des pages choisies (« 1-5, 8 ») ou sur tout le numéro : le traitement passe par la file existante (Moteurs › Traitements), une page à la fois, annulable ; chaque page terminée est enregistrée aussitôt (rien de perdu si la page est fermée ; reprise au point d'arrêt).
 4. Résultats : chaque bloc arrive **« à vérifier »** dans la base de connaissances, avec son extrait d'image à côté du texte, sa zone dessinée sur la page, la confiance Tesseract, la case, la langue, le prétraitement, le traitement et la date. Corriger le texte (le texte OCR initial est conservé), valider ou rejeter un à un ou en lot, relancer, comparer deux passages (« Comparer les prétraitements »), garder un seul passage.
 5. Les résultats OCR ne deviennent jamais de la matière de script, même validés : ils servent à relever les textes ; le script reprend les **événements validés**.
@@ -124,16 +124,12 @@ Seules les variantes LSTM du cœur sont intégrées (moteur hérité non utilis�
 - Une nature confirmée ajuste la catégorie dans la base de connaissances (bulle → dialogue, cartouche → narration, crédits → texte éditorial), avec une trace dans l'historique.
 
 ### Mesures sur pages réelles (anglais)
-Rapport complet : `docs/OCR_0.11.1_VALIDATION.md`. En résumé, sur le lettrage courant (bulles et narration ordinaires), en page entière avec les réglages par défaut :
-
-| Corpus | Exactitude des mots |
-|---|---|
-| Réglage | 88,7 % |
-| Contrôle A, jamais vu pendant le réglage | 73,3 % |
-| Contrôle B, nouvelles séries | 87,3 % |
-| **Contrôles A + B** | **82,4 %** |
-
-L'objectif de 85 % n'est donc pas atteint sur l'ensemble des pages de contrôle. Les principaux défauts sont les cartouches en texte clair sur fond coloré, de petites bulles manquées et les lettrages particuliers. Lettrage stylisé, couvertures, effets sonores et textes du décor ne sont pas fiables. Le français n'est validé que techniquement.
+Rapport complet : `docs/OCR_0.11.1_VALIDATION.md`. Mesures en page entière avec les réglages par défaut, second passage « texte clair » compris. Les paramètres ont été figés sur le corpus de réglage, puis mesurés sur trois corpus de contrôle (17 pages, 1 650 mots), dont un jamais vu.
+- **Lettrage courant** (bulles et narration ordinaires) : **88,5 %** des mots, WER 17 %, CER 11 %. Par contrôle : 84,9 %, 88,3 % et 91,3 % (contrôle jamais vu).
+- **Cartouches en texte clair sur fond coloré** : 73 % sur le contrôle jamais vu, contre 0 % sans le second passage.
+- **Non fiables** : lettrage stylisé, couvertures, effets sonores, textes du décor. Des petites bulles isolées sont parfois manquées.
+- **Temps** : environ 11 s par page avec le second passage (5 s sans).
+- **Français** : validé techniquement seulement.
 
 Vision locale (0.11.2, non implémentée) : `docs/VISION_0.11.2_AUDIT.md`.
 

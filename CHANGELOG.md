@@ -18,7 +18,13 @@
   - lettrage courant en page entière : 82,4 % des mots sur les contrôles (objectif de 85 % non atteint) ;
   - français validé techniquement seulement.
 - **Audit de vision locale 0.11.2** (`docs/VISION_0.11.2_AUDIT.md`) : modèles et licences, besoins matériels, architecture du Comic Vision Engine, protocole d'évaluation, plan, risques. Aucun moteur de vision implémenté, aucun modèle téléchargé.
-- Tests : 58 tests OCR.
+- **OCR, itération 2 : cartouches en texte clair sur fond coloré.**
+  - Second passage sur une copie inversée et seuillée localement (Bradley), qui ne garde que les blocs nouveaux et sûrs.
+  - Activé par défaut, désactivable ; marqué dans la provenance.
+  - Réglé sur le corpus de réglage seulement (12 pages), puis contrôlé sur 6 pages jamais vues.
+  - Lettrage courant sur trois contrôles : 81,8 % → 88,5 % ; narration : 60,3 % → 86,4 %. L'objectif de 85 % est atteint.
+  - Temps par page : 4,8 s → 11,3 s.
+- Tests : 61 tests OCR.
 
 ## 0.11.1 · 2026-11-06 · Script Studio : OCR local (Tesseract.js)
 
