@@ -3,8 +3,9 @@
 // par catégorie de lettrage, par prétraitement et par langue. Utilise le vrai moteur de DA-PRIME (Chromium, Tesseract.js, modèles fast).
 // Les images et références restent dans VOTRE dossier (jamais dans le dépôt) ; le rapport y est écrit.
 //
-// Usage : node tools/mesurer-ocr.mjs <dossier-corpus> [--mode=zone|page] [--pretraitements=original,x2,x2-gris,x2-contraste,x2-binaire] [--langues=eng,fra,fra+eng] [--segmentation=bloc|epars|auto]
-//   --mode=zone (défaut) : reconnaissance seule sur la zone délimitée ; --mode=page : page entière, détection comprise (réaliste)
+// Usage : node tools/mesurer-ocr.mjs <dossier-corpus> [--mode=zone|page|cases] [--pretraitements=original,x2,x2-gris,x2-contraste,x2-binaire] [--langues=eng,fra,fra+eng] [--segmentation=bloc|epars|auto]
+//   --mode=zone (défaut) : reconnaissance seule sur la zone délimitée ; --mode=page : page entière, détection comprise (réaliste) ;
+//   --mode=cases : cases détectées automatiquement par DA-PRIME, puis OCR case par case
 // <dossier-corpus>/corpus.json :
 //   { "echantillons": [ { "image": "pages/hulk1-p05.png", "zone": { "x": 0.12, "y": 0.05, "w": 0.3, "h": 0.1 },
 //                         "categorie": "dialogue|narration|italique|stylise|onomatopee|petit", "langue": "eng", "reference": "TEXTE EXACT" } ] }
@@ -21,7 +22,7 @@ if (!DOS || !existsSync(join(DOS, 'corpus.json'))) { console.error('Usage : node
 if (DOS.startsWith(ROOT + '/')) console.warn('Attention : corpus dans le dépôt. Ne jamais committer d\'images de comics.');
 const arg = (k, d) => (process.argv.find((a) => a.startsWith(`--${k}=`)) || `=${d}`).split('=')[1];
 const O = await import(pathToFileURL(join(ROOT, 'templates/_systeme/ocr.js')));
-const PRE = arg('pretraitements', 'original,x2,x2-gris,x2-contraste,x2-binaire').split(',').filter((k) => O.PRETRAITEMENTS[k]), LANGS = arg('langues', '').split(',').filter(Boolean), MODE = arg('mode', 'zone'), SEG = arg('segmentation', MODE === 'page' ? 'epars' : 'bloc');
+const PRE = arg('pretraitements', 'original,x2,x2-gris,x2-contraste,x2-binaire').split(',').filter((k) => O.PRETRAITEMENTS[k]), LANGS = arg('langues', '').split(',').filter(Boolean), MODE = arg('mode', 'zone'), SEG = arg('segmentation', MODE === 'zone' ? 'bloc' : 'epars');
 const corpus = JSON.parse(readFileSync(join(DOS, 'corpus.json'), 'utf8')).echantillons;
 const TESS = process.env.DA_PRIME_TESSDATA || join(ROOT, '.cache/tessdata'); mkdirSync(TESS, { recursive: true });
 for (const [code, m] of Object.entries(O.MODELES.langues)) { const f = join(TESS, `${code}.traineddata`); if (!existsSync(f)) execFileSync('curl', ['-sSfL', '-o', f, O.urlModele(code)]);
@@ -52,8 +53,9 @@ for (const comb of LANGS.length ? combis : [null]) {
       const M = await import('/atelier/script/ocr.js'), O = await import('/templates/_systeme/ocr.js'), out = [], moteurs = {}, pages = {};
       try {
         // Mode « page » (réaliste) : la page entière est reconnue une fois ; chaque zone de référence reçoit les blocs dont le centre y tombe
-        if (mode === 'page') { for (const e of corpus) { const lang = comb || e.langue || 'eng'; moteurs[lang] ||= await M.creerMoteur(lang).then(async (m) => { await m.parametrer(seg); return m; });
-            const k = `${lang}|${e.image}`; if (!pages[k]) { const blob = await (await fetch(`http://corpus.invalid/${encodeURI(e.image)}`)).blob(), t0 = performance.now(); pages[k] = { r: await M.ocrPage(moteurs[lang], { blob, cases: [] }, { pretraitement: pre }), ms: performance.now() - t0, n: corpus.filter((x) => x.image === e.image).length }; }
+        if (mode === 'page' || mode === 'cases') { const C = mode === 'cases' ? await import('/atelier/script/comics.js') : null; for (const e of corpus) { const lang = comb || e.langue || 'eng'; moteurs[lang] ||= await M.creerMoteur(lang).then(async (m) => { await m.parametrer(seg); return m; });
+            const k = `${lang}|${e.image}`; if (!pages[k]) { const blob = await (await fetch(`http://corpus.invalid/${encodeURI(e.image)}`)).blob(), t0 = performance.now(); const bmC = C ? await createImageBitmap(blob) : null, cases = C ? C.detecterCases(bmC).cases : []; bmC?.close();
+              pages[k] = { r: await M.ocrPage(moteurs[lang], { blob, cases }, { pretraitement: pre, zone: C ? 'cases' : 'page' }), cases: cases.length, ms: performance.now() - t0, n: corpus.filter((x) => x.image === e.image).length }; }
             const z = e.zone || { x: 0, y: 0, w: 1, h: 1 }, m = 0.01, dans = pages[k].r.blocs.filter((b) => { const cx = b.zone.x + b.zone.w / 2, cy = b.zone.y + b.zone.h / 2; return cx >= z.x - m && cx <= z.x + z.w + m && cy >= z.y - m && cy <= z.y + z.h + m; }), texte = dans.map((b) => b.texte).join(' ');
             out.push({ ...e, langue: lang, pretraitement: pre, texte, ms: Math.round(pages[k].ms / pages[k].n), confiance: dans.length ? dans.reduce((s, b) => s + b.confiance, 0) / dans.length : 0, mesure: O.mesurer(e.reference, texte) }); }
           return out; }
@@ -76,7 +78,7 @@ clearInterval(sonde); await browser.close(); srv.close();
 // ---------- Rapport ----------
 const pc = (x) => (x === null || x === undefined ? '—' : `${(x * 100).toFixed(1)} %`), grp = (f) => { const m = new Map(); for (const l of lignes) { const k = f(l); if (!m.has(k)) m.set(k, []); m.get(k).push(l); } return m; };
 const ligneAg = (ls) => { const a = O.agreger(ls.map((x) => x.mesure)); return `${a.echantillons} | ${a.mots} | ${pc(a.exactitude)} | ${pc(a.wer)} | ${pc(a.cer)} | ${Math.round(ls.reduce((s, x) => s + x.ms, 0) / ls.length)} ms | ${pc(ls.reduce((s, x) => s + x.confiance, 0) / ls.length)}`; };
-let md = `# Mesure de l'OCR local DA-PRIME\n\n${new Date().toISOString().slice(0, 16).replace('T', ' ')} · Tesseract.js 7.0.0, modèles fast ${O.MODELES.version} · mode « ${MODE === 'page' ? 'page entière (détection + reconnaissance)' : 'zone délimitée (reconnaissance seule)'} » · segmentation « ${SEG} » · ${corpus.length} échantillon(s), ${new Set(corpus.map((e) => e.image)).size} page(s).\n\n`;
+let md = `# Mesure de l'OCR local DA-PRIME\n\n${new Date().toISOString().slice(0, 16).replace('T', ' ')} · Tesseract.js 7.0.0, modèles fast ${O.MODELES.version} · mode « ${{ page: 'page entière (détection + reconnaissance)', cases: 'case par case (cases détectées automatiquement, puis reconnaissance)', zone: 'zone délimitée (reconnaissance seule)' }[MODE]} » · segmentation « ${SEG} » · ${corpus.length} échantillon(s), ${new Set(corpus.map((e) => e.image)).size} page(s).\n\n`;
 md += 'Exactitude des mots = mots de la référence correctement reconnus ÷ mots de la référence. WER = (substitutions + suppressions + insertions) ÷ mots de la référence. CER : même calcul en caractères. La confiance Tesseract est donnée à titre indicatif : ce n\'est pas un taux d\'exactitude.\n\n';
 md += `Mémoire (somme des processus du navigateur) : ${base !== null && pic ? `${Math.round(base)} Mo au départ, pic ${Math.round(pic)} Mo` : 'non mesurée sur ce système'}. Requêtes externes pendant la mesure : ${externes.length}.\n\n`;
 const lc = lignes.filter((l) => O.OBJECTIF.categories.includes(l.categorie)), parPre = grp((l) => l.pretraitement);
@@ -89,6 +91,6 @@ for (const [k, ls] of grp((l) => l.langue)) md += `| ${O.COMBINAISONS[k] || k} |
 const meilleur = [...parPre].map(([k, ls]) => [k, O.agreger(ls.filter((l) => O.OBJECTIF.categories.includes(l.categorie)).map((x) => x.mesure)).exactitude ?? -1]).sort((a, b) => b[1] - a[1])[0];
 md += `\n## Détail (toutes les lignes, du pire au meilleur, pour le meilleur prétraitement : ${O.PRETRAITEMENTS[meilleur[0]].nom})\n\n| Image | Catégorie | Exactitude | Référence | Reconnu |\n|---|---|---|---|---|\n`;
 for (const l of lignes.filter((x) => x.pretraitement === meilleur[0]).sort((a, b) => (a.mesure.exactitude ?? 0) - (b.mesure.exactitude ?? 0))) md += `| ${l.image} | ${O.CATEGORIES_MESURE[l.categorie] || l.categorie} | ${pc(l.mesure.exactitude)} | ${l.reference.replace(/\|/g, '/')} | ${(l.texte || '(rien)').replace(/\|/g, '/')} |\n`;
-const suf = MODE === 'page' ? '-page' : ''; writeFileSync(join(DOS, `rapport-ocr${suf}.md`), md); writeFileSync(join(DOS, `rapport-ocr${suf}.json`), JSON.stringify({ date: Date.now(), mode: MODE, segmentation: SEG, memoire: { base, pic }, externes, lignes }, null, 1));
-console.log(`Lettrage courant, meilleur prétraitement (${O.PRETRAITEMENTS[meilleur[0]].nom}) : ${pc(meilleur[1])} des mots. Rapport : ${join(DOS, `rapport-ocr${MODE === 'page' ? '-page' : ''}.md`)}`);
+const suf = MODE === 'zone' ? '' : `-${MODE}`; writeFileSync(join(DOS, `rapport-ocr${suf}.md`), md); writeFileSync(join(DOS, `rapport-ocr${suf}.json`), JSON.stringify({ date: Date.now(), mode: MODE, segmentation: SEG, memoire: { base, pic }, externes, lignes }, null, 1));
+console.log(`Lettrage courant, meilleur prétraitement (${O.PRETRAITEMENTS[meilleur[0]].nom}) : ${pc(meilleur[1])} des mots. Rapport : ${join(DOS, `rapport-ocr${MODE === 'zone' ? '' : `-${MODE}`}.md`)}`);
 console.log(externes.length ? `ATTENTION : ${externes.length} requête(s) externe(s).` : 'Aucune requête externe.');

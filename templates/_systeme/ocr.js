@@ -66,7 +66,8 @@ export function estParasite(m, capitales = true) {
   return (l.length <= 2 && !COURTS.has(l.toUpperCase())) || (capitales && /\p{Ll}/u.test(l));
 }
 // Blocs Tesseract → blocs DA-PRIME, coordonnées normalisées (0-1) dans la PAGE d'origine. Construits à partir des MOTS :
-// une ligne est coupée là où l'écart entre deux mots dépasse 1,2 hauteur de ligne (Tesseract réunit parfois deux bulles voisines).
+// une ligne est coupée là où l'écart entre deux mots dépasse 1,2 hauteur de ligne ET 2,5 fois l'espace médian de la ligne
+// (Tesseract réunit parfois deux bulles voisines ; un lettrage aéré, lui, n'est pas coupé).
 // Ce sont des zones de texte reconnues, PAS des limites de bulles.
 export function blocsDepuisTesseract(data, { echelle = 1, decalage = { x: 0, y: 0 }, largeur, hauteur, caseNo = null } = {}) {
   const out = []; let ignores = 0;
@@ -81,7 +82,9 @@ export function blocsDepuisTesseract(data, { echelle = 1, decalage = { x: 0, y: 
     for (const l of lignes) {
       const ws = (l.words || []).filter((w) => w.bbox && String(w.text || '').trim()).sort((a, b) => a.bbox.x0 - b.bbox.x0); if (!ws.length) continue;
       const hs = ws.map((w) => w.bbox.y1 - w.bbox.y0).sort((a, b) => a - b), hL = hs[Math.floor(hs.length / 2)] || 1, segs = [[ws[0]]];
-      for (let k = 1; k < ws.length; k++) { if (ws[k].bbox.x0 - ws[k - 1].bbox.x1 > 1.2 * hL) segs.push([]); segs.at(-1).push(ws[k]); }
+      // Seuil relatif à l'espacement habituel de la ligne : un lettrage aéré n'est pas coupé, deux bulles voisines le sont
+      const ecarts = ws.slice(1).map((w, k) => w.bbox.x0 - ws[k].bbox.x1), tri = [...ecarts].sort((a, b) => a - b), med = tri.length >= 2 ? tri[Math.floor((tri.length - 1) / 2)] : 0.5 * hL, seuil = Math.max(1.2 * hL, 1.8 * med);
+      for (let k = 1; k < ws.length; k++) { if (ecarts[k - 1] > seuil) segs.push([]); segs.at(-1).push(ws[k]); }
       for (const seg of segs) {
         const lettres = seg.map((w) => String(w.text).replace(/[^\p{L}]/gu, '')).join(''), capitales = lettres.length ? (lettres.match(/\p{Lu}/gu) || []).length / lettres.length >= 0.6 : true;
         const garde = seg.filter((w) => !estParasite(w, capitales)), brut = seg.map((w) => w.text).join(' ');
@@ -94,19 +97,27 @@ export function blocsDepuisTesseract(data, { echelle = 1, decalage = { x: 0, y: 
   }
   return { blocs: out, ignores };
 }
-// Regroupement prudent des lignes d'un même texte (le découpage « épars » rend souvent une ligne par bloc) :
-// même case, chevauchement horizontal ≥ 50 % de la plus étroite et écart vertical < 1 hauteur de ligne. Rien d'autre n'est fusionné.
+// Regroupement prudent des morceaux d'un même texte (le découpage « épars » rend une ligne, voire un mot, par bloc) :
+// deux groupes de la même case sont réunis si l'un est dans la colonne de l'autre (chevauchement horizontal ≥ 50 % du plus étroit)
+// et s'ils se touchent verticalement (écart < 1 hauteur de ligne). Deux bulles côte à côte ne se chevauchent pas : elles restent séparées.
+// Le texte est ensuite recomposé rangée par rangée, de gauche à droite (un mot en gras isolé par Tesseract reprend sa place).
 export function regrouperLignes(blocs) {
-  const reste = [...blocs].sort((a, b) => a.zone.y - b.zone.y), out = [];
-  for (const b of reste) {
-    const g = out.find((x) => x.case === b.case && (() => { const o = Math.min(x.zone.x + x.zone.w, b.zone.x + b.zone.w) - Math.max(x.zone.x, b.zone.x), dernier = x.derniere;
-      return o >= 0.5 * Math.min(x.zone.w, b.zone.w) && b.zone.y - (dernier.y + dernier.h) < 1.0 * Math.min(dernier.h, b.zone.h) && b.zone.y >= dernier.y; })());
-    if (!g) { out.push({ ...b, lignes: [...(b.lignes || [b.texte])], derniere: { ...b.zone } }); continue; }
-    const x0 = Math.min(g.zone.x, b.zone.x), y0 = Math.min(g.zone.y, b.zone.y), x1 = Math.max(g.zone.x + g.zone.w, b.zone.x + b.zone.w), y1 = Math.max(g.zone.y + g.zone.h, b.zone.y + b.zone.h), n = g.mots + b.mots;
-    Object.assign(g, { texte: `${g.texte} ${b.texte}`, texteBrut: `${g.texteBrut ?? g.texte} ${b.texteBrut ?? b.texte}`, retires: [...(g.retires || []), ...(b.retires || [])], lignes: [...g.lignes, ...(b.lignes || [b.texte])], confiance: n ? (g.confiance * g.mots + b.confiance * b.mots) / n : Math.min(g.confiance, b.confiance), mots: n, motsFaibles: g.motsFaibles + b.motsFaibles,
-      zone: { x: +x0.toFixed(4), y: +y0.toFixed(4), w: +(x1 - x0).toFixed(4), h: +(y1 - y0).toFixed(4) }, derniere: { ...b.zone } });
-  }
-  return out.map(({ derniere, ...b }) => b);
+  let gs = blocs.map((b) => ({ ...b, morceaux: [{ texte: b.texte, texteBrut: b.texteBrut ?? b.texte, zone: b.zone }] }));
+  const proches = (a, b) => { if (a.case !== b.case) return false; const h = Math.min(...[...a.morceaux, ...b.morceaux].map((m) => m.zone.h)), o = Math.min(a.zone.x + a.zone.w, b.zone.x + b.zone.w) - Math.max(a.zone.x, b.zone.x), gv = Math.max(a.zone.y, b.zone.y) - Math.min(a.zone.y + a.zone.h, b.zone.y + b.zone.h);
+    return o >= 0.5 * Math.min(a.zone.w, b.zone.w) && gv < 1.0 * h; };
+  for (let change = true; change;) { change = false;
+    for (let i = 0; i < gs.length && !change; i++) for (let k = i + 1; k < gs.length && !change; k++) if (proches(gs[i], gs[k])) {
+      const a = gs[i], b = gs[k], x0 = Math.min(a.zone.x, b.zone.x), y0 = Math.min(a.zone.y, b.zone.y), x1 = Math.max(a.zone.x + a.zone.w, b.zone.x + b.zone.w), y1 = Math.max(a.zone.y + a.zone.h, b.zone.y + b.zone.h), n = (a.mots || 0) + (b.mots || 0);
+      gs[i] = { ...a, morceaux: [...a.morceaux, ...b.morceaux], retires: [...(a.retires || []), ...(b.retires || [])], confiance: n ? (a.confiance * (a.mots || 0) + b.confiance * (b.mots || 0)) / n : Math.min(a.confiance, b.confiance), mots: n, motsFaibles: (a.motsFaibles || 0) + (b.motsFaibles || 0),
+        zone: { x: +x0.toFixed(4), y: +y0.toFixed(4), w: +(x1 - x0).toFixed(4), h: +(y1 - y0).toFixed(4) } };
+      gs.splice(k, 1); change = true; } }
+  return gs.map(({ morceaux, ...g }) => {
+    // Rangées par le CENTRE des morceaux, à ± une demi-hauteur de ligne médiane (un fragment haut n'étire pas une rangée)
+    const hs = morceaux.map((m) => m.zone.h).sort((a, b) => a - b), hRef = hs[Math.floor((hs.length - 1) / 2)], rangees = [];
+    for (const m of [...morceaux].sort((a, b) => (a.zone.y + a.zone.h / 2) - (b.zone.y + b.zone.h / 2))) { const c = m.zone.y + m.zone.h / 2, r = rangees.find((x) => Math.abs(x.c - c) < 0.5 * hRef); if (r) r.m.push(m); else rangees.push({ c, m: [m] }); }
+    const lignes = rangees.map((r) => r.m.sort((a, b) => a.zone.x - b.zone.x));
+    return { ...g, texte: lignes.map((l) => l.map((m) => m.texte).join(' ')).join(' '), texteBrut: lignes.map((l) => l.map((m) => m.texteBrut).join(' ')).join(' '), lignes: lignes.map((l) => l.map((m) => m.texte).join(' ')) };
+  });
 }
 // Ordre de lecture : par case quand elles existent (ordre des cases), puis par rangées (haut → bas), gauche → droite
 // (droite → gauche en manga). Sur une page entière sans cases, l'ordre reste APPROXIMATIF et est signalé comme tel.
