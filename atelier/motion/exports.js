@@ -1,5 +1,6 @@
 // Motion Studio · exports : PNG (jusqu'à ×4), JPG, SVG autonome, GIF animé, WebM image par image (WebCodecs),
 // MP4 ou WebM en temps réel (MediaRecorder). Tous les rendus passent par la même scène que l'aperçu.
+import { encoderOpus, versWAV } from '../../templates/_systeme/studio-sons.js';
 import { S } from './etat.js';
 import { el, bouton } from './proprietes.js';
 import { versSVG } from '../../templates/_systeme/motion-svg.js';
@@ -35,7 +36,7 @@ export function initExports(ctx) {
       el('div', { className: 'rangee' }, bouton('PNG', () => lancer('png'), { dataset: { export: 'png' } }), bouton('JPG', () => lancer('jpg'), { dataset: { export: 'jpg' } }), bouton('SVG', () => lancer('svg'), { dataset: { export: 'svg' } })),
       el('h3', { textContent: 'Animation' }), el('div', { className: 'grille2' }, sel('export-gif', 'GIF', { 480: '480 px', 720: '720 px', 1080: '1080 px' }, 'gif'), sel('export-gif-fps', 'Images/s du GIF', { 10: '10', 15: '15', 20: '20', 25: '25' }, 'gifFps'),
         sel('export-video-fps', 'Images/s de la vidéo', { 24: '24', 30: '30', 60: '60' }, 'vidFps'), sel('export-video-def', 'Définition vidéo', { 1: 'Pleine (4K au plus)', 0.5: 'Moitié' }, 'vidDef')),
-      el('div', { className: 'rangee' }, bouton('GIF animé', () => lancer('gif'), { dataset: { export: 'gif' } }),
+      el('div', { className: 'rangee' }, bouton('GIF animé (muet)', () => lancer('gif'), { dataset: { export: 'gif' } }), bouton('Son seul (WAV)', () => lancer('wav'), { dataset: { export: 'wav' } }),
         wc ? bouton(`WebM (${wc.nom.toUpperCase()}, image par image)`, () => lancer('webm'), { dataset: { export: 'webm' } }) : null,
         MIME_TEMPS_REEL ? bouton(`${MIME_TEMPS_REEL.includes('mp4') ? 'MP4' : 'WebM'} (temps réel)`, () => lancer('direct'), { dataset: { export: 'direct' } }) : null),
       el('p', { className: 'info', textContent: `${wc ? 'WebM image par image : rendu exact, plus rapide que le temps réel, indépendant de la visibilité de l\'onglet. ' : 'Encodage image par image indisponible dans ce navigateur. '}${MIME_TEMPS_REEL ? `${MIME_TEMPS_REEL.includes('mp4') ? 'MP4' : 'WebM'} temps réel : dure autant que l'animation, onglet visible obligatoire.` : 'Aucun enregistrement vidéo en temps réel dans ce navigateur.'} Pas de son.` }),
@@ -62,6 +63,7 @@ export function initExports(ctx) {
       if (type === 'gif') return await gif();
       if (type === 'webm') return await webm();
       if (type === 'direct') return await direct();
+      if (type === 'wav') { const mix = await ctx.mixage(); if (!mix) return info('Aucun son dans cette composition : ajouter des effets dans Document › Son.'); ctx.telecharger(new Blob([versWAV(mix)], { type: 'audio/wav' }), 'wav'); return info(`Son exporté · WAV 48 kHz stéréo · ${mix.duration.toFixed(1)} s.`); }
     } catch (e) { info(`Export impossible : ${e.message || e}.`); }
     finally { occupe = false; prog(null); document.querySelector('#export-annuler')?.setAttribute('hidden', ''); for (const b of corps.querySelectorAll('[data-export]')) b.disabled = false; }
   }
@@ -96,16 +98,19 @@ export function initExports(ctx) {
       prog(i / n); if (i % 3 === 0) { info(`Encodage WebM… ${Math.round((i / n) * 100)} %`); await new Promise((r) => setTimeout(r)); }
     }
     await enc.flush(); enc.close(); if (erreur) throw erreur;
-    const b = muxerWebM({ codec: cc.nom, largeur: w, hauteur: h, duree: ctx.duree(), images }); ctx.telecharger(b, 'webm');
-    info(`WebM exporté · ${cc.nom.toUpperCase()} · ${w} × ${h} · ${fps} i/s · ${ctx.duree()} s · ${(b.size / 1048576).toFixed(2)} Mo.`);
+    info('Mixage et encodage du son…'); const mix = await ctx.mixage().catch(() => null), audio = mix ? await encoderOpus(mix).catch(() => null) : null;
+    const b = muxerWebM({ codec: cc.nom, largeur: w, hauteur: h, duree: ctx.duree(), images, audio }); ctx.telecharger(b, 'webm');
+    info(`WebM exporté · ${cc.nom.toUpperCase()} · ${w} × ${h} · ${fps} i/s · ${ctx.duree()} s · ${audio ? 'son Opus stéréo · ' : mix ? 'son non encodable sur ce navigateur (exporter le son en WAV) · ' : 'sans son · '}${(b.size / 1048576).toFixed(2)} Mo.`);
   }
   async function direct() {
     const { w: W, h: H } = S.doc.format, e = o.vidDef * Math.min(1, 1920 / Math.max(W, H)), w = Math.round(W * e) & ~1, h = Math.round(H * e) & ~1;
     const c = Object.assign(document.createElement('canvas'), { width: w, height: h }), g = c.getContext('2d'), s0 = await ctx.scenePrete(0); await ctx.rendu.precharger(s0); ctx.rendu.dessiner(g, s0, w / s0.w);
-    const rec = new MediaRecorder(c.captureStream(o.vidFps), { mimeType: MIME_TEMPS_REEL, videoBitsPerSecond: Math.round(Math.min(20e6, w * h * o.vidFps * 0.15)) }), morceaux = [];
-    rec.ondataavailable = (x) => x.data.size && morceaux.push(x.data); const fin = new Promise((ok) => { rec.onstop = ok; }); rec.start(250); const t0 = performance.now();
+    const flux = c.captureStream(o.vidFps), mix = await ctx.mixage().catch(() => null); let ac = null, src = null;
+    if (mix) { ac = new AudioContext(); await ac.resume(); const dest = ac.createMediaStreamDestination(); src = ac.createBufferSource(); src.buffer = mix; src.connect(dest); dest.stream.getAudioTracks().forEach((t) => flux.addTrack(t)); }
+    const rec = new MediaRecorder(flux, { mimeType: MIME_TEMPS_REEL, videoBitsPerSecond: Math.round(Math.min(20e6, w * h * o.vidFps * 0.15)) }), morceaux = [];
+    rec.ondataavailable = (x) => x.data.size && morceaux.push(x.data); const fin = new Promise((ok) => { rec.onstop = ok; }); rec.start(250); src?.start(); const t0 = performance.now();
     await new Promise((ok) => { const pas = async (now) => { const t = Math.min(ctx.duree(), (now - t0) / 1000); if (annule) return ok(); const sc = await ctx.scenePrete(t); await ctx.rendu.precharger(sc); ctx.rendu.dessiner(g, sc, w / sc.w); prog(t / ctx.duree()); info(`Enregistrement… ${Math.round((t / ctx.duree()) * 100)} % (garder l'onglet visible)`); if (t >= ctx.duree()) ok(); else requestAnimationFrame(pas); }; requestAnimationFrame(pas); });
-    await new Promise((r) => setTimeout(r, 200)); rec.stop(); await fin; if (annule) return info('Export annulé.');
+    await new Promise((r) => setTimeout(r, 200)); rec.stop(); await fin; ac?.close(); if (annule) return info('Export annulé.');
     const ext = MIME_TEMPS_REEL.includes('mp4') ? 'mp4' : 'webm', b = new Blob(morceaux, { type: MIME_TEMPS_REEL.split(';')[0] }); ctx.telecharger(b, ext);
     info(`${ext.toUpperCase()} exporté (temps réel) · ${w} × ${h} · ${(b.size / 1048576).toFixed(2)} Mo.`);
   }

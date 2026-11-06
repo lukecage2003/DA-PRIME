@@ -16,6 +16,7 @@ import { initExports, MIME_TEMPS_REEL } from './exports.js';
 import { db, persister, migrer, paquetProjet, lirePaquet, paquetBibliotheque, importerBibliotheque, enregistrerVersion, versionsDe, ressourcesUtilisees } from './stockage.js';
 import * as TR from './traitements.js';
 import { importerVisuel } from './visuels.js';
+import { mixer, synthetiser, sonsAuto, SONS } from '../../templates/_systeme/studio-sons.js';
 import { icone, poserIcones } from './icones.js';
 poserIcones();
 
@@ -44,6 +45,7 @@ const ctx = {
   // Remplacement d'image : l'intention (brief) suit, pour que les déclinaisons recomposées utilisent la nouvelle image
   majBriefImage: async (e, id) => { const ps = S.doc.brief?.personnages; const p = ps?.find((x) => x.nom === e.nom); if (!p) return; const v = id ? await db.lire('visuels', id).catch(() => null) : null;
     if (id) { p.image = id; p.imageInfo = v ? { w: v.w, h: v.h, alpha: v.alpha, boite: v.boite, role: p.role || null, categorie: v.categorie, orientation: v.orientation } : null; } else { delete p.image; delete p.imageInfo; } },
+  mixage, ecouter: ecouterSon, sonsAuto: () => sonsAuto(S.doc), importerSon: () => $('#fichier-son').click(),
   listerVersions, declinaison, profils: () => db.tous('profils').catch(() => []), appliquerProfil: (p) => { modifier(() => { S.doc.systeme = p.systeme || S.doc.systeme; if (p.palette) S.doc.palette = p.palette; S.doc.couleurs = { ...(p.couleurs || {}), ...(S.doc.couleursPropres || {}) }; S.doc.profil = p.id; }); panneaux.documentP?.(); info(`Profil « ${p.nom} » appliqué${S.doc.couleursPropres ? ' (couleurs propres à cette création conservées)' : ''}.`); }, nouvelle, ouvrir, depuisModele, depuisSignature, dupliquerCreation, supprimerCreation, enregistrerProjet, ouvrirProjet: () => $('#fichier-projet').click(), exporterBibliotheque,
 };
 let presets = [], cible = null;
@@ -74,9 +76,20 @@ const info = (t) => { $('#aide').textContent = t; };
 function jouer(depuis = S.t >= total() - 0.01 ? 0 : S.t) {
   arreter(); S.auto = false; const t0 = performance.now() - depuis * 1000; S.lecture = { id: 0 }; $('#lecture').innerHTML = `${icone('pause', 16)}<span>Pause</span>`; $('#lecture').setAttribute('aria-pressed', 'true'); vue.dessiner();
   const pas = (now) => { if (!S.lecture) return; S.t = (now - t0) / 1000; if (S.t >= total()) { if (S.doc.boucle) return jouer(0); S.t = total(); arreter(); return dessiner(); } const k = planA(S.doc, S.t).i; if (S.doc.plans && k !== S.doc.planActif) allerAuPlan(k, false); dessiner(); S.lecture.id = requestAnimationFrame(pas); };
-  S.lecture.id = requestAnimationFrame(pas);
+  S.lecture.id = requestAnimationFrame(pas); jouerSon(t0, S.lecture);
 }
-function arreter() { if (S.lecture) cancelAnimationFrame(S.lecture.id); S.lecture = null; $('#lecture').innerHTML = `${icone('lecture', 16)}<span>Lecture</span>`; $('#lecture').setAttribute('aria-pressed', 'false'); }
+// ---------- Son : mixage mis en cache, lecture synchronisée sur l'horloge de l'animation ----------
+let audioCtx = null, sourceSon = null, mixCache = { cle: null, buf: null };
+async function decoderAudio(id) { const r = S.ressources.get(id); if (!r?.href) return null; try { const b = await (await fetch(r.href)).arrayBuffer(); return await new OfflineAudioContext(2, 48000, 48000).decodeAudioData(b); } catch { return null; } }
+async function mixage() { const cle = JSON.stringify([S.doc.audio, total()]); if (mixCache.cle !== cle) mixCache = { cle, buf: await mixer(S.doc, { duree: total(), decoder: decoderAudio }) }; return mixCache.buf; }
+async function jouerSon(t0, lecture) {
+  arreterSon(); if (!S.doc.audio?.pistes?.length || S.doc.audio.muet) return;
+  try { const b = await mixage(); if (!b || S.lecture !== lecture) return; audioCtx ||= new AudioContext(); await audioCtx.resume();
+    const s = audioCtx.createBufferSource(); s.buffer = b; s.connect(audioCtx.destination); s.start(0, Math.max(0, (performance.now() - t0) / 1000)); sourceSon = s; } catch { /* son indisponible : animation muette */ }
+}
+function arreterSon() { try { sourceSon?.stop(); } catch { /* déjà arrêté */ } sourceSon = null; }
+async function ecouterSon(id, ressource) { audioCtx ||= new AudioContext(); await audioCtx.resume(); const b = ressource ? await decoderAudio(ressource) : await synthetiser(id, 6); if (!b) return; const s = audioCtx.createBufferSource(); s.buffer = b; s.connect(audioCtx.destination); s.start(); setTimeout(() => { try { s.stop(); } catch { /* fini */ } }, 6000); }
+function arreter() { arreterSon(); if (S.lecture) cancelAnimationFrame(S.lecture.id); S.lecture = null; $('#lecture').innerHTML = `${icone('lecture', 16)}<span>Lecture</span>`; $('#lecture').setAttribute('aria-pressed', 'false'); }
 $('#lecture').addEventListener('click', () => (S.lecture ? (arreter(), dessiner()) : jouer()));
 $('#rejouer').addEventListener('click', () => jouer(0));
 $('#temps').addEventListener('input', () => ctx.positionner(+$('#temps').value));
@@ -171,6 +184,13 @@ $('#fichier-image').addEventListener('change', async () => {
   }
   if (ids.length) selectionner(ids);
 });
+const fichierSon = el('input', { type: 'file', accept: 'audio/*', hidden: true, id: 'fichier-son' }); document.body.append(fichierSon);
+fichierSon.addEventListener('change', async () => { const f = fichierSon.files?.[0]; fichierSon.value = ''; if (!f) return;
+  try { const href = await new Promise((ok, ko) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = ko; r.readAsDataURL(f); }); const test = await new OfflineAudioContext(2, 48000, 48000).decodeAudioData(await (await fetch(href)).arrayBuffer());
+    const id = idRessource(href), r = { id, type: 'audio', href, nom: f.name, duree: test.duration, taille: f.size }; S.ressources.set(id, r); await db.ecrire('ressources', r).catch(() => {});
+    modifier((d) => { d.audio = d.audio || { volume: 0.9, muet: false, pistes: [] }; d.audio.pistes.push({ id: nouvelId('s'), source: 'fichier', ressource: id, nom: f.name, t: 0, volume: 0.6, fondu: 0.8 }); }); panneaux.documentP();
+    info(`Son « ${f.name} » ajouté (${test.duration.toFixed(1)} s). Vérifier que vous avez les droits de diffusion de cette musique.`);
+  } catch { info(`Impossible de lire « ${f.name} » : formats MP3, WAV, OGG, M4A acceptés selon le navigateur.`); } });
 const fichierPolice = el('input', { type: 'file', accept: '.ttf,.otf,.woff,.woff2,font/*', hidden: true, id: 'fichier-police' }); document.body.append(fichierPolice);
 function importerPolice() { fichierPolice.click(); }
 async function enregistrerPolice(r) { if (r.type !== 'police' || [...document.fonts].some((f) => f.family === r.fam)) return; try { const f = new FontFace(r.fam, `url(${r.href})`); await f.load(); document.fonts.add(f); } catch { /* police illisible */ } }

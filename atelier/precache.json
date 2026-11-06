@@ -1,5 +1,5 @@
 {
- "version": "0.1.1-e3c8252b7f",
+ "version": "0.1.1-745ce74093",
  "fichiers": [
   "./",
   "index.html",
@@ -55,6 +55,7 @@
   "../templates/_systeme/studio-formes.js",
   "../templates/_systeme/studio-personnages.js",
   "../templates/_systeme/studio-signatures.js",
+  "../templates/_systeme/studio-sons.js",
   "../templates/_systeme/studio-systemes.js",
   "../templates/_systeme/studio-texte.js",
   "../templates/_systeme/studio.js",

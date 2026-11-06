@@ -11,16 +11,20 @@ const cat = (parts) => { const n = parts.reduce((s, p) => s + p.length, 0), o = 
 const el = (id, data) => { const d = data instanceof Uint8Array ? data : Array.isArray(data) ? cat(data) : typeof data === 'string' ? enc.encode(data) : uint(data); return cat([idb(id), vint(d.length), d]); };
 const f64 = (x) => { const b = new Uint8Array(8); new DataView(b.buffer).setFloat64(0, x); return b; };
 
-// images : [{ data: Uint8Array, temps: microsecondes, cle: bool }]
-export function muxerWebM({ codec, largeur, hauteur, duree, images }) {
+// images : [{ data: Uint8Array, temps: microsecondes, cle: bool }] ; audio facultatif : { morceaux: [{ data, temps }], frequence } (Opus stéréo)
+export function muxerWebM({ codec, largeur, hauteur, duree, images, audio }) {
   const ebml = el(0x1a45dfa3, [el(0x4286, 1), el(0x42f7, 1), el(0x42f2, 4), el(0x42f3, 8), el(0x4282, 'webm'), el(0x4287, 2), el(0x4285, 2)]);
   const info = el(0x1549a966, [el(0x2ad7b1, 1000000), el(0x4d80, 'Primestone Motion Studio'), el(0x5741, 'Primestone Motion Studio'), el(0x4489, f64(duree * 1000))]);
-  const tracks = el(0x1654ae6b, [el(0xae, [el(0xd7, 1), el(0x73c5, 1), el(0x9c, 0), el(0x86, codec === 'vp8' ? 'V_VP8' : 'V_VP9'), el(0x83, 1), el(0xe0, [el(0xb0, largeur), el(0xba, hauteur)])])]);
+  const opusHead = () => { const b = new Uint8Array(19), v = new DataView(b.buffer); b.set(enc.encode('OpusHead')); b[8] = 1; b[9] = 2; v.setUint16(10, 312, true); v.setUint32(12, audio.frequence, true); return b; };
+  const pisteAudio = audio?.morceaux?.length ? [el(0xae, [el(0xd7, 2), el(0x73c5, 2), el(0x9c, 0), el(0x86, 'A_OPUS'), el(0x63a2, opusHead()), el(0x56aa, 6500000), el(0x56bb, 80000000), el(0x83, 2), el(0xe1, [el(0xb5, f64(audio.frequence)), el(0x9f, 2)])])] : [];
+  const tracks = el(0x1654ae6b, [el(0xae, [el(0xd7, 1), el(0x73c5, 1), el(0x9c, 0), el(0x86, codec === 'vp8' ? 'V_VP8' : 'V_VP9'), el(0x83, 1), el(0xe0, [el(0xb0, largeur), el(0xba, hauteur)])]), ...pisteAudio]);
+  // Blocs vidéo et audio entrelacés par ordre chronologique ; nouvelle grappe à chaque image clé (ou toutes les 30 s)
+  const blocs = [...images.map((x) => ({ ...x, piste: 1 })), ...(pisteAudio.length ? audio.morceaux.map((x) => ({ ...x, piste: 2, cle: true })) : [])].sort((a, b) => a.temps - b.temps || a.piste - b.piste);
   const grappes = []; let cur = null;
-  for (const im of images) {
+  for (const im of blocs) {
     const ms = Math.round(im.temps / 1000);
-    if (!cur || im.cle || ms - cur.t > 30000) { cur = { t: ms, blocs: [] }; grappes.push(cur); }
-    const rel = ms - cur.t, tete = new Uint8Array([0x81, (rel >> 8) & 255, rel & 255, im.cle ? 0x80 : 0]);
+    if (!cur || (im.piste === 1 && im.cle) || ms - cur.t > 30000) { cur = { t: ms, blocs: [] }; grappes.push(cur); }
+    const rel = ms - cur.t, tete = new Uint8Array([0x80 | im.piste, (rel >> 8) & 255, rel & 255, im.cle ? 0x80 : 0]);
     cur.blocs.push(el(0xa3, cat([tete, im.data])));
   }
   const clusters = grappes.map((g) => el(0x1f43b675, [el(0xe7, g.t), ...g.blocs]));

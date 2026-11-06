@@ -214,6 +214,16 @@ console.log('Excellence visuelle (Node)');
   const avecLumiere = fams.filter((f) => /radialGradient|feTurbulence|feGaussianBlur/.test(Mo.rendre(f, Object.keys(Mo.FAMILLES[f].variantes)[0], {}).svg)).length;
   ok(sig.size === 8 && avecLumiere === 8, `8 familles de miniatures recomposées : lumière et atmosphère dans ${avecLumiere}/8`);
 }
+// ---------- Son ----------
+console.log('Son (Node)');
+{
+  const So = await imp('templates/_systeme/studio-sons.js'), Co = await imp('templates/_systeme/studio-compositeur.js');
+  const d = Co.composer({ type: 'versus', personnages: ['Black Panther', 'Batman'] }, 'miniature'), ps = d.audio.pistes, vs = d.elements.find((e) => e.nom === 'VS');
+  const tVs = vs.anim.entree.delai + vs.anim.entree.duree * 0.55;
+  ok(ps.length >= 3 && ps.every((p) => p.t >= 0 && So.SONS[p.sfx]) && ps.some((p) => p.sfx === 'impact' && Math.abs(p.t - tVs) < 0.4) && ps.some((p) => p.sfx === 'whoosh'), `bande son automatique synchronisée : ${ps.map((p) => `${p.sfx}@${p.t}`).join(' ')}`);
+  const n = St.normaliserDoc(JSON.parse(JSON.stringify(d))); ok(JSON.stringify(n.audio) === JSON.stringify(d.audio), 'bande son conservée à l\'enregistrement');
+  const c = Co.composer({ type: 'annonce', titre: 'T' }, 'carrousel'); ok(c.audio.pistes.filter((p) => p.sfx === 'whoosh' || p.sfx === 'souffle').length >= 1, 'transitions de carrousel sonorisées');
+}
 if (process.argv.includes('--moteur')) fin();
 
 // ---------- 2. Éditeur (Chromium, appareils ÉMULÉS) ----------
@@ -495,6 +505,23 @@ let fichierBiblio = null, fichierProjetV2 = null;
   await p.locator(`.grille-choix [data-visuel="${ids.ESSAI_personnage}"]`).click(); await attendre(p, 400);
   ok((await p.innerHTML('#apercu')).includes('data:image/png'), 'Atelier : image choisie dans la bibliothèque visuelle et posée dans le gabarit');
   ok(!err.length, `bibliothèque visuelle : aucune erreur JavaScript${err.length ? ' · ' + err.slice(0, 2).join(' | ') : ''}`); await ctx.close();
+}
+// Son dans Motion Studio : synthèse, panneau, export WAV et WebM avec piste Opus
+{
+  const ctx = await browser.newContext({ viewport: { width: 1400, height: 1000 }, acceptDownloads: true }), p = await ctx.newPage(), err = erreurs(p);
+  await p.goto(URL0 + 'motion/'); await prets(p);
+  const niveaux = await D(p, async () => { const So = await import('../../templates/_systeme/studio-sons.js'), r = {}; for (const id of Object.keys(So.SONS)) { const b = await So.synthetiser(id, 3), x = b.getChannelData(0); let m = 0; for (let i = 0; i < x.length; i += 7) m = Math.max(m, Math.abs(x[i])); r[id] = +m.toFixed(2); } return r; });
+  ok(Object.values(niveaux).every((v) => v > 0.05 && v <= 1.01), `8 effets synthétisés, audibles sans saturation : ${Object.entries(niveaux).map(([k, v]) => `${k} ${v}`).join(', ')}`);
+  await D(p, async () => { const C = await import('../../templates/_systeme/studio-compositeur.js'); await window.__studio.charger(C.composer({ type: 'versus', personnages: ['Black Panther', 'Batman'] }, 'miniature')); });
+  await p.click('button[data-onglet="document"]'); await deplier(p); const n0 = await p.locator('.piste-son').count();
+  await p.click('#son-ajouter'); await attendre(p, 200); await deplier(p); const n1 = await p.locator('.piste-son').count(); await p.click('#sons-auto'); await attendre(p, 200); await deplier(p);
+  ok(n0 >= 3 && n1 === n0 + 1 && (await p.locator('.piste-son').count()) === n1, `panneau Son : ${n0} effets automatiques, ajout manuel conservé lors du recalcul`);
+  await p.click('#ouvrir-export'); await attendre(p, 300);
+  const dlw = async (sel, nom) => { const [x] = await Promise.all([p.waitForEvent('download', { timeout: 120000 }), p.click(sel)]); const f = join(OUT, nom); await x.saveAs(f); return readFileSync(f); };
+  const wav = await dlw('[data-export="wav"]', 'son.wav'); ok(wav.toString('ascii', 0, 4) === 'RIFF' && wav.toString('ascii', 8, 12) === 'WAVE' && wav.readUInt32LE(24) === 48000 && wav.length > 48000 * 4 * 5, `son seul exporté en WAV 48 kHz stéréo (${(wav.length / 1048576).toFixed(1)} Mo)`);
+  const aOpus = await D(p, () => typeof AudioEncoder !== 'undefined');
+  if (await p.locator('[data-export="webm"]').count()) { const wb = await dlw('[data-export="webm"]', 'son.webm'); ok(!aOpus || wb.includes(Buffer.from('A_OPUS')), `vidéo WebM ${aOpus ? 'avec piste audio Opus' : '(encodeur audio indisponible : piste vidéo seule)'}`); }
+  ok(!err.length, `son : aucune erreur JavaScript${err.length ? ' · ' + err.slice(0, 2).join(' | ') : ''}`); await ctx.close();
 }
 for (const [nom, opt] of [
   ['galaxy-s25', { viewport: { width: 384, height: 832 }, deviceScaleFactor: 2.8125, isMobile: true, hasTouch: true }],

@@ -30,7 +30,7 @@ export function normaliserDoc(d) {
     couleurs: { ...(d.couleurs || {}) }, format: f, fond: { type: 'couleur', c1: '@fond', c2: '@papier', angle: 90, ...(d.fond || {}) },
     duree: clamp(+d.duree || 6, 1, 60), boucle: d.boucle ?? true, camera: { type: 'aucune', intensite: 0.5, ...(d.camera || {}) },
     grille: { pas: 60, visible: false, aimant: true, ...(d.grille || {}) }, guides: { h: [...(d.guides?.h || [])], v: [...(d.guides?.v || [])] }, zonesSures: d.zonesSures ?? false,
-    elements: (d.elements || []).map(normaliserEl), cree: d.cree || Date.now(), modifie: d.modifie, origine: d.origine, ...(d.brief ? { brief: d.brief } : {}), ...(d.couleursPropres && Object.keys(d.couleursPropres).length ? { couleursPropres: { ...d.couleursPropres } } : {}), ...(d.profil ? { profil: d.profil } : {}), ...(d.campagne ? { campagne: d.campagne } : {}),
+    elements: (d.elements || []).map(normaliserEl), cree: d.cree || Date.now(), modifie: d.modifie, origine: d.origine, ...(d.brief ? { brief: d.brief } : {}), ...(d.audio ? { audio: JSON.parse(JSON.stringify(d.audio)) } : {}), ...(d.couleursPropres && Object.keys(d.couleursPropres).length ? { couleursPropres: { ...d.couleursPropres } } : {}), ...(d.profil ? { profil: d.profil } : {}), ...(d.campagne ? { campagne: d.campagne } : {}),
     ...(Array.isArray(d.plans) && d.plans.length > 1 ? { plans: d.plans.map((p, i) => normaliserPlan(p, i)), planActif: Math.min(d.plans.length - 1, Math.max(0, d.planActif | 0)) } : {}),
   };
 }

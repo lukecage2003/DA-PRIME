@@ -1,5 +1,12 @@
 # Journal des versions
 
+## 0.9.2 · 2026-11-06 · son et vraies images
+
+- Son dans Motion Studio : 8 effets synthétisés sur l'appareil, libres de droits (passage rapide, souffle grave, impact, boom cinéma, montée de tension, scintillement, tic, nappe d'ambiance) ; import d'une musique ou d'un son personnel (fichier local, inclus dans le projet) ; panneau Document › Son : volume général, coupure, effets placés à la seconde, volume par effet, écoute, placement à la tête de lecture.
+- Bande son automatique : impacts sur les arrivées (VS, titres), souffles sur les révélations de personnages, passages sur les glissements et les transitions entre plans, montée de tension avant un impact, nappe de fond selon le système graphique ; recalculable sans perdre les sons ajoutés à la main. Les créations de l'assistant et des campagnes en reçoivent une.
+- Lecture synchronisée dans l'éditeur ; exports : WebM avec piste audio Opus (multiplexeur intégré), MP4/WebM temps réel avec son, son seul en WAV ; GIF muet.
+- Vraies images : plus aucune illustration de démonstration (planète, ville) en décor dès qu'une image importée est utilisée ; duel de personnages détourés sur aplats tramés ; planche ou image opaque jamais recadrée dans une une éditoriale ; sol en dégradé progressif ; anneaux d'énergie retirés sur les illustrations.
+
 ## 0.9.1 · 2026-11-06 · Visual Asset Studio : bibliothèque visuelle
 
 - Production › Visuels : bibliothèque locale et privée des images (personnages, illustrations, couvertures, logos, arrière-plans, textures, effets, ressources transparentes, images promotionnelles) ; import individuel et multiple, vignettes légères, recherche (nom, tag, collection, personnage), filtres (catégorie, favoris, transparentes), tri, collections, favoris, renommage, actions par lot, suppression confirmée avec les créations concernées, jauge de stockage.

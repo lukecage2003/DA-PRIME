@@ -6,6 +6,7 @@ import { SYSTEMES, JETONS, ROLES_TEXTE, palette, format as fmt } from '../../tem
 import { POLICES, DEFORMATIONS } from '../../templates/_systeme/studio-texte.js';
 import { FORMES, MASQUES } from '../../templates/_systeme/studio-formes.js';
 import { icone } from './icones.js';
+import { SONS } from '../../templates/_systeme/studio-sons.js';
 import { EFFETS_LIB, CATEGORIES_EFFETS } from '../../templates/_systeme/studio-effets.js';
 import { ENTREES, SORTIES, BOUCLES, COURBES, DIRECTIONS, CAMERAS, PRESETS_ANIM } from '../../templates/_systeme/studio-anim.js';
 
@@ -197,6 +198,23 @@ export function initPanneaux(ctx) {
       bIco('monter', '', () => { selectionner(e.id); ordre('avant'); }, { className: 'ico', label: `Monter ${e.nom}` }), bIco('descendre', '', () => { selectionner(e.id); ordre('arriere'); }, { className: 'ico', label: `Descendre ${e.nom}` }));
   }
   // ---------- Document ----------
+  // Son : effets synthétisés sur l'appareil (libres de droits) ou fichiers audio importés, placés sur la ligne de temps
+  function sonP(d) {
+    const a = d.audio || (d.audio = { volume: 0.9, muet: false, pistes: [] }), maj = () => setTimeout(documentP);
+    const ligne = (p) => el('div', { className: 'piste-son', dataset: { piste: p.id } },
+      p.source === 'fichier' ? el('span', { className: 'nom-son', textContent: `♪ ${p.nom}` }) : choix('Effet', Object.fromEntries(Object.entries(SONS).map(([k, v]) => [k, v.nom])), () => p.sfx, (v) => { p.sfx = v; p.nom = SONS[v].nom; p.auto = false; }, { cle: 'sfx' + p.id }),
+      num('Début (s)', () => p.t, (v) => { p.t = Math.max(0, v); p.auto = false; }, { pas: 0.05, min: 0, cle: 't' + p.id }),
+      plage('Volume', () => p.volume, (v) => { p.volume = v; }, { max: 1.5, cle: 'v' + p.id }),
+      el('div', { className: 'rangee' }, bouton('▶ Écouter', () => ctx.ecouter(p.sfx, p.ressource), { label: `Écouter ${p.nom}` }), bouton('Placer à la tête de lecture', () => modifier(() => { p.t = Math.round(S.t * 100) / 100; p.auto = false; }) || maj()),
+        bouton('Supprimer', () => { modifier(() => { a.pistes = a.pistes.filter((x) => x !== p); }); maj(); }, { className: 'danger' })));
+    return details('Son', !!a.pistes.length,
+      g2(bascule('Couper le son', () => a.muet, (v) => { a.muet = v; }, { id: 'son-muet' }), plage('Volume général', () => a.volume, (v) => { a.volume = v; }, { id: 'son-volume' })),
+      el('div', { className: 'rangee' }, bouton('Sons automatiques', () => { modifier(() => { a.pistes = [...a.pistes.filter((p) => !p.auto), ...ctx.sonsAuto()]; }); maj(); }, { id: 'sons-auto', title: 'Place des effets synchronisés sur les apparitions, impacts et transitions' }),
+        bouton('Ajouter un effet', () => { modifier(() => { a.pistes.push({ id: nouvelId('s'), source: 'sfx', sfx: 'whoosh', nom: SONS.whoosh.nom, t: Math.round(S.t * 100) / 100, volume: 0.8, fondu: 0 }); }); maj(); }, { id: 'son-ajouter' }),
+        bouton('Importer une musique ou un son…', () => ctx.importerSon(), { id: 'son-importer' })),
+      ...a.pistes.slice().sort((x, y) => x.t - y.t).map(ligne),
+      el('p', { className: 'info', textContent: 'Effets synthétisés sur l\'appareil : libres de droits. Une musique importée reste locale ; vérifier vos droits avant diffusion. Le son est inclus dans les exports vidéo (WebM, MP4) ; le GIF est muet.' }));
+  }
   // Profil de direction artistique : applique les couleurs et le système enregistrés (Production › Profils DA)
   function profilsDA(d) {
     const sel = el('select', { id: 'doc-profil' }, el('option', { value: '', textContent: 'Aucun profil' })), corps = details('Direction artistique', !!d.profil, champ('Profil enregistré', sel),
@@ -228,6 +246,7 @@ export function initPanneaux(ctx) {
       details('Animation de la composition', true, g2(num('Durée (s)', () => d.duree, (v) => { d.duree = Math.min(60, Math.max(1, v)); }, { pas: 0.5, min: 1, max: 60, id: 'doc-duree' }), bascule('Lecture en boucle', () => d.boucle, (v) => { d.boucle = v; })),
         g2(choix('Caméra', CAMERAS, () => d.camera.type, (v) => { d.camera.type = v; }, { id: 'doc-camera' }), plage('Intensité', () => d.camera.intensite, (v) => { d.camera.intensite = v; }, { cle: 'ci' })),
         el('p', { className: 'info', textContent: 'La caméra déplace toute la scène ; la profondeur de chaque calque (Propriétés) règle sa parallaxe.' })),
+      sonP(d),
       details('Grille et guides', false, g2(num('Pas de la grille (px)', () => d.grille.pas, (v) => { d.grille.pas = Math.max(4, v); }, { min: 4 }), bascule('Magnétisme de la grille', () => d.grille.aimant, (v) => { d.grille.aimant = v; })),
         el('div', { className: 'rangee' }, bouton('Guides au centre', () => modifier(() => { d.guides.v.push(d.format.w / 2); d.guides.h.push(d.format.h / 2); })), bouton('Guides des tiers', () => modifier(() => { d.guides.v.push(d.format.w / 3, (2 * d.format.w) / 3); d.guides.h.push(d.format.h / 3, (2 * d.format.h) / 3); })), bouton('Effacer les guides', () => modifier(() => { d.guides = { h: [], v: [] }; }))),
         el('p', { className: 'info', textContent: 'Glisser depuis une règle pour créer un guide ; le glisser hors de la scène pour le supprimer.' })),

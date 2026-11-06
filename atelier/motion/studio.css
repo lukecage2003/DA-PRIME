@@ -177,3 +177,5 @@ dialog.tiroir { border-radius:12px; border-color:#30303A; box-shadow:0 30px 80px
 .controle-qualite { border-left:3px solid var(--vert, #4DD68C); background:var(--surface); padding:8px 10px; margin-bottom:10px; font-size:13px; }
 .controle-qualite[data-niveau="attention"] { border-color:var(--ambre); } .controle-qualite[data-niveau="erreur"] { border-color:var(--rouge); }
 .controle-qualite ul { margin:6px 0 0; padding-left:18px; color:var(--doux); }
+
+.piste-son { border:1px solid var(--ligne); background:var(--surface2); padding:6px; display:flex; flex-direction:column; gap:4px; margin:4px 0; } .nom-son { font-weight:700; overflow-wrap:anywhere; }

@@ -32,7 +32,7 @@ export function migrer(d, placeholder) {
 
 // ---------- Fichiers ----------
 export function paquetProjet(doc, ressources) {
-  synchroniserPlans(doc); const r = Object.fromEntries(ressourcesUtilisees(plansDe(doc).flatMap((p) => p.elements)).map((id) => [id, ressources.get(id)]).filter(([, v]) => v));
+  synchroniserPlans(doc); const r = Object.fromEntries([...ressourcesUtilisees(plansDe(doc).flatMap((p) => p.elements)), ...(doc.audio?.pistes || []).map((p) => p.ressource).filter(Boolean)].map((id) => [id, ressources.get(id)]).filter(([, v]) => v));
   return { format: 'primestone-motion', version: 2, exporte: new Date().toISOString(), creation: doc, ressources: r };
 }
 // Lit un fichier de projet (version 1 ou 2) ou une bibliothèque complète

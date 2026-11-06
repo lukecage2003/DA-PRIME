@@ -7,6 +7,7 @@ import { palette } from './studio-systemes.js';
 import { format as fmt, SYSTEMES } from './studio-systemes.js';
 import { TYPES } from './studio-assistant.js';
 import { trouverPersonnage } from './studio-personnages.js';
+import { sonsAuto } from './studio-sons.js';
 
 const SANS = { contour: { c: '@encre', w: 0 }, extrusion: { c: '@accent', profondeur: 0, angle: 45 }, lueur: { c: '@accent', b: 0 }, ombre: { c: '@encre', dx: 0, dy: 0, flou: 0, op: 0.85 }, deformation: { type: 'aucune', force: 0.4 }, degrade: null, fond: 'none' };
 const FOND_UNIVERS = { cosmique: 'cosmos', urbain: 'noir', mystique: 'cosmos', techno: 'noir' };
@@ -234,6 +235,8 @@ export function composer(brief, formatId = 'miniature', { profil, traitement } =
   const k = kit(d); k.sujet = profil?.composition?.sujet; k.sobre = !!tr?.sobre || profil?.sobriete === 'épurée' || (profil?.mesures?.densite ?? 1) < 0.08; k.lateral = !!tr && mise === 'heros'; k.minimal = traitement === 'minimal'; k.reel = b.personnages.some((p) => p.image); if (tr) d.origine.traitement = traitement; d.elements = sansVides((MISES[mise] || MISES.heros)(k, b));
   if (['duel', 'heros', 'heros-repere', 'annonce', 'evenement'].includes(mise)) d.camera = { type: 'poussee', intensite: 0.3 };
   if (carrousel) composerCarrousel(d, b);
+  // Bande son synchronisée sur l'animation (effets synthétisés, modifiables dans Document › Son)
+  d.audio = { volume: 0.9, muet: false, pistes: sonsAuto(d) };
   return d;
 }
 // Jeton de texte le plus lisible sur le fond du document (contraste mesuré)

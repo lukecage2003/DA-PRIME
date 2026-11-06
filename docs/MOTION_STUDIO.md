@@ -121,6 +121,10 @@ Chaque calque a sa propre animation, en trois parties combinables :
 
 Une image détourée (« Image entière ») peut recevoir une mise en lumière : lumière de contour du côté de la source, aura colorée, ombre portée, modelé du côté opposé, direction réglable. Le compositeur l'applique selon l'univers. Le panneau Exporter affiche un contrôle qualité (débordements, marges, textes superposés, contraste, lisibilité) avant chaque export ; l'export reste possible. Les déclinaisons par ancrages réespacent les textes qui se chevaucheraient et les gardent dans les marges.
 
+## Son (0.9.2)
+
+Document › Son. Effets synthétisés par Web Audio sur l'appareil (aucun fichier externe, aucun droit tiers) : whoosh, souffle, impact, boom, montée de tension, scintillement, tic, nappe. « Sons automatiques » place les effets sur les gestes de l'animation (arrivées, révélations, transitions) ; chaque effet reste modifiable (début, volume) et les ajouts manuels sont conservés. Une musique importée est stockée localement et incluse dans le fichier de projet ; ses droits de diffusion restent à vérifier. Exports : WebM avec piste Opus, temps réel avec son, WAV seul ; le GIF est muet. Limite : la synthèse ne remplace pas un sound design professionnel ; le son n'est pas joint aux exports PNG des campagnes.
+
 ## Plans et transitions
 
 Une création peut enchaîner plusieurs **plans** : des états visuels successifs (teaser, révélation, date…), chacun avec ses propres calques, animations et durée. La barre *Plans*, sous la scène, permet d'ajouter un plan vide, de dupliquer le plan actif, de le supprimer, de le renommer (double-clic) et de choisir sa **transition d'entrée** : coupe franche, fondu enchaîné, volet diagonal, iris, zoom traversant, éclair blanc, glissement (0,1 à 3 s). Le curseur de temps et la lecture parcourent toute la séquence ; le séquenceur montre le plan actif. Les exports animés (GIF, WebM, MP4) couvrent toute la séquence ; les images fixes montrent le plan actif.
