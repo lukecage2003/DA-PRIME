@@ -17,8 +17,10 @@
   <nav class="onglets" role="tablist" aria-label="Espaces de Script Studio">
     <button type="button" role="tab" data-espace="projets" aria-selected="true">Projets</button>
     <button type="button" role="tab" data-espace="comics" aria-selected="false">Comics</button>
+    <button type="button" role="tab" data-espace="connaissances" aria-selected="false">Connaissances</button>
     <button type="button" role="tab" data-espace="profils" aria-selected="false">Profils d'écriture</button>
     <button type="button" role="tab" data-espace="prompts" aria-selected="false">Prompt Studio</button>
+    <button type="button" role="tab" data-espace="moteurs" aria-selected="false">Moteurs</button>
   </nav>
   <a class="retour" href="../production/">Production →</a>
   <span id="etat" class="etat" role="status" aria-live="polite"></span>
@@ -42,10 +44,12 @@
       <ul id="resultats-comics" class="liste"></ul>
       <h3>Numéros</h3><ul id="liste-comics" class="liste"></ul>
       <h3>Arcs</h3><button type="button" id="nouvel-arc">Nouvel arc narratif</button><ul id="liste-arcs" class="liste"></ul>
-      <p id="moteurs" class="note"></p>
+      <p id="moteurs-statut" class="note"></p>
     </aside>
     <div id="comic" class="projet"><p class="vide">Importer un ou plusieurs numéros, puis analyser chaque numéro : pages, cases, transcription, personnages, événements, validation.</p></div>
   </section>
+  <section id="connaissances" class="espace espace-plein" aria-label="Connaissances" hidden><div id="connaissances-vue" class="projet"></div></section>
+  <section id="moteurs" class="espace espace-plein" aria-label="Moteurs" hidden><div id="moteurs-vue" class="projet"></div></section>
   <section id="profils" class="espace" aria-label="Profils d'écriture" hidden>
     <aside class="cote"><button type="button" id="nouveau-profil" class="accent">Nouveau profil</button><ul id="liste-profils" class="liste"></ul></aside>
     <div id="profil" class="projet"></div>

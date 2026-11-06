@@ -5,6 +5,9 @@ import * as SM from '../../templates/_systeme/script-moteur.js';
 import { $, el, bouton, champ, choix, saisie, zone, info, telecharger, slug, sans, PROVENANCES, autoTaille } from './ui.js';
 import { initComics } from './comics-ui.js';
 import { initPrompts } from './prompts-ui.js';
+import { creerFile } from './taches.js';
+import { initConnaissances } from './connaissances-ui.js';
+import { initMoteurs } from './moteurs-ui.js';
 
 const ETAPES = { projet: 'Projet', sources: 'Sources', analyse: 'Analyse', angle: 'Angle éditorial', plan: 'Plan', script: 'Script', critique: 'Analyse critique', export: 'Export' };
 const PROFONDEURS = { decouverte: 'Découverte', intermediaire: 'Intermédiaire', expert: 'Expert' };
@@ -27,11 +30,11 @@ addEventListener('keydown', (e) => { if (!P || !(e.ctrlKey || e.metaKey) || $('#
 addEventListener('pagehide', () => { if (P) db.ecrire('scripts', JSON.parse(JSON.stringify(P))); });
 
 // ---------- Espaces ----------
-let comicsUI, promptsUI;
+let comicsUI, promptsUI, kb, moteursUI; const file = creerFile();
 function espace(nom) {
   for (const b of document.querySelectorAll('[data-espace]')) { const a = b.dataset.espace === nom; b.setAttribute('aria-selected', a); $(`#${b.dataset.espace}`).hidden = !a; }
   if (location.hash.slice(1) !== nom) history.replaceState(null, '', `#${nom}`);
-  if (nom === 'comics') comicsUI.afficher(); if (nom === 'profils') listerProfils(); if (nom === 'prompts') promptsUI.afficher(P);
+  if (nom === 'comics') comicsUI.afficher(); if (nom === 'profils') listerProfils(); if (nom === 'prompts') promptsUI.afficher(P); if (nom === 'connaissances') kb.afficher(comicsUI.numeros()); if (nom === 'moteurs') moteursUI.afficher();
 }
 document.querySelectorAll('[data-espace]').forEach((b) => b.addEventListener('click', () => espace(b.dataset.espace)));
 
@@ -120,9 +123,10 @@ function vueSources(z) {
       el('div', { className: 'liste-elements' }, ...P.sources.map(ligneSource)), bouton('Ajouter une source', () => modif((p) => { p.sources.push({ titre: '', reference: '', genre: 'document', note: '' }); }), { id: 'ajouter-source' })));
 }
 async function reprendreComics() {
-  const { points, ignores } = await comicsUI.pointsDepuis(P.comics), existants = new Set(P.points.map((x) => x.cle).filter(Boolean)), nouveaux = points.filter((x) => !existants.has(x.cle));
+  const brut = await kb.pointsPourProjet(P.comics), libs = Object.fromEntries(comicsUI.numeros().map((c) => [c.id, c])), points = brut.map((x) => { const c = libs[x.ref.comic]; return { ...x, ref: { ...x.ref, pageId: c?.pages[(x.ref.page || 1) - 1] }, refTexte: `${c?.serie || ''} #${c?.numero || '?'} p. ${x.ref.page || '?'}${x.ref.case ? ` case ${x.ref.case}` : ''}` }; });
+  const ignores = P.comics.filter((id) => !brut.some((x) => x.ref.comic === id)).length, existants = new Set(P.points.map((x) => x.cle).filter(Boolean)), nouveaux = points.filter((x) => !existants.has(x.cle));
   modif((p) => { p.points.push(...nouveaux); p.points.forEach((y, k) => { y.ordre = y.ordre ?? k; }); });
-  info(`${nouveaux.length} événement(s) repris avec leur référence (numéro, page, case).${ignores ? ` ${ignores} numéro(s) ignoré(s) : événements non validés.` : ''}`);
+  info(`${nouveaux.length} événement(s) validé(s) repris avec leur référence (numéro, page, case).${ignores ? ` ${ignores} numéro(s) ignoré(s) : événements non validés.` : ''} Les informations à vérifier, rejetées, hypothèses et incertaines ne sont jamais reprises.`);
 }
 
 // ---------- 3. Analyse (comics) ----------
@@ -231,12 +235,13 @@ function adaptations() {
 
 // ---------- 8. Export ----------
 function vueExport(z) {
-  const apercu = el('textarea', { className: 'apercu-export', readOnly: true, id: 'apercu-export' }); let fmt = 'complet';
+  const apercu = el('textarea', { className: 'apercu-export', readOnly: true, id: 'apercu-export' }), controle = el('div', { className: 'carte-bloc controle-export', id: 'controle-export' }); let fmt = 'complet', ctl = { problemes: [], bloquants: 0 };
+  kb.controler(P).then((r) => { ctl = r; controle.replaceChildren(el('h3', { textContent: 'Contrôle des sources' }), r.problemes.length ? el('ul', {}, ...r.problemes.map((x) => el('li', { dataset: { gravite: x.gravite }, textContent: x.message }))) : el('p', { className: 'note', textContent: 'Toute la matière issue des comics renvoie à des informations validées.' }), r.bloquants ? el('p', { className: 'moteur-statut', textContent: `${r.bloquants} information(s) non validée(s) : l'export sera marqué BROUILLON.` }) : null); });
   const voir = async (f) => { fmt = f; apercu.value = SM.exporter(P, f, { profil: profilDe(P), comics: await comicsUI.infosRefs() }); z.querySelectorAll('[data-format]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.format === f))); };
   z.append(el('div', { className: 'carte-bloc' }, el('h3', { textContent: 'Exports pour la production' }), el('p', { className: 'note', textContent: 'Fichiers texte ouverts (Markdown, CSV, SRT, JSON) importables dans un traitement de texte, un tableur ou un logiciel de montage (les sous-titres SRT s\'importent dans Premiere Pro, DaVinci Resolve, CapCut). Aucune intégration directe à un logiciel de montage n\'est revendiquée.' }),
     el('div', { className: 'rangee' }, ...Object.entries(SM.EXPORTS).map(([k, n]) => bouton(n, () => voir(k), { dataset: { format: k } }))),
-    apercu, el('div', { className: 'rangee' }, bouton('Télécharger', () => { telecharger(apercu.value, `${slug(P.nom)}-${fmt}.${SM.EXT[fmt]}`, fmt === 'montage' ? 'text/csv;charset=utf-8' : 'text/plain;charset=utf-8'); P.etapes = { ...(P.etapes || {}), export: Date.now() }; sauverBientot(); }, { className: 'accent', id: 'telecharger-export' }), bouton('Copier', async () => { await navigator.clipboard?.writeText(apercu.value).catch(() => {}); info('Copié dans le presse-papiers.'); }))),
-    el('div', { className: 'carte-bloc' }, el('h3', { textContent: 'Correspondance script ↔ pages de comics' }), comicsUI.correspondance(P)));
+    apercu, el('div', { className: 'rangee' }, bouton('Télécharger', () => { if (ctl.bloquants && !confirm(`${ctl.bloquants} information(s) du script ne sont pas validées. Exporter quand même en BROUILLON ?`)) return; const contenu = ctl.bloquants && !['json', 'srt', 'montage'].includes(fmt) ? `BROUILLON — ${ctl.bloquants} information(s) non validée(s) à vérifier avant diffusion.\n\n${apercu.value}` : apercu.value; telecharger(contenu, `${slug(P.nom)}-${fmt}${ctl.bloquants ? '-brouillon' : ''}.${SM.EXT[fmt]}`, fmt === 'montage' ? 'text/csv;charset=utf-8' : 'text/plain;charset=utf-8'); P.etapes = { ...(P.etapes || {}), export: Date.now() }; sauverBientot(); }, { className: 'accent', id: 'telecharger-export' }), bouton('Copier', async () => { await navigator.clipboard?.writeText(apercu.value).catch(() => {}); info('Copié dans le presse-papiers.'); }))),
+    controle, el('div', { className: 'carte-bloc' }, el('h3', { textContent: 'Correspondance script ↔ pages de comics' }), comicsUI.correspondance(P)));
   voir('complet');
 }
 
@@ -257,11 +262,16 @@ function editerProfil(p) {
 // ---------- Démarrage ----------
 await Promise.all(['400 40px Anton', '700 40px "JetBrains Mono"', '700 40px Archivo'].map((f) => document.fonts.load(f).catch(() => {})));
 await charger();
-comicsUI = initComics({ rafraichirProjet: () => P && afficher(), projet: () => P, modif });
+kb = initConnaissances({ file, libelleComic: (c) => `${c.serie || 'Sans série'} #${c.numero || '?'}` });
+moteursUI = initMoteurs({ file });
+comicsUI = initComics({ rafraichirProjet: () => P && afficher(), projet: () => P, modif, kb, file });
+// Traitements : diagnostic de la file (fil principal) et détection des cases d'un numéro entier (Web Worker)
+file.enregistrer('diagnostic', { nom: 'Diagnostic de la file', async executer(t, { signal, progres }) { const n = t.params.etapes || 10; for (let i = t.curseur || 0; i < n; i++) { if (signal.aborted) throw Object.assign(new Error('annulé'), { name: 'AbortError' }); await new Promise((r) => setTimeout(r, t.params.pause ?? 200)); if (t.params.echouerA === i + 1) throw new Error(`échec volontaire à l'étape ${i + 1}`); progres((i + 1) / n, `Étape ${i + 1}/${n}`, i + 1); } return { etapes: n }; } });
+file.enregistrer('cases-numero', { nom: 'Détection des cases d\'un numéro', worker: true, async apres() { await comicsUI.charger(); if (!$('#comics').hidden) comicsUI.afficher(); } });
 promptsUI = initPrompts({ projets: () => projets, profilDe, critique: () => critique });
-await comicsUI.charger();
-lister(); persister();
+await comicsUI.charger(); await kb.charger();
+lister(); persister(); await file.demarrer(); if (await kb.migrerSiNecessaire()) info('Reprise des analyses existantes dans la base de connaissances (traitement en arrière-plan).');
 const qid = new URLSearchParams(location.search).get('projet'); if (qid && projets.some((x) => x.id === qid)) await ouvrir(qid);
-espace(['comics', 'profils', 'prompts'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'projets');
+espace(['comics', 'profils', 'prompts', 'connaissances', 'moteurs'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'projets');
 if ('serviceWorker' in navigator && window.isSecureContext) navigator.serviceWorker.register('../sw.js').catch(() => {});
-window.__script = { SM, db, projet: () => P, sauver, ouvrir };   // utilisé par les tests automatisés
+window.__script = { SM, db, projet: () => P, sauver, ouvrir, file, kb };   // utilisé par les tests automatisés

@@ -10,18 +10,19 @@ const TYPES_TEXTE = { dialogue: 'Bulle de dialogue', pensee: 'Pensée', cartouch
 const STATUTS = { lu: 'Lu', incertain: 'Incertain', illisible: 'Illisible' };
 const nid = (p) => `${p}${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
-export function initComics({ rafraichirProjet }) {
+export function initComics({ rafraichirProjet, kb, file }) {
   let comics = [], courant = null, pageIdx = 0, pageCache = new Map(), caseSel = null;
   const numeros = () => comics.filter((c) => c.genre === 'numero').sort((a, b) => sans(`${a.serie} ${String(a.numero).padStart(5, '0')}`).localeCompare(sans(`${b.serie} ${String(b.numero).padStart(5, '0')}`)));
   const arcs = () => comics.filter((c) => c.genre === 'arc');
   const libelle = (c) => `${c.serie || 'Sans série'} #${c.numero || '?'}${c.titre ? ` · ${c.titre}` : ''}`;
   async function charger() { comics = await db.tous('comics').catch(() => []); }
-  const sauverComic = async (c) => { c.modifie = Date.now(); await db.ecrire('comics', c); const i = comics.findIndex((x) => x.id === c.id); if (i >= 0) comics[i] = c; else comics.push(c); };
+  const attenteSync = new Map(), planifierSync = (c) => { if (!kb || c?.genre !== 'numero') return; clearTimeout(attenteSync.get(c.id)); attenteSync.set(c.id, setTimeout(() => { attenteSync.delete(c.id); kb.synchroniserComic(c); }, 400)); };
+  const sauverComic = async (c) => { c.modifie = Date.now(); await db.ecrire('comics', c); const i = comics.findIndex((x) => x.id === c.id); if (i >= 0) comics[i] = c; else comics.push(c); planifierSync(c); };
   const page = async (id) => { if (!pageCache.has(id)) pageCache.set(id, await db.lire('pages', id)); return pageCache.get(id); };
-  const sauverPage = async (p) => { pageCache.set(p.id, p); await db.ecrire('pages', p); };
+  const sauverPage = async (p) => { pageCache.set(p.id, p); await db.ecrire('pages', p); planifierSync(comics.find((x) => x.id === p.comic)); };
 
   $('#import-comics').accept = FORMATS_ACCEPTES;
-  $('#moteurs').replaceChildren(...Object.values(MOTEURS).map((m) => el('span', { className: 'moteur-statut', style: 'display:block;margin-bottom:4px', textContent: `${m.nom} : ${m.note}` })));
+  $('#moteurs-statut').replaceChildren(...Object.values(MOTEURS).map((m) => el('span', { className: 'moteur-statut', style: 'display:block;margin-bottom:4px', textContent: `${m.nom} : ${m.note}` })));
   // ---------- Import ----------
   $('#import-comics').addEventListener('change', async (ev) => {
     const fs = [...ev.target.files]; ev.target.value = ''; if (!fs.length) return;
@@ -90,6 +91,7 @@ export function initComics({ rafraichirProjet }) {
       el('label', { className: 'bascule' }, (() => { const x = el('input', { type: 'checkbox', checked: !!p.double }); x.addEventListener('change', async () => { p.double = x.checked; await sauverPage(p); }); return x; })(), 'Double page'))),
       el('div', { className: 'pile' }, el('div', { className: 'carte-bloc' }, el('h3', { textContent: `Page ${pageIdx + 1} · cases` }),
         el('div', { className: 'rangee' }, bouton('Détecter les cases', async () => { const bm = await createImageBitmap(p.blob), r = detecterCases(bm, { sens: c.sens || 'gd' }); bm.close?.(); p.cases = r.cases; p.detection = { fiabilite: r.fiabilite, note: r.note }; await sauverPage(p); lecteur(c); info(`${r.cases.length} case(s) détectée(s) · fiabilité ${r.fiabilite}.`); }, { className: 'accent', id: 'detecter-cases' }),
+          file ? bouton('Tout le numéro (arrière-plan)', async () => { await file.ajouter('cases-numero', { comic: c.id }, { nom: `Cases · ${libelle(c)}` }); info('Détection des cases du numéro lancée en arrière-plan (suivi dans l\'espace Moteurs ; annulable).'); }, { id: 'cases-arriere-plan' }) : null,
           bouton('Supprimer la case', async () => { if (caseSel === null) return; p.cases.splice(caseSel, 1); caseSel = null; await sauverPage(p); lecteur(c); }), bouton('Effacer les cases', async () => { p.cases = []; p.detection = null; await sauverPage(p); lecteur(c); }),
           el('label', { className: 'bascule' }, (() => { const x = el('input', { type: 'checkbox', checked: c.sens === 'dg' }); x.addEventListener('change', async () => { c.sens = x.checked ? 'dg' : 'gd'; await sauverComic(c); }); return x; })(), 'Lecture de droite à gauche (manga)')),
         el('p', { className: 'note', textContent: det ? `Détection géométrique (fiabilité ${det.fiabilite}) : ${det.note}` : 'Détection géométrique par gouttières (sans IA). Glisser sur la page pour tracer une case à la main.' })),
@@ -109,12 +111,14 @@ export function initComics({ rafraichirProjet }) {
       return el('div', { className: 'ligne-element', dataset: { evenement: x.id } }, el('div', { className: 'pile' }, t, el('div', { className: 'rangee' }, el('label', {}, 'p. ', pg), el('label', {}, 'case ', ca), pr, im, fn, el('label', { className: 'bascule' }, rv, 'Révélation'), el('label', { className: 'bascule' }, fb, 'Flashback'))),
         el('div', { className: 'pile' }, bouton('↑', () => { if (!i) return; [A.evenements[i - 1], A.evenements[i]] = [A.evenements[i], A.evenements[i - 1]]; sv(); afficher(); }, { className: 'petit', 'aria-label': 'Plus tôt' }), bouton('✕', () => { A.evenements.splice(i, 1); sv(); afficher(); }, { className: 'petit' }))); };
     const txt = (k, lab) => { const t = autoTaille(zone(A[k], { rows: 2 })); t.addEventListener('change', () => { A[k] = t.value; sv(); }); return champ(lab, t); };
-    const valid = el('div', { className: 'validation', id: 'validation-numero' }, ...Object.entries(VALIDATIONS).map(([k, n]) => { const cb = el('input', { type: 'checkbox', checked: !!c.validation[k], dataset: { valider: k } }); cb.addEventListener('change', () => { c.validation[k] = cb.checked; sv(); rafraichirProjet(); }); return el('label', {}, cb, n); }));
+    const valid = el('div', { className: 'validation', id: 'validation-numero' }, ...Object.entries(VALIDATIONS).map(([k, n]) => { const cb = el('input', { type: 'checkbox', checked: !!c.validation[k], dataset: { valider: k } }); cb.addEventListener('change', async () => { c.validation[k] = cb.checked; await sv(); if (kb && (k === 'evenements' || k === 'personnages')) { clearTimeout(attenteSync.get(c.id)); attenteSync.delete(c.id); await kb.synchroniserComic(c); const n = await kb.validerGroupe(c.id, k === 'evenements' ? 'evenement' : 'personnage', cb.checked); info(`${n} information(s) ${cb.checked ? 'validée(s)' : 'repassée(s) « à vérifier »'} dans la base de connaissances.`); } rafraichirProjet(); }); return el('label', {}, cb, n); }));
     return el('div', { className: 'pile' },
       el('div', { className: 'carte-bloc' }, el('h3', { textContent: 'Analyse du numéro' }), el('p', { className: 'note', textContent: 'Analyse construite par vous, page par page : chaque information garde sa provenance. Les informations incertaines ne sont jamais utilisées automatiquement dans un script.' }), champ('Résumé', resume)),
       el('div', { className: 'carte-bloc' }, el('h3', { textContent: 'Personnages' }), ...A.personnages.map(perso), el('div', { className: 'rangee' }, bouton('Ajouter un personnage', () => { A.personnages.push({ nom: '', role: '', provenance: 'dialogue' }); sv(); afficher(); }), bouton('Suggérer depuis les transcriptions', () => suggererPersonnages(c), { id: 'suggerer-personnages' }))),
       el('div', { className: 'carte-bloc' }, el('h3', { textContent: 'Événements (ordre chronologique du numéro)' }), ...A.evenements.map(evt), bouton('Ajouter un événement (page courante)', () => { A.evenements.push({ id: nid('ev'), texte: '', page: pageIdx + 1, case: caseSel !== null ? caseSel + 1 : null, provenance: 'dialogue', importance: 2, fonction: '' }); sv(); afficher(); }, { id: 'ajouter-evenement' })),
       el('div', { className: 'carte-bloc' }, el('div', { className: 'grille2' }, txt('lieux', 'Lieux'), txt('relations', 'Relations'), txt('incertitudes', 'Incertitudes et points à vérifier'))),
+      kb ? el('div', { className: 'carte-bloc' }, el('h3', { textContent: 'Base de connaissances' }), (() => { const s = kb.resume(c.id); return el('p', { className: 'note', id: 'resume-kb', textContent: `${s.total} information(s) · ${s.parStatut.valide || 0} validée(s) · ${s.parStatut['a-verifier'] || 0} à vérifier · ${s.parStatut.rejete || 0} rejetée(s).` }); })(),
+        bouton('Ouvrir dans Connaissances', () => document.querySelector('[data-espace="connaissances"]').click())) : null,
       el('div', { className: 'carte-bloc' }, el('h3', { textContent: 'Validation humaine' }), el('p', { className: 'note', textContent: 'Seuls les événements d\'un numéro validé (case « Événements ») sont repris dans un script.' }), valid));
   }
   // Suggestion déterministe : noms en capitales relevés dans les transcriptions (à confirmer, provenance « dialogue »)

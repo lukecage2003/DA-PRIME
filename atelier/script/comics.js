@@ -61,7 +61,7 @@ export async function importerFichiers(fichiers, { progres } = {}) {
 // Fiable sur des grilles à gouttières nettes ; les cases inclinées, débordantes ou sans gouttière sont signalées pour découpe manuelle.
 export function detecterCases(bitmap, { sens = 'gd' } = {}) {
   const k = Math.min(1, 700 / Math.max(bitmap.width, bitmap.height)), W = Math.max(1, Math.round(bitmap.width * k)), H = Math.max(1, Math.round(bitmap.height * k));
-  const c = Object.assign(document.createElement('canvas'), { width: W, height: H }), g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(bitmap, 0, 0, W, H);
+  const c = typeof document !== 'undefined' ? Object.assign(document.createElement('canvas'), { width: W, height: H }) : new OffscreenCanvas(W, H), g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(bitmap, 0, 0, W, H);   // OffscreenCanvas dans un Web Worker
   const d = g.getImageData(0, 0, W, H).data, L = new Float32Array(W * H); for (let i = 0; i < W * H; i++) L[i] = (d[i * 4] * 0.3 + d[i * 4 + 1] * 0.59 + d[i * 4 + 2] * 0.11) / 255;
   // Couleur de gouttière : la luminosité dominante du bord de page
   const bord = []; for (let x = 0; x < W; x++) bord.push(L[x], L[(H - 1) * W + x]); for (let y = 0; y < H; y++) bord.push(L[y * W], L[y * W + W - 1]); bord.sort((a, b) => a - b); const fond = bord[Math.floor(bord.length / 2)];

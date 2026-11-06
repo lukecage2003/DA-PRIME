@@ -1,5 +1,18 @@
 # Journal des versions
 
+## 0.11.0 · 2026-11-06 · Script Studio : fondation (connaissances, validation, file, capacités, moteurs)
+
+- **Base de connaissances** (Script Studio › Connaissances) : chaque information est une assertion traçable — contenu, catégorie (dialogue extrait, narration, élément visuel observable, interprétation, hypothèse, information incertaine), numéro, page, case, méthode d'extraction, confiance, statut (brouillon, à vérifier, validée, rejetée) et historique daté. Recherche, filtres, actions groupées, ajout manuel, fiche détaillée.
+- **Validation humaine** : une information modifiée après validation redevient « à vérifier » ; seules les informations validées (dialogue, narration, visuel, interprétation) nourrissent un script ; contrôle avant export (source supprimée, rejetée ou non validée → export marqué BROUILLON, confirmation demandée).
+- **Migration 0.10 → 0.11** : transcriptions, événements et personnages des numéros existants repris automatiquement (identifiants stables, idempotente, en tâche de fond) ; validations existantes conservées ; textes illisibles ou incertains classés « information incertaine ». Synchronisation continue avec l'espace Comics.
+- **File de traitements en arrière-plan** : progression, annulation, erreurs, tâche interrompue à la fermeture de la page, reprise contrôlée au point d'arrêt ou relance depuis le début ; détection des cases d'un numéro entier dans un Web Worker.
+- **Capacités matérielles** (Script Studio › Moteurs) : mesures du navigateur avec leur source (cœurs, mémoire approximative, nom de la carte graphique, WebGPU, quota de stockage) ; la mémoire vidéo est affichée « inconnue » quand elle n'est pas mesurable — jamais supposée.
+- **Serveur local facultatif** `tools/serveur-moteurs.mjs` (Node, sans dépendance) : mesure réelle de la RAM, des processeurs, du disque et de la mémoire vidéo NVIDIA (nvidia-smi) ; mode réseau local avec jeton obligatoire pour les téléphones et tablettes ; aucune donnée envoyée hors du réseau.
+- **Architecture des moteurs** : trois moteurs indépendants et remplaçables (OCR Engine, Comic Vision Engine, Local Writing Engine) ; seuls les adaptateurs manuels sont disponibles ; Tesseract, vision et rédaction locales listés « prévus », non installés. Test de joignabilité Ollama (adresses locales uniquement, aucun modèle exécuté).
+- **Profils de configuration** (mobile, léger, standard, qualité) recommandés d'après les seules capacités mesurées ; capacité inconnue → profil léger.
+- Base locale version 6 (`connaissances`, `taches`, `reglages`) ; la sauvegarde de la bibliothèque inclut la base de connaissances.
+- Tests : 33 tests de fondation (16 Node, 17 Chromium, dont migration réelle d'une base 0.10) ; validation sur 5 numéros réels (hors dépôt).
+
 ## 0.10.0 · 2026-11-06 · Script Studio ; fin de la 0.9.1
 
 - **Script Studio** (`atelier/script/`, voir `docs/SCRIPT_STUDIO.md`) : projets éditoriaux en 8 étapes ; architecte éditorial (angles et suggestions à accepter ou rejeter) ; plan narratif selon la durée (15 s à plusieurs heures : court, intermédiaire, long avec chapitres, très long avec parties et rappels) et la plateforme (8), budget de mots selon le profil, aucun remplissage ; éditeur par séquences (métadonnées, sources, notes de montage, commentaires, réorganisation), sauvegarde automatique, annulation, versions et comparaison mot à mot ; analyse critique par règles avec corrections acceptées une par une ; courbe de rythme indicative ; adaptations à une autre plateforme ; profils d'écriture ; 9 exports (Markdown, TXT, CSV de montage, SRT, JSON).

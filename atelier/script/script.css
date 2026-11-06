@@ -50,3 +50,12 @@ details.meta-seq summary { font-size:12px; color:var(--doux); min-height:28px; c
 .correspondance { display:grid; grid-template-columns:minmax(0, 1fr) 220px; gap:10px; border-bottom:1px solid var(--ligne); padding:8px 0; } .correspondance .refs { display:flex; flex-wrap:wrap; gap:4px; } .correspondance .refs img { width:64px; aspect-ratio:2/3; object-fit:cover; }
 .moteur-statut { border-left:3px solid var(--ambre); padding:6px 8px; background:var(--surface); font-size:12.5px; }
 @media (max-width:900px) { .espace:not([hidden]), .lecteur, .correspondance { grid-template-columns:1fr; } .etapes button { flex-basis:30%; } }
+
+/* 0.11.0 : connaissances, moteurs, traitements */
+.espace-plein:not([hidden]) { grid-template-columns:minmax(0, 1fr); }
+.tableau-caps { width:100%; border-collapse:collapse; font-size:13.5px; } .tableau-caps th { text-align:left; color:var(--doux); font-weight:400; padding:5px 10px 5px 0; white-space:nowrap; vertical-align:top; } .tableau-caps td { padding:5px 10px 5px 0; vertical-align:top; } .tableau-caps tr { border-bottom:1px solid var(--ligne); }
+.inconnu { color:var(--ambre); font-style:normal; }
+.commande { background:#0F0F0F; border:1px solid var(--ligne); padding:8px 10px; font:12.5px/1.5 "JetBrains Mono", monospace; overflow-x:auto; margin:0; }
+.statut-kb { font:700 11px "JetBrains Mono", monospace; text-transform:uppercase; } .statut-kb[data-statut="valide"] { color:var(--vert); } .statut-kb[data-statut="a-verifier"] { color:var(--ambre); } .statut-kb[data-statut="rejete"] { color:#FF8C7A; }
+.ligne-element[data-statut="rejete"] { opacity:.55; } .tache[data-etat="erreur"] { border-left:3px solid var(--rouge); } .tache[data-etat="interrompu"] { border-left:3px solid var(--ambre); } .tache[data-etat="termine"] { border-left:3px solid var(--vert); } .tache .jauge { flex:none; width:100%; min-width:200px; }
+.controle-export li[data-gravite="bloquant"] { color:#FF8C7A; }

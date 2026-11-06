@@ -1,10 +1,11 @@
 // Motion Studio · stockage durable sur l'appareil (IndexedDB) et fichiers de projet / de bibliothèque.
 // Magasins : créations, ressources (images, polices), versions, modèles, composants, préréglages d'animation,
 // campagnes, profils DA, visuels (fiches légères des images : vignette, catégorie, tags…), fiches de personnages,
-// Script Studio : projets de scripts, profils rédactionnels, prompts personnels, comics (numéros, arcs, analyses) et pages (images).
+// Script Studio : projets de scripts, profils rédactionnels, prompts personnels, comics (numéros, arcs, analyses), pages (images),
+// base de connaissances sourcée (assertions), file de traitements, réglages des moteurs.
 import { parcourir, convertirV1, estV1, normaliserDoc, nouvelId, plansDe, synchroniserPlans } from '../../templates/_systeme/studio.js';
 
-const BASE = 'primestone-motion', VERSION = 5, MAGASINS = ['creations', 'ressources', 'versions', 'modeles', 'composants', 'presets', 'campagnes', 'profils', 'visuels', 'personnages', 'scripts', 'redaction', 'prompts', 'comics', 'pages'];
+const BASE = 'primestone-motion', VERSION = 6, MAGASINS = ['creations', 'ressources', 'versions', 'modeles', 'composants', 'presets', 'campagnes', 'profils', 'visuels', 'personnages', 'scripts', 'redaction', 'prompts', 'comics', 'pages', 'connaissances', 'taches', 'reglages'];
 let base = null;
 const ouvrir = () => base || (base = new Promise((ok, ko) => {
   const r = indexedDB.open(BASE, VERSION);
@@ -43,13 +44,13 @@ export function lirePaquet(j, placeholder) {
   const { doc, ressources } = migrer(c, placeholder); return { doc, ressources: { ...(j.ressources || {}), ...ressources } };
 }
 export async function paquetBibliotheque() {
-  const M = ['creations', 'ressources', 'modeles', 'composants', 'presets', 'campagnes', 'profils', 'visuels', 'personnages', 'scripts', 'redaction', 'prompts'], v = await Promise.all(M.map((m) => db.tous(m)));
+  const M = ['creations', 'ressources', 'modeles', 'composants', 'presets', 'campagnes', 'profils', 'visuels', 'personnages', 'scripts', 'redaction', 'prompts', 'connaissances'], v = await Promise.all(M.map((m) => db.tous(m)));
   return { format: 'primestone-motion-bibliotheque', version: 3, exporte: new Date().toISOString(), ...Object.fromEntries(M.map((m, i) => [m, v[i]])) };
 }
 // Importe une bibliothèque : les éléments existants (même identifiant) sont conservés, rien n'est écrasé
 export async function importerBibliotheque(b) {
   let n = 0;
-  for (const m of ['ressources', 'creations', 'modeles', 'composants', 'presets', 'campagnes', 'profils', 'visuels', 'personnages', 'scripts', 'redaction', 'prompts']) for (const o of b[m] || []) { if (!o?.id) continue; if (await db.lire(m, o.id)) continue; await db.ecrire(m, o); n++; }
+  for (const m of ['ressources', 'creations', 'modeles', 'composants', 'presets', 'campagnes', 'profils', 'visuels', 'personnages', 'scripts', 'redaction', 'prompts', 'connaissances']) for (const o of b[m] || []) { if (!o?.id) continue; if (await db.lire(m, o.id)) continue; await db.ecrire(m, o); n++; }
   return n;
 }
 // Versions : instantanés datés d'une création (30 au plus par création, les plus anciennes automatiques sont supprimées)

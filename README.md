@@ -4,7 +4,7 @@ Dépôt de l'identité visuelle de **Primestone Media** : système graphique, de
 
 Direction artistique de référence : **Signal** (YouTube, accroches, communication) + **Kiosque** (éditorial, dossiers, carrousels, infographies, bibliothèque). Direction sombre et cinématographique en usage secondaire.
 
-## État : studio créatif éditorial (accueil, Script Studio, Production, Atelier, Motion Studio) · version 0.10.0 provisoire
+## État : studio créatif éditorial (accueil, Script Studio, Production, Atelier, Motion Studio) · version 0.11.0 provisoire
 
 | Élément | Emplacement | Statut |
 |---|---|---|
@@ -22,6 +22,7 @@ Direction artistique de référence : **Signal** (YouTube, accroches, communicat
 | Production éditoriale : assistant local (27 types de contenus), compositeur multiformat, campagnes et calendrier, statuts de validation, production et export par lot (ZIP), profils de direction artistique mesurés, bibliothèque centralisée | `atelier/production/`, `templates/_systeme/studio-assistant.js`, `studio-compositeur.js`, `studio-personnages.js` | prototype fonctionnel |
 | Bibliothèque visuelle : import multiple, catégories, tags, collections, favoris, fiches de personnages (7 rôles d'image), comparaison de 4 traitements × 3 formats, réutilisation dans l'Atelier et Motion Studio | `atelier/production/` (onglet Visuels), `atelier/motion/visuels.js` | prototype fonctionnel |
 | Script Studio : projets éditoriaux, architecte éditorial, plan narratif selon la durée, éditeur, analyse critique, adaptations, comics (CBZ, ZIP, PDF), cases, transcription, analyse par numéro, Prompt Studio, exports de montage | `atelier/script/`, `templates/_systeme/script-*.js`, `docs/SCRIPT_STUDIO.md` | fonctionnel (OCR et vision non installés) |
+| Fondation 0.11 : base de connaissances sourcée, validation humaine, file de traitements, capacités matérielles, moteurs locaux (architecture), serveur local réseau | `templates/_systeme/connaissances.js`, `templates/_systeme/moteurs.js`, `atelier/script/{connaissances-ui,moteurs-ui,taches,capacites}.js`, `tools/serveur-moteurs.mjs` | fonctionnel (aucun moteur IA installé) |
 | Catalogue `brand-manifest.json` + schéma | `catalog/`, `schemas/` | généré |
 | Schéma Supabase | `supabase/` | **brouillon non appliqué** |
 | Présentations des missions 01 et 02 | `presentations/` | archive |
