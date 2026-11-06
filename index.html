@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atelier Primestone · création graphique et motion design pour les comics</title>
+<meta name="description" content="Miniatures YouTube, carrousels, infographies et créations animées pour les comics et la pop culture. Gratuit, sans compte, tout reste sur votre appareil.">
+<meta name="theme-color" content="#0E0E10">
+<meta property="og:title" content="Atelier Primestone">
+<meta property="og:description" content="Création graphique et motion design pour les comics, directement dans le navigateur.">
+<meta property="og:image" content="https://lukecage2003.github.io/DA-PRIME/accueil/motion-evenement.jpg">
+<meta property="og:type" content="website">
+<link rel="icon" href="brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png">
+<link rel="stylesheet" href="atelier/polices.css">
+<style>
+:root { --fond:#0E0E10; --surface:#16161A; --ligne:#2A2A31; --texte:#ECEBE7; --doux:#8F8E96; --jaune:#FFE500; color-scheme:dark; }
+* { box-sizing:border-box; } html { scroll-behavior:smooth; }
+body { margin:0; background:var(--fond); color:var(--texte); font:16px/1.55 Archivo, system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+a { color:inherit; }
+.page { max-width:1200px; margin:0 auto; padding:0 max(20px, env(safe-area-inset-left)); }
+header { display:flex; align-items:center; gap:24px; padding:20px 0; }
+.logo { font:400 22px/1 Anton, Impact, sans-serif; text-transform:uppercase; color:var(--jaune); text-decoration:none; letter-spacing:.01em; }
+nav { display:flex; gap:20px; margin-left:auto; font-size:14px; } nav a { color:var(--doux); text-decoration:none; } nav a:hover { color:var(--texte); }
+.bouton { display:inline-flex; align-items:center; gap:10px; min-height:48px; padding:0 22px; border-radius:8px; font-weight:700; text-decoration:none; border:1px solid var(--ligne); background:#1D1D22; transition:background .15s, transform .15s; }
+.bouton:hover { background:#26262D; transform:translateY(-1px); } .bouton.jaune { background:var(--jaune); color:#111; border-color:var(--jaune); } .bouton.jaune:hover { background:#FFF06A; }
+.hero { display:grid; grid-template-columns:1.05fr 1fr; gap:48px; align-items:center; padding:56px 0 72px; }
+.surtitre { font:700 12px "JetBrains Mono", monospace; letter-spacing:.18em; text-transform:uppercase; color:var(--jaune); }
+h1 { font:400 clamp(44px, 6.4vw, 84px)/.98 Anton, Impact, sans-serif; text-transform:uppercase; margin:14px 0 18px; letter-spacing:.005em; }
+h1 em { font-style:normal; color:var(--jaune); }
+.chapeau { font-size:19px; color:#C9C8C2; max-width:34em; margin:0 0 30px; }
+.actions { display:flex; flex-wrap:wrap; gap:12px; }
+.visuel { position:relative; aspect-ratio:16/10; }
+.visuel img { position:absolute; border-radius:10px; box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06); }
+.visuel .v1 { width:82%; right:0; top:0; } .visuel .v2 { width:34%; left:0; bottom:-6%; transform:rotate(-3deg); }
+section { padding:64px 0; border-top:1px solid var(--ligne); }
+h2 { font:400 clamp(30px, 4vw, 44px)/1.05 Anton, Impact, sans-serif; text-transform:uppercase; margin:10px 0 12px; }
+.intro { color:var(--doux); max-width:42em; margin:0 0 36px; }
+.outils { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+.outil { background:var(--surface); border:1px solid var(--ligne); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; }
+.outil img { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; }
+.outil div { padding:24px 26px 28px; display:flex; flex-direction:column; gap:10px; flex:1; }
+.outil h3 { font:400 26px/1 Anton, sans-serif; text-transform:uppercase; margin:0; }
+.outil p { margin:0; color:#BDBCB6; } .outil ul { margin:4px 0 14px; padding-left:18px; color:var(--doux); font-size:15px; } .outil .bouton { align-self:flex-start; margin-top:auto; }
+.galerie { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+.galerie figure { margin:0; } .galerie img { width:100%; border-radius:10px; display:block; border:1px solid var(--ligne); }
+.galerie figcaption { font-size:13px; color:var(--doux); margin-top:8px; }
+.points { display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; }
+.point { padding:24px; border:1px solid var(--ligne); border-radius:12px; background:var(--surface); }
+.point b { display:block; font-size:17px; margin-bottom:6px; } .point span { color:var(--doux); font-size:15px; }
+footer { padding:36px 0 48px; border-top:1px solid var(--ligne); color:#6E6D75; font-size:13px; display:flex; flex-wrap:wrap; gap:8px 24px; }
+@media (max-width: 900px) { .hero, .outils { grid-template-columns:1fr; } .hero { padding-top:24px; gap:40px; } .galerie, .points { grid-template-columns:1fr; } nav { display:none; } .visuel { margin-bottom:24px; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header><a class="logo" href="./">Atelier Primestone</a>
+    <nav aria-label="Navigation"><a href="#outils">Outils</a><a href="#galerie">Exemples</a><a href="#confidentialite">Vos données</a></nav>
+    <a class="bouton jaune" href="atelier/motion/">Motion Studio</a></header>
+  <main>
+    <div class="hero">
+      <div>
+        <div class="surtitre">Comics · super-héros · pop culture</div>
+        <h1>Créez des visuels <em>dignes d'un éditeur</em></h1>
+        <p class="chapeau">Miniatures YouTube, carrousels, infographies, révélations de couvertures et animations : composez, animez et exportez directement dans votre navigateur. Gratuit, sans compte.</p>
+        <div class="actions"><a class="bouton jaune" href="atelier/motion/">Ouvrir Motion Studio</a><a class="bouton" href="atelier/">Ouvrir l'Atelier</a></div>
+      </div>
+      <div class="visuel" aria-hidden="true"><img class="v1" src="accueil/motion-evenement.jpg" alt=""><img class="v2" src="accueil/motion-annonce.jpg" alt=""></div>
+    </div>
+    <section id="outils">
+      <div class="surtitre">Deux outils</div><h2>Du gabarit à la composition libre</h2>
+      <p class="intro">L'Atelier remplit en quelques secondes des gabarits éprouvés ; Motion Studio laisse composer et animer librement, avec un langage graphique comics complet.</p>
+      <div class="outils">
+        <article class="outil"><img src="accueil/motion-personnage.jpg" alt="Révélation d'un personnage créée avec Motion Studio" loading="lazy">
+          <div><h3>Motion Studio</h3><p>Composition libre et motion design pour les comics.</p>
+            <ul><li>Textes d'impact, bulles, trames, explosions, lumières et effets cosmiques</li><li>Animation par calque, séquenceur, caméra et parallaxe</li><li>Exports PNG, SVG, GIF, WebM et MP4</li></ul>
+            <a class="bouton jaune" href="atelier/motion/">Ouvrir Motion Studio</a></div></article>
+        <article class="outil"><img src="templates/miniatures/01-analyse-personnage/exemples/PS_MIN_01-analyse-personnage_jaune_NON-OFFICIEL.jpg" alt="Miniature YouTube créée avec l'Atelier" loading="lazy">
+          <div><h3>Atelier</h3><p>Gabarits prêts à l'emploi, contrôles de lisibilité intégrés.</p>
+            <ul><li>8 familles de miniatures YouTube, 19 variantes</li><li>Carrousels Kiosque et fiches personnage</li><li>Infographies pilotées par des données</li></ul>
+            <a class="bouton" href="atelier/">Ouvrir l'Atelier</a></div></article>
+      </div>
+    </section>
+    <section id="galerie">
+      <div class="surtitre">Exemples</div><h2>Ce que vous pouvez créer</h2>
+      <p class="intro">Tous ces visuels sont des modèles entièrement modifiables : textes, illustrations, couleurs, effets et animations.</p>
+      <div class="galerie">
+        <figure><img src="accueil/motion-equipe.jpg" alt="Révélation d'équipe" loading="lazy"><figcaption>Révélation d'équipe · Motion Studio</figcaption></figure>
+        <figure><img src="templates/miniatures/08-cosmique/exemples/PS_MIN_08-cosmique_decor_NON-OFFICIEL.jpg" alt="Miniature cosmique" loading="lazy"><figcaption>Miniature YouTube · Atelier</figcaption></figure>
+        <figure><img src="templates/miniatures/06-evenements/exemples/PS_MIN_06-evenements_titre-bas_NON-OFFICIEL.jpg" alt="Miniature événement" loading="lazy"><figcaption>Miniature YouTube · Atelier</figcaption></figure>
+      </div>
+    </section>
+    <section id="confidentialite">
+      <div class="surtitre">Vos données</div><h2>Tout reste sur votre appareil</h2>
+      <div class="points">
+        <div class="point"><b>Aucun compte, aucun serveur</b><span>Vos créations, illustrations et polices sont enregistrées dans votre navigateur. Rien n'est envoyé en ligne.</span></div>
+        <div class="point"><b>Fonctionne hors ligne</b><span>Après une première visite, les outils se rouvrent même sans connexion.</span></div>
+        <div class="point"><b>Vos projets en fichier</b><span>Enregistrez un projet complet pour le sauvegarder ou le reprendre sur un autre appareil.</span></div>
+      </div>
+    </section>
+  </main>
+  <footer><span>Atelier Primestone · version 0.6.0</span><span>Logo et jaune de marque provisoires (non officiels)</span><span>Illustrations de démonstration originales</span></footer>
+</div>
+</body>
+</html>

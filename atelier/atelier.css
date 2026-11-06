@@ -54,3 +54,19 @@ button:focus-visible, input:focus-visible { outline:2px solid var(--jaune); outl
 .champs .rangee { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
 .champs .rangee button { font:inherit; color:var(--texte); background:var(--fond); border:1px solid var(--ligne); padding:9px 12px; min-height:44px; cursor:pointer; }
 .lien-motion { display:inline-flex; align-items:center; min-height:44px; padding:0 14px; background:var(--jaune); color:#111; font:700 14px/1 Archivo, sans-serif; text-decoration:none; }
+
+/* ---------- Thème professionnel (couleurs d'interface seulement : la marque et les gabarits ne changent pas) ---------- */
+:root { --fond:#0E0E10; --surface:#16161A; --ligne:#2A2A31; --texte:#ECEBE7; --doux:#8F8E96; }
+body { -webkit-font-smoothing:antialiased; }
+.barre { background:#0B0B0D; align-items:center; }
+.statut { font-size:10px; border-color:transparent; color:#6E6D75; padding:4px 0; }
+fieldset { border-radius:10px; border-color:var(--ligne); }
+legend { color:var(--doux); font-weight:600; letter-spacing:.14em; }
+.puces button, .image button, .champs .rangee button { border-radius:6px; background:#1D1D22; border-color:var(--ligne); }
+.puces button:hover, .image button:hover { background:#26262D; }
+.puces button[aria-pressed="true"] { background:#2C2C34; color:#fff; border-color:#3A3A43; box-shadow:inset 0 -2px 0 var(--jaune); font-weight:600; }
+.exports button { border-radius:6px; }
+.champs textarea, .champs select, .champs input { border-radius:6px; background:#121215; }
+.apercu { border-radius:4px; border-color:#24242A; box-shadow:0 18px 60px rgba(0,0,0,.5); }
+.resume { border-radius:6px; }
+.lien-motion { border-radius:6px; }

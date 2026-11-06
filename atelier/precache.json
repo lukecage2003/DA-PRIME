@@ -1,5 +1,5 @@
 {
- "version": "0.1.1-8eff408c16",
+ "version": "0.1.1-3ee099f03b",
  "fichiers": [
   "./",
   "index.html",
@@ -13,6 +13,7 @@
   "motion/etat.js",
   "motion/exports.js",
   "motion/gif.js",
+  "motion/icones.js",
   "motion/index.html",
   "motion/proprietes.js",
   "motion/rendu-canvas.js",

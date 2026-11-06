@@ -16,8 +16,8 @@
   <strong class="marque">Motion Studio</strong>
   <input type="text" id="nom" class="nom" aria-label="Nom de la création" autocomplete="off">
   <div class="groupe-boutons">
-    <button type="button" id="annuler" title="Annuler (Ctrl+Z)" aria-label="Annuler">↶</button>
-    <button type="button" id="retablir" title="Rétablir (Ctrl+Maj+Z)" aria-label="Rétablir">↷</button>
+    <button type="button" id="annuler" title="Annuler (Ctrl+Z)" aria-label="Annuler" data-icone="annuler"></button>
+    <button type="button" id="retablir" title="Rétablir (Ctrl+Maj+Z)" aria-label="Rétablir" data-icone="retablir"></button>
   </div>
   <button type="button" id="ouvrir-bibliotheque" class="principal">Bibliothèque</button>
   <button type="button" id="ouvrir-export" class="principal accent">Exporter</button>
@@ -25,18 +25,18 @@
 </header>
 <main class="studio">
   <nav class="outils" aria-label="Outils">
-    <button type="button" data-outil="selection" aria-pressed="true" title="Sélection (V)"><span>↖</span>Sélection</button>
-    <button type="button" data-ajout="texte" title="Texte (T)"><span>T</span>Texte</button>
-    <button type="button" data-ajout="forme" title="Forme (R)"><span>■</span>Forme</button>
-    <button type="button" data-ajout="image" title="Illustration (I)"><span>▣</span>Image</button>
-    <button type="button" data-ajout="effet" title="Effet (E)"><span>✺</span>Effet</button>
-    <button type="button" data-ajout="composant" title="Composants (C)"><span>❖</span>Composant</button>
+    <button type="button" data-outil="selection" aria-pressed="true" title="Sélection (V)"><span data-icone="curseur" data-taille="20"></span>Sélection</button>
+    <button type="button" data-ajout="texte" title="Texte (T)"><span data-icone="texte" data-taille="20"></span>Texte</button>
+    <button type="button" data-ajout="forme" title="Forme (R)"><span data-icone="forme" data-taille="20"></span>Forme</button>
+    <button type="button" data-ajout="image" title="Illustration (I)"><span data-icone="image" data-taille="20"></span>Image</button>
+    <button type="button" data-ajout="effet" title="Effet (E)"><span data-icone="effet" data-taille="20"></span>Effet</button>
+    <button type="button" data-ajout="composant" title="Composants (C)"><span data-icone="composant" data-taille="20"></span>Composant</button>
     <input type="file" id="fichier-image" accept="image/*" multiple hidden>
   </nav>
   <section class="centre" aria-label="Scène">
     <div class="barre-scene">
       <button type="button" id="lecture" aria-pressed="false">▶ Lecture</button>
-      <button type="button" id="rejouer" aria-label="Rejouer depuis le début">↺</button>
+      <button type="button" id="rejouer" aria-label="Rejouer depuis le début" data-icone="rejouer"></button>
       <input type="range" id="temps" min="0" max="6" step="0.01" value="0" aria-label="Position dans l'animation">
       <output id="temps-lu" for="temps">0,0 s</output>
       <select id="zoom" aria-label="Zoom de la scène"><option value="ajuste">Ajuster</option><option value="0.25">25 %</option><option value="0.5">50 %</option><option value="1">100 %</option><option value="2">200 %</option></select>

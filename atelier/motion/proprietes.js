@@ -5,12 +5,15 @@ import { styleTexte, adapter, normaliserEl, nouvelId, FORMATS_STUDIO } from '../
 import { SYSTEMES, JETONS, ROLES_TEXTE, palette, format as fmt } from '../../templates/_systeme/studio-systemes.js';
 import { POLICES, DEFORMATIONS } from '../../templates/_systeme/studio-texte.js';
 import { FORMES, MASQUES } from '../../templates/_systeme/studio-formes.js';
+import { icone } from './icones.js';
 import { EFFETS_LIB, CATEGORIES_EFFETS } from '../../templates/_systeme/studio-effets.js';
 import { ENTREES, SORTIES, BOUCLES, COURBES, DIRECTIONS, CAMERAS, PRESETS_ANIM } from '../../templates/_systeme/studio-anim.js';
 
 const el = (tag, { dataset, ...p } = {}, ...k) => { const e = Object.assign(document.createElement(tag), p); if (dataset) Object.assign(e.dataset, dataset); e.append(...k.flat().filter((x) => x !== null && x !== undefined && x !== false)); return e; };
 const bouton = (txt, fn, p = {}) => { const { label, ...r } = p; const b = el('button', { type: 'button', textContent: txt, ...r }); if (label) b.setAttribute('aria-label', label); b.addEventListener('click', fn); return b; };
 let maj = [];
+// Bouton à icône (texte facultatif après l'icône)
+const bIco = (nom, txt, fn, p = {}) => { const b = bouton('', fn, p); b.innerHTML = icone(nom) + (txt ? `<span>${txt}</span>` : ''); b.classList.add('a-icone'); return b; };
 // Champ générique : get lit la valeur, set l'écrit dans le document (avec historique regroupé par champ)
 function lier(input, get, set, cle, lire = (i) => i.value) {
   const ecrire = () => modifier(() => set(lire(input)), cle);
@@ -51,8 +54,8 @@ export function initPanneaux(ctx) {
     const p = $('#onglet-proprietes'), s = selection();
     if (!s.length) { p.replaceChildren(el('p', { className: 'vide', textContent: 'Aucun élément sélectionné. Ajouter un élément avec la barre d\'outils, ou toucher un élément de la scène.' }),
       el('p', { className: 'info', textContent: 'Raccourcis : Ctrl+Z / Ctrl+Maj+Z annuler et rétablir · Suppr effacer · Ctrl+D dupliquer · Ctrl+G grouper · Ctrl+C / Ctrl+V copier, coller · flèches déplacer (Maj ×10) · Espace lecture · Échap désélectionner · double-clic : éditer le texte, recadrer l\'image, entrer dans un groupe.' })); return; }
-    const alignes = el('div', { className: 'grille3' }, ...[['gauche', '⇤ Gauche'], ['centre', '↔ Centre'], ['droite', '⇥ Droite'], ['haut', '⤒ Haut'], ['milieu', '↕ Milieu'], ['bas', '⤓ Bas']].map(([m, t]) => bouton(t, () => aligner(m), { label: `Aligner ${m}` })));
-    const ordres = el('div', { className: 'grille4' }, bouton('⇈', () => ordre('premier'), { label: 'Premier plan', title: 'Premier plan' }), bouton('↑', () => ordre('avant'), { label: 'Avancer', title: 'Avancer' }), bouton('↓', () => ordre('arriere'), { label: 'Reculer', title: 'Reculer' }), bouton('⇊', () => ordre('dernier'), { label: 'Arrière-plan', title: 'Arrière-plan' }));
+    const alignes = el('div', { className: 'grille6' }, ...[['gauche', 'gauche', 'Gauche'], ['centre', 'centreH', 'Centre'], ['droite', 'droite', 'Droite'], ['haut', 'haut', 'Haut'], ['milieu', 'milieu', 'Milieu'], ['bas', 'bas', 'Bas']].map(([m, i, t]) => bIco(i, '', () => aligner(m), { label: `Aligner ${m}`, title: `Aligner : ${t}` })));
+    const ordres = el('div', { className: 'grille4' }, bIco('premier', '', () => ordre('premier'), { label: 'Premier plan', title: 'Premier plan' }), bIco('avant', '', () => ordre('avant'), { label: 'Avancer', title: 'Avancer' }), bIco('arriere', '', () => ordre('arriere'), { label: 'Reculer', title: 'Reculer' }), bIco('dernier', '', () => ordre('dernier'), { label: 'Arrière-plan', title: 'Arrière-plan' }));
     if (s.length > 1) { p.replaceChildren(el('h3', { textContent: `${s.length} éléments sélectionnés` }), el('div', { className: 'rangee' }, bouton('Grouper', grouper), bouton('Dupliquer', dupliquer), bouton('Supprimer', supprimer), bouton('Enregistrer comme composant', () => ctx.enregistrerComposant())),
       el('h3', { textContent: 'Aligner' }), alignes, el('div', { className: 'rangee' }, bouton('Répartir horizontalement', () => distribuer('h')), bouton('Répartir verticalement', () => distribuer('v'))), el('h3', { textContent: 'Ordre' }), ordres); return; }
     const e = s[0].el, set = (f) => (v) => f(v), T = { texte: 'Texte', image: 'Illustration', forme: 'Forme', effet: 'Effet', groupe: 'Groupe', vecteur: 'Vectoriel (modèle)', sceau: 'Sceau P (non officiel)' }[e.type];
@@ -62,7 +65,7 @@ export function initPanneaux(ctx) {
       el('div', { className: 'rangee' }, bouton('Dupliquer', dupliquer), bouton('Supprimer', supprimer), bouton(e.verrou ? 'Déverrouiller' : 'Verrouiller', () => { modifier(() => { e.verrou = !e.verrou; }); proprietes(); }), e.type === 'groupe' ? bouton('Dégrouper', degrouper) : null, bouton('Comme composant', () => ctx.enregistrerComposant(), { title: 'Enregistrer comme composant réutilisable' })),
       details('Disposition', true, g2(num('X', () => Math.round(e.x), (v) => { e.x = v; }, { id: 'prop-x' }), num('Y', () => Math.round(e.y), (v) => { e.y = v; }, { id: 'prop-y' }), num('Largeur', () => Math.round(e.w), (v) => redimensionner(e, Math.max(1, v), e.h), { min: 1, id: 'prop-w' }), num('Hauteur', () => Math.round(e.h), (v) => redimensionner(e, e.w, Math.max(1, v)), { min: 1, id: 'prop-h' })),
         g2(num('Rotation (°)', () => e.rot, (v) => { e.rot = v; }, { pas: 0.5, id: 'prop-rot' }), plage('Opacité', () => e.op, (v) => { e.op = v; }, { id: 'prop-op' })),
-        el('h3', { textContent: 'Aligner sur la scène' }), alignes, el('h3', { textContent: 'Ordre' }), ordres),
+        el('div', { className: 'ligne-outils' }, el('span', { className: 'etiquette', textContent: 'Aligner' }), alignes), el('div', { className: 'ligne-outils' }, el('span', { className: 'etiquette', textContent: 'Ordre' }), ordres)),
       details('Fusion, miroir, profondeur', false, choix('Mode de fusion', { normal: 'Normal', multiply: 'Produit', screen: 'Superposition claire', overlay: 'Incrustation', darken: 'Assombrir', lighten: 'Éclaircir', 'color-dodge': 'Densité couleur −', 'hard-light': 'Lumière crue', difference: 'Différence' }, () => e.blend, (v) => { e.blend = v; }),
         bascule('Miroir horizontal', () => e.miroir, (v) => { e.miroir = v; }), plage('Profondeur (parallaxe de la caméra)', () => e.prof, (v) => { e.prof = v; }, { min: -1, max: 2 })),
     ];
@@ -178,13 +181,13 @@ export function initPanneaux(ctx) {
     if (!lignes.length) $('#arbre').append(el('li', { className: 'vide', textContent: 'Aucun calque : page blanche.' }));
   }
   function ligne(e, prof) {
-    const nom = bouton(`${{ texte: 'T', image: '▣', forme: '■', effet: '✺', groupe: '❖', vecteur: '◆', sceau: 'P' }[e.type] || ''}  ${e.nom}`, (ev) => selectionner(e.id, ev.shiftKey || ev.ctrlKey || ev.metaKey), { className: 'nom-calque', title: e.nom });
+    const nom = bIco({ texte: 'texte', image: 'image', forme: 'forme', effet: 'effet', groupe: 'composant', vecteur: 'forme', sceau: 'composant' }[e.type] || 'forme', e.nom, (ev) => selectionner(e.id, ev.shiftKey || ev.ctrlKey || ev.metaKey), { className: 'nom-calque', title: e.nom });
     nom.style.paddingLeft = 8 + prof * 16 + 'px';
     nom.addEventListener('dblclick', () => { const n = prompt('Nom du calque', e.nom); if (n) modifier(() => { e.nom = n; }); });
     return el('li', { dataset: { id: e.id, actif: String(S.sel.includes(e.id)), visible: String(e.visible !== false) } }, nom,
-      bouton(e.visible !== false ? '👁' : '–', () => modifier(() => { e.visible = e.visible === false; }), { className: 'ico oeil', label: `${e.visible !== false ? 'Masquer' : 'Afficher'} ${e.nom}` }),
-      bouton(e.verrou ? '🔒' : '🔓', () => modifier(() => { e.verrou = !e.verrou; }), { className: 'ico verrou', label: `${e.verrou ? 'Déverrouiller' : 'Verrouiller'} ${e.nom}` }),
-      bouton('↑', () => { selectionner(e.id); ordre('avant'); }, { className: 'ico', label: `Monter ${e.nom}` }), bouton('↓', () => { selectionner(e.id); ordre('arriere'); }, { className: 'ico', label: `Descendre ${e.nom}` }));
+      bIco(e.visible !== false ? 'oeil' : 'oeilFerme', '', () => modifier(() => { e.visible = e.visible === false; }), { className: 'ico oeil', label: `${e.visible !== false ? 'Masquer' : 'Afficher'} ${e.nom}` }),
+      bIco(e.verrou ? 'cadenas' : 'cadenasOuvert', '', () => modifier(() => { e.verrou = !e.verrou; }), { className: 'ico verrou', label: `${e.verrou ? 'Déverrouiller' : 'Verrouiller'} ${e.nom}` }),
+      bIco('monter', '', () => { selectionner(e.id); ordre('avant'); }, { className: 'ico', label: `Monter ${e.nom}` }), bIco('descendre', '', () => { selectionner(e.id); ordre('arriere'); }, { className: 'ico', label: `Descendre ${e.nom}` }));
   }
   // ---------- Document ----------
   function documentP() {
