@@ -33,7 +33,11 @@ export function changerStatut(a, statut, { par = 'utilisateur', motif = '' } = {
 export function modifierContenu(a, contenu, { par = 'utilisateur' } = {}) {
   const e = empreinteContenu(contenu); if (e === a.empreinte) { a.contenu = contenu; return a; }
   const avant = a.statut; a.contenu = contenu; a.empreinte = e; a.modifie = Date.now();
-  if (avant === 'valide') { a.statut = 'a-verifier'; a.historique = [...a.historique, { date: Date.now(), de: 'valide', vers: 'a-verifier', par, motif: 'contenu modifié après validation', empreinte: e }]; }
+  const trace = (vers, motif) => { a.statut = vers; a.historique = [...(a.historique || []), { date: Date.now(), de: avant, vers, par, motif, empreinte: e }]; };
+  // Un contenu vidé redevient brouillon ; un brouillon qui reçoit un contenu passe « à vérifier » (sinon il ne pourrait jamais être validé)
+  if (!String(contenu).trim()) { if (avant !== 'brouillon' && avant !== 'rejete') trace('brouillon', 'contenu vidé'); }
+  else if (avant === 'valide') trace('a-verifier', 'contenu modifié après validation');
+  else if (avant === 'brouillon') trace('a-verifier', 'contenu renseigné');
   return a;
 }
 
@@ -78,7 +82,9 @@ export function pointsPourScript(as, ordreComics = []) {
 // Contrôle avant export final : toute matière du script doit renvoyer à une assertion encore validée
 export function controlerScript(projet, as) {
   const par = new Map(as.map((a) => [a.id, a])), problemes = [];
-  for (const pt of projet.points || []) { if (!pt.assertion) continue; const a = par.get(pt.assertion);
+  for (const pt of projet.points || []) {
+    // Points repris en 0.10 (sans lien « assertion ») : leur clé est l'identifiant de l'événement source (ev:<clé>)
+    const id = pt.assertion || (pt.ref?.comic && pt.cle ? `ev:${pt.cle}` : null); if (!id) continue; const a = par.get(id);
     if (!a) problemes.push({ point: pt.id, gravite: 'bloquant', message: `« ${pt.texte.slice(0, 60)} » : information source introuvable (supprimée).` });
     else if (a.statut !== 'valide') problemes.push({ point: pt.id, gravite: 'bloquant', message: `« ${pt.texte.slice(0, 60)} » : information source ${STATUTS[a.statut].toLowerCase()} — ne peut pas figurer comme fait.` });
     else if (!AUTORISEES_SCRIPT.includes(a.categorie)) problemes.push({ point: pt.id, gravite: 'bloquant', message: `« ${pt.texte.slice(0, 60)} » : ${CATEGORIES[a.categorie].toLowerCase()} exclue d'un script final.` });

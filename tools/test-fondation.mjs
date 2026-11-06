@@ -33,6 +33,10 @@ console.log('Base de connaissances et moteurs (Node)');
   ok(pts.map((x) => x.assertion).join() === 'ev:e1,ev:e3' && pts[1].provenance === 'interpretation' && pts[0].ref.page === 4, 'matière de script : seules les informations validées admises (hypothèse, incertain, rejeté, transcriptions exclus), ordre et références conservés');
   const projet = { points: pts }; ok(K.controlerScript(projet, kb).bloquants === 0 && K.controlerScript(projet, kb).problemes.some((p) => p.gravite === 'info'), 'contrôle avant export : interprétation signalée, aucun bloquant');
   K.changerStatut(kb.find((x) => x.id === 'ev:e1'), 'a-verifier'); ok(K.controlerScript(projet, kb).bloquants === 1, 'information dévalidée après coup : export bloqué (brouillon)');
+  const b0 = K.normaliser({ id: 'b0', contenu: '', statut: 'brouillon' }); K.modifierContenu(b0, 'Texte ajouté ensuite.'); K.modifierContenu(b0, '');
+  ok(b0.historique.map((h) => h.vers).join() === 'a-verifier,brouillon', 'brouillon rempli → « à vérifier » (validable) ; contenu vidé → brouillon');
+  const ancien = { points: [{ id: 'p010', cle: 'e1', texte: 'Point repris en 0.10', ref: { comic: 'c1', page: 4 } }, { id: 'libre', texte: 'Point saisi à la main' }] };
+  const kb2 = [K.normaliser({ id: 'ev:e1', contenu: 'x', statut: 'rejete' })]; ok(K.controlerScript(ancien, kb2).bloquants === 1 && K.controlerScript(ancien, []).bloquants === 1 && K.controlerScript({ points: [ancien.points[1]] }, []).bloquants === 0, 'projet 0.10 (points sans lien) : source rejetée ou supprimée → export bloqué ; point manuel non concerné');
   const ad = ['http://localhost:11434', 'http://127.0.0.1:4180', 'http://192.168.1.20:4180', 'http://10.0.0.5', 'http://172.16.3.4', 'http://pc-studio.local:4180', 'http://[::1]:11434'], refus = ['https://api.example.com', 'http://8.8.8.8:11434', 'http://172.32.0.1', 'ftp://localhost'];
   ok(ad.every((u) => MO.adresseLocale(u).ok) && refus.every((u) => !MO.adresseLocale(u).ok), 'moteurs : adresses locales et privées acceptées, Internet et protocoles exotiques refusés');
   const p0 = MO.profilRecommande({}), p1 = MO.profilRecommande({ coeurs: 8, ramGo: 8 }), p2 = MO.profilRecommande({ serveur: { ramGo: 16, vramGo: 8, coeurs: 8 } }), p3 = MO.profilRecommande({ serveur: { ramGo: 64, vramGo: 24, coeurs: 16 } }), p4 = MO.profilRecommande({ mobile: true, ramGo: 8 });
@@ -49,6 +53,8 @@ const SM = await imp('tools/serveur-moteurs.mjs');
   ok(sante.moteurs.ocr.etat === 'non installé' && sante.moteurs.vision.etat === 'non installé' && sante.moteurs.ecriture.etat === 'non installé', 'santé : les trois moteurs déclarés « non installé »');
   const codes = await Promise.all(['/atelier/script/', '/docs/SCRIPT_STUDIO.md', '/tools/serve.mjs', '/.git/config', '/package.json', '/brand/00_originaux/x', '/../etc/passwd'].map(async (p) => (await g(p)).status)), post = await fetch('http://127.0.0.1:4187/api/sante', { method: 'POST', headers: J });
   ok(codes[0] === 200 && codes.slice(1).every((c) => c === 404) && post.status === 405, `fichiers servis : application seulement (documents, outils, dépôt Git, originaux refusés : ${codes.join(', ')}) ; écriture interdite (405)`);
+  const pre = (o) => fetch('http://127.0.0.1:4187/api/sante', { method: 'OPTIONS', headers: { Origin: o } }), cl = await pre('http://192.168.1.20:4173'), ci = await pre('https://exemple.com'), gi = await fetch('http://127.0.0.1:4187/api/sante', { headers: { ...J, Origin: 'https://exemple.com' } });
+  ok(cl.status === 204 && cl.headers.get('access-control-allow-origin') === 'http://192.168.1.20:4173' && ci.status === 403 && !gi.headers.get('access-control-allow-origin'), 'DA-PRIME ouvert depuis une autre adresse locale : accès autorisé (CORS) ; origines Internet refusées');
   srv.close();
 }
 if (process.argv.includes('--unitaires')) fin();
@@ -118,9 +124,13 @@ await D(async () => { const p = await window.__script.db.lire('scripts', 'spA');
 await p.goto(`${B}/atelier/script/?projet=spA#projets`); await p.waitForFunction(() => window.__script?.projet?.()); await p.click('[data-etape="export"]'); await p.waitForFunction(() => /BROUILLON/.test(document.querySelector('#controle-export')?.textContent || ''));
 const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#telecharger-export')]);
 ok(/brouillon/.test(dl.suggestedFilename()) && /à vérifier — ne peut pas figurer comme fait/.test(await p.textContent('#controle-export')), `export contrôlé : information non validée signalée, fichier marqué brouillon (${dl.suggestedFilename()})`);
+// 6 bis. Suppression d'un numéro depuis l'espace Comics : ses informations sont rejetées (plus jamais utilisables), traces conservées
+await p.goto('about:blank'); await p.goto(`${B}/atelier/script/#comics`); await p.waitForFunction(() => window.__script); await p.click('[data-comic="cmA"]'); await p.click('text=Supprimer ce numéro');
+await attendreQue(async () => (await window.__script.db.tous('connaissances')).filter((a) => a.comic === 'cmA').every((a) => a.statut === 'rejete'));
+ok((await D(async () => (await window.__script.db.tous('connaissances')).filter((a) => a.comic === 'cmA' && a.historique.at(-1)?.motif === 'numéro supprimé').length)) > 0, 'numéro supprimé : ses informations passent « rejetée » (motif tracé)');
 // 7. Mobile : profil délégué, aucun modèle
 const m = await browser.newContext({ ...devices['iPhone 13'] }), pm = await m.newPage(); await pm.goto(`${B}/atelier/script/#moteurs`); await pm.waitForSelector('#profil-moteurs');
-ok(/Appareil mobile/.test(await pm.textContent('#profil-moteurs')) && (await pm.evaluate(() => document.documentElement.scrollWidth <= innerWidth)), 'téléphone : profil « Appareil mobile » (moteurs délégués au PC), page sans débordement');
+ok(/Appareil mobile/.test(await pm.textContent('#profil-moteurs')) && (await pm.evaluate(() => document.documentElement.scrollWidth <= screen.width)), 'téléphone : profil « Appareil mobile » (moteurs délégués au PC), page sans débordement');
 await m.close();
 ok(!err.length, `aucune erreur JavaScript${err.length ? ' · ' + err.slice(0, 3).join(' | ') : ''}`);
 await browser.close(); serveur.close(); faux.close(); fin();

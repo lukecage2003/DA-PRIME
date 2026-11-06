@@ -61,7 +61,7 @@ export function initConnaissances({ file, libelleComic }) {
     z.replaceChildren(el('div', { className: 'carte-bloc' }, el('h3', { textContent: 'Information' }),
       el('p', { className: 'note', textContent: manuel ? 'Information saisie à la main.' : 'Information issue d\'une analyse : la modifier ici la fait repasser « à vérifier ». Pour une transcription ou un événement, préférer la modification dans l\'espace Comics (la source reste cohérente).' }),
       champ('Contenu', t), el('div', { className: 'grille2' }, champ('Catégorie', cat), champ('Numéro', co), champ('Page', pg), champ('Case', cs)), champ('Note', note),
-      el('div', { className: 'rangee' }, bouton('Enregistrer', async () => { K.modifierContenu(a, t.value); Object.assign(a, { categorie: cat.value, comic: co.value || null, page: +pg.value || null, case: +cs.value || null, note: note.value, modifie: Date.now() }); if (a.statut === 'brouillon' && a.contenu.trim()) K.changerStatut(a, 'a-verifier', { motif: 'création' }); await ecrire(a); afficher(comicsListe); info('Information enregistrée.'); }, { className: 'accent', id: 'kb-enregistrer' }),
+      el('div', { className: 'rangee' }, bouton('Enregistrer', async () => { if (!t.value.trim()) return info('Contenu vide : rien n\'est enregistré.'); K.modifierContenu(a, t.value); Object.assign(a, { categorie: cat.value, comic: co.value || null, page: +pg.value || null, case: +cs.value || null, note: note.value, modifie: Date.now() }); if (a.statut === 'brouillon' && a.contenu.trim()) K.changerStatut(a, 'a-verifier', { motif: 'création' }); await ecrire(a); afficher(comicsListe); info('Information enregistrée.'); }, { className: 'accent', id: 'kb-enregistrer' }),
         bouton('Retour', () => afficher(comicsListe))),
       el('h3', { textContent: 'Historique' }), el('ul', {}, ...(a.historique.length ? a.historique : [{ date: a.cree, de: '—', vers: a.statut, par: 'création', motif: '' }]).map((h) => el('li', { className: 'note', textContent: `${new Date(h.date).toLocaleString('fr-FR')} · ${K.STATUTS[h.de] || h.de} → ${K.STATUTS[h.vers] || h.vers} · ${h.par}${h.motif ? ` · ${h.motif}` : ''}` })))));
   }
@@ -69,6 +69,8 @@ export function initConnaissances({ file, libelleComic }) {
     charger, afficher, synchroniserComic, validerGroupe, migrerSiNecessaire,
     async pointsPourProjet(ids) { await charger(); return K.pointsPourScript(toutes.filter((a) => ids.includes(a.comic)), ids); },
     async controler(P) { await charger(); return K.controlerScript(P, toutes); },
+    // Numéro supprimé : ses informations sont rejetées (conservées pour la traçabilité, plus jamais utilisables dans un script)
+    async retirerComic(comic) { await charger(); let n = 0; for (const a of toutes.filter((x) => x.comic === comic && x.statut !== 'rejete')) { K.changerStatut(a, 'rejete', { par: 'synchronisation', motif: 'numéro supprimé' }); await ecrire(a); n++; } return n; },
     resume: (comic) => K.statistiques(toutes.filter((a) => a.comic === comic)),
   };
 }

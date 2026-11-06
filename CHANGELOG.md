@@ -11,7 +11,8 @@
 - **Architecture des moteurs** : trois moteurs indépendants et remplaçables (OCR Engine, Comic Vision Engine, Local Writing Engine) ; seuls les adaptateurs manuels sont disponibles ; Tesseract, vision et rédaction locales listés « prévus », non installés. Test de joignabilité Ollama (adresses locales uniquement, aucun modèle exécuté).
 - **Profils de configuration** (mobile, léger, standard, qualité) recommandés d'après les seules capacités mesurées ; capacité inconnue → profil léger.
 - Base locale version 6 (`connaissances`, `taches`, `reglages`) ; la sauvegarde de la bibliothèque inclut la base de connaissances.
-- Tests : 33 tests de fondation (16 Node, 17 Chromium, dont migration réelle d'une base 0.10) ; validation sur 5 numéros réels (hors dépôt).
+- Corrections issues de la validation fonctionnelle : un événement ajouté vide puis rempli restait « brouillon » et ne pouvait jamais être validé ; une information manuelle vide pouvait être enregistrée ; la suppression d'un numéro laissait ses informations utilisables ; les points repris par un projet 0.10 échappaient au contrôle avant export ; « null » affiché dans le contrôle des sources ; tableau des capacités trop large sur téléphone ; serveur local injoignable quand DA-PRIME est ouvert depuis une autre adresse locale (CORS limité aux origines locales).
+- Tests : 37 tests de fondation (19 Node, 18 Chromium, dont migration réelle d'une base 0.10) ; validation sur 5 numéros réels (hors dépôt).
 
 ## 0.10.0 · 2026-11-06 · Script Studio ; fin de la 0.9.1
 

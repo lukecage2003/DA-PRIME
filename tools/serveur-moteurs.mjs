@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { execFile } from 'node:child_process';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import os from 'node:os';
+import { adresseLocale } from '../templates/_systeme/moteurs.js';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const VERSION = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8')).version;
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.woff2': 'font/woff2' };
@@ -33,15 +34,19 @@ const MOTEURS = { ocr: { etat: 'non installé', prevu: '0.11.1' }, vision: { eta
 
 export function demarrer({ port = 4180, reseau = false, jeton = reseau ? randomBytes(18).toString('hex') : '' } = {}) {
   const ok = (req) => { if (!jeton) return true; const j = Buffer.from(String(req.headers['x-da-prime-jeton'] || new URL(req.url, 'http://x').searchParams.get('jeton') || '')), r = Buffer.from(jeton); return j.length === r.length && timingSafeEqual(j, r); };
-  const json = (res, code, o) => { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' }); res.end(JSON.stringify(o)); };
+  // DA-PRIME ouvert depuis une autre adresse locale (autre port, autre appareil du réseau) : lecture autorisée (CORS)
+  // pour les seules origines locales ; le jeton reste exigé en mode réseau. Aucune origine Internet n'est autorisée.
+  const cors = (req) => { const o = req.headers.origin; return o && adresseLocale(o).ok ? { 'Access-Control-Allow-Origin': o, Vary: 'Origin' } : {}; };
+  const json = (res, code, o, req) => { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', ...cors(req) }); res.end(JSON.stringify(o)); };
   const srv = createServer(async (req, res) => {
     const u = new URL(req.url, 'http://x'); let p = decodeURIComponent(u.pathname);
     if (p.startsWith('/api/')) {
-      if (req.method !== 'GET') return json(res, 405, { erreur: 'méthode non autorisée' });
-      if (!ok(req)) return json(res, 401, { erreur: 'jeton requis' });
-      if (p === '/api/sante') return json(res, 200, { ok: true, application: 'DA-PRIME', version: VERSION, reseau, moteurs: MOTEURS });
-      if (p === '/api/capacites') return json(res, 200, await capacites());
-      return json(res, 404, { erreur: 'inconnu' });
+      if (req.method === 'OPTIONS') { const c = cors(req); res.writeHead(c['Access-Control-Allow-Origin'] ? 204 : 403, { ...c, ...(c['Access-Control-Allow-Origin'] ? { 'Access-Control-Allow-Methods': 'GET', 'Access-Control-Allow-Headers': 'X-DA-PRIME-Jeton', 'Access-Control-Allow-Private-Network': 'true', 'Access-Control-Max-Age': '600' } : {}) }); return res.end(); }
+      if (req.method !== 'GET') return json(res, 405, { erreur: 'méthode non autorisée' }, req);
+      if (!ok(req)) return json(res, 401, { erreur: 'jeton requis' }, req);
+      if (p === '/api/sante') return json(res, 200, { ok: true, application: 'DA-PRIME', version: VERSION, reseau, moteurs: MOTEURS }, req);
+      if (p === '/api/capacites') return json(res, 200, await capacites(), req);
+      return json(res, 404, { erreur: 'inconnu' }, req);
     }
     if (p === '/') p = '/index.html'; if (p.endsWith('/')) p += 'index.html';
     const f = normalize(join(ROOT, p));

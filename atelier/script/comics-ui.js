@@ -58,7 +58,7 @@ export function initComics({ rafraichirProjet, kb, file }) {
     z.replaceChildren(el('div', { className: 'titre-projet' }, el('h2', { className: 'titre-section', textContent: libelle(c) })),
       el('div', { className: 'carte-bloc' }, el('h3', { textContent: 'Fiche du numéro (informations saisies par vous)' }), el('div', { className: 'grille2' }, meta('serie', 'Série'), meta('numero', 'Numéro'), meta('titre', 'Titre'), meta('editeur', 'Éditeur'), meta('auteurs', 'Auteurs'), meta('annee', 'Année')),
         el('p', { className: 'note', textContent: `Source : ${c.source} · empreinte ${c.hash.slice(0, 12)}… · le fichier d'origine n'est pas modifié ; seules des copies des pages sont conservées sur l'appareil.` }),
-        bouton('Supprimer ce numéro', async () => { if (!confirm(`Supprimer « ${libelle(c)} », ses pages et son analyse de la bibliothèque ?`)) return; for (const id of c.pages) await db.suppr('pages', id); await db.suppr('comics', c.id); courant = null; afficher(); }, { className: 'danger' })),
+        bouton('Supprimer ce numéro', async () => { if (!confirm(`Supprimer « ${libelle(c)} », ses pages et son analyse de la bibliothèque ?`)) return; clearTimeout(attenteSync.get(c.id)); attenteSync.delete(c.id); for (const id of c.pages) await db.suppr('pages', id); await db.suppr('comics', c.id); if (kb) await kb.retirerComic(c.id); courant = null; afficher(); }, { className: 'danger' })),
       el('div', { className: 'carte-bloc' }, el('h3', { textContent: 'Pages' }), el('div', { className: 'bande-pages', id: 'bande-pages' })), el('div', { id: 'lecteur' }), analyseNumero(c));
     const bande = $('#bande-pages');
     for (const [i, id] of c.pages.entries()) { const p = await page(id); if (!p) continue;
