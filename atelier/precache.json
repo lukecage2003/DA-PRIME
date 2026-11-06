@@ -1,5 +1,5 @@
 {
- "version": "0.1.1-cfc532f9c8",
+ "version": "0.1.1-5ba66d5f34",
  "fichiers": [
   "./",
   "index.html",
@@ -39,6 +39,9 @@
   "script/connaissances-ui.js",
   "script/index.html",
   "script/moteurs-ui.js",
+  "script/ocr-ui.js",
+  "script/ocr-worker.js",
+  "script/ocr.js",
   "script/prompts-ui.js",
   "script/script.css",
   "script/script.js",
@@ -63,6 +66,7 @@
   "../templates/_systeme/motion-familles.js",
   "../templates/_systeme/motion-svg.js",
   "../templates/_systeme/motion.js",
+  "../templates/_systeme/ocr.js",
   "../templates/_systeme/placeholders.js",
   "../templates/_systeme/registre.js",
   "../templates/_systeme/script-moteur.js",
@@ -91,5 +95,13 @@
   "../brand/99_tests/substitution/PLACEHOLDER_art-pop.jpg",
   "../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png",
   "../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL@2x.png"
+ ],
+ "aLaDemande": [
+  "vendor/tesseract/tesseract-core-lstm.js",
+  "vendor/tesseract/tesseract-core-lstm.wasm",
+  "vendor/tesseract/tesseract-core-simd-lstm.js",
+  "vendor/tesseract/tesseract-core-simd-lstm.wasm",
+  "vendor/tesseract/tesseract.esm.min.js",
+  "vendor/tesseract/worker.min.js"
  ]
 }

@@ -13,7 +13,7 @@ import os from 'node:os';
 import { adresseLocale } from '../templates/_systeme/moteurs.js';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const VERSION = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8')).version;
-const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.woff2': 'font/woff2' };
+const TYPES = { '.wasm': 'application/wasm', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.woff2': 'font/woff2' };
 // Seuls les fichiers de l'application sont servis (jamais les originaux de marque, outils, documents ou fichiers cachés)
 const AUTORISES = /^\/(index\.html|atelier\/.+|templates\/.+\.(js|json|svg|jpg|png)|accueil\/.+\.jpg|brand\/03_fonts\/web\/.+|brand\/04_elements\/png\/.+|brand\/99_tests\/substitution\/PLACEHOLDER_.+)$/;
 const sortie = (cmd, args) => new Promise((ok) => execFile(cmd, args, { timeout: 4000, windowsHide: true }, (e, out) => ok(e ? null : String(out))));
@@ -33,7 +33,8 @@ export async function capacites() {
 const MOTEURS = { ocr: { etat: 'non installé', prevu: '0.11.1' }, vision: { etat: 'non installé', prevu: '0.11.2' }, ecriture: { etat: 'non installé', prevu: '0.11.3' } };
 
 export function demarrer({ port = 4180, reseau = false, jeton = reseau ? randomBytes(18).toString('hex') : '' } = {}) {
-  const ok = (req) => { if (!jeton) return true; const j = Buffer.from(String(req.headers['x-da-prime-jeton'] || new URL(req.url, 'http://x').searchParams.get('jeton') || '')), r = Buffer.from(jeton); return j.length === r.length && timingSafeEqual(j, r); };
+  // Jeton accepté UNIQUEMENT dans l'en-tête X-DA-PRIME-Jeton (jamais dans l'adresse : elle finit dans les historiques et journaux)
+  const ok = (req) => { if (!jeton) return true; const j = Buffer.from(String(req.headers['x-da-prime-jeton'] || '')), r = Buffer.from(jeton); return j.length === r.length && timingSafeEqual(j, r); };
   // DA-PRIME ouvert depuis une autre adresse locale (autre port, autre appareil du réseau) : lecture autorisée (CORS)
   // pour les seules origines locales ; le jeton reste exigé en mode réseau. Aucune origine Internet n'est autorisée.
   const cors = (req) => { const o = req.headers.origin; return o && adresseLocale(o).ok ? { 'Access-Control-Allow-Origin': o, Vary: 'Origin' } : {}; };
@@ -59,7 +60,10 @@ export function demarrer({ port = 4180, reseau = false, jeton = reseau ? randomB
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const port = +(process.argv.find((a) => /^\d+$/.test(a)) || 4180), reseau = process.argv.includes('--reseau'), { jeton } = await demarrer({ port, reseau });
   console.log(`DA-PRIME ${VERSION} · serveur local des moteurs (aucun modèle installé dans cette version)`);
-  console.log(`Sur ce PC : http://localhost:${port}/atelier/script/${jeton ? `?jeton=${jeton}` : ''}#moteurs`);
-  if (reseau) { for (const l of Object.values(os.networkInterfaces()).flat()) if (l && l.family === 'IPv4' && !l.internal) console.log(`Sur le réseau local : http://${l.address}:${port}/atelier/script/?jeton=${jeton}#moteurs`);
-    console.log('Jeton à garder privé : il donne accès à l\'API de ce PC depuis le réseau local. Arrêter avec Ctrl+C.'); }
+  // Le jeton n'est jamais écrit dans un fichier ni un journal : affiché seulement dans un terminal interactif, après « # »
+  // (la partie d'adresse après « # » n'est jamais transmise au serveur ; DA-PRIME la retire aussitôt de la barre d'adresse).
+  const visible = !jeton || process.stdout.isTTY, frag = jeton && visible ? `#moteurs&jeton=${jeton}` : '#moteurs';
+  console.log(`Sur ce PC : http://localhost:${port}/atelier/script/${frag}`);
+  if (reseau) { for (const l of Object.values(os.networkInterfaces()).flat()) if (l && l.family === 'IPv4' && !l.internal) console.log(`Sur le réseau local : http://${l.address}:${port}/atelier/script/${frag}`);
+    console.log(visible ? 'Jeton à garder privé : il donne accès à l\'API de ce PC depuis le réseau local. Arrêter avec Ctrl+C.' : 'Sortie non interactive : jeton masqué (jamais écrit dans un journal). Relancer dans un terminal pour l\'afficher.'); }
 }

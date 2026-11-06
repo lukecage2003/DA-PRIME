@@ -23,3 +23,7 @@ supabase/.temp/
 *.cbz
 *.cbr
 *.cb7
+
+# Modèles OCR utilisés par les tests (téléchargés à la demande, vérifiés par empreinte) : jamais versionnés
+.cache/
+*.traineddata

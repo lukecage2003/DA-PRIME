@@ -41,7 +41,7 @@ console.log('Base de connaissances et moteurs (Node)');
   ok(ad.every((u) => MO.adresseLocale(u).ok) && refus.every((u) => !MO.adresseLocale(u).ok), 'moteurs : adresses locales et privées acceptées, Internet et protocoles exotiques refusés');
   const p0 = MO.profilRecommande({}), p1 = MO.profilRecommande({ coeurs: 8, ramGo: 8 }), p2 = MO.profilRecommande({ serveur: { ramGo: 16, vramGo: 8, coeurs: 8 } }), p3 = MO.profilRecommande({ serveur: { ramGo: 64, vramGo: 24, coeurs: 16 } }), p4 = MO.profilRecommande({ mobile: true, ramGo: 8 });
   ok(p0.profil === 'leger' && p0.raisons.some((r) => /inconnue/.test(r)) && p1.profil === 'leger' && p2.profil === 'standard' && p3.profil === 'qualite' && p4.profil === 'mobile', `profils : capacités inconnues → léger (jamais supposées), 16 Go + GPU 8 Go → standard, GPU 24 Go → qualité, mobile → délégué (${p0.raisons.join(' ; ')})`);
-  ok(Object.values(MO.ADAPTATEURS).filter((a) => a.etat === 'disponible').every((a) => a.mode === 'manuel'), 'aucun moteur d\'IA déclaré disponible en 0.11.0 (seuls les modes manuels le sont)');
+  ok(Object.values(MO.ADAPTATEURS).filter((a) => a.etat === 'disponible' && a.type !== 'ocr').every((a) => a.mode === 'manuel'), 'vision et rédaction : aucun moteur d\'IA disponible (modes manuels seulement ; l\'OCR local arrive en 0.11.1)');
 }
 console.log('Serveur local des moteurs (Node)');
 const SM = await imp('tools/serveur-moteurs.mjs');
@@ -91,7 +91,7 @@ await p.waitForSelector('#capacites'); const capTxt = await p.textContent('#capa
 ok(/Cœurs logiques/.test(capTxt) && /Mémoire vidéo\s*inconnu/.test(capTxt) && /non mesurable/.test(capTxt), 'capacités du navigateur affichées, mémoire vidéo « inconnu » (non mesurable, jamais supposée)');
 ok(new RegExp(`${os.cpus().length} cœurs`).test(srvTxt) && /Go libres/.test(srvTxt), 'serveur local détecté automatiquement (DA-PRIME servi par lui) : mesures réelles du PC affichées');
 ok(/Recommandé :/.test(await p.textContent('#profil-moteurs')) && /non téléchargé/.test(await p.textContent('#profil-moteurs')), 'profil de configuration recommandé à partir des mesures ; modèles listés comme non téléchargés');
-ok(await p.locator('select[data-moteur="ocr"] option:not([disabled])').count() === 1, 'moteurs non installés non sélectionnables (seul le mode manuel est actif)');
+ok(await p.locator('select[data-moteur="ocr"] option:not([disabled])').count() === 2 && await p.locator('select[data-moteur="vision"] option:not([disabled])').count() === 1, 'moteurs non installés non sélectionnables (OCR : manuel + Tesseract ; vision : manuel seulement)');
 await p.fill('#ollama-url', 'https://api.example.com'); await p.click('#tester-ollama'); await att(200); const refus = await p.textContent('#ollama-resultat');
 await p.fill('#ollama-url', 'http://127.0.0.1:4189'); await p.click('#tester-ollama'); await p.waitForFunction(() => /Joignable/.test(document.querySelector('#ollama-resultat').textContent), null, { timeout: 8000 });
 ok(/publique refusée/.test(refus) && /1 modèle\(s\) installé\(s\) : qwen3:8b/.test(await p.textContent('#ollama-resultat')), 'connexion Ollama : adresse publique refusée ; service local joignable, modèles listés sans exécution');

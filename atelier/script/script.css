@@ -59,3 +59,14 @@ details.meta-seq summary { font-size:12px; color:var(--doux); min-height:28px; c
 .statut-kb { font:700 11px "JetBrains Mono", monospace; text-transform:uppercase; } .statut-kb[data-statut="valide"] { color:var(--vert); } .statut-kb[data-statut="a-verifier"] { color:var(--ambre); } .statut-kb[data-statut="rejete"] { color:#FF8C7A; }
 .ligne-element[data-statut="rejete"] { opacity:.55; } .tache[data-etat="erreur"] { border-left:3px solid var(--rouge); } .tache[data-etat="interrompu"] { border-left:3px solid var(--ambre); } .tache[data-etat="termine"] { border-left:3px solid var(--vert); } .tache .jauge { flex:none; width:100%; min-width:200px; }
 .controle-export li[data-gravite="bloquant"] { color:#FF8C7A; }
+.filtres-kb { display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:8px; align-items:end; } .filtres-kb .champ { margin:0; } .masque-saisie { -webkit-text-security:disc; }
+/* OCR local : zones de texte reconnues (pas des contours de bulles), comparaison image ↔ texte */
+.zone-ocr { position:absolute; border:1.5px dashed #4fc3f7; background:rgba(79,195,247,.10); pointer-events:auto; cursor:pointer; }
+.zone-ocr span { position:absolute; left:0; top:-1px; transform:translateY(-100%); font:700 10px "JetBrains Mono", monospace; background:#4fc3f7; color:#000; padding:0 3px; }
+.zone-ocr[data-statut="valide"] { border-color:var(--vert); background:rgba(80,200,120,.10); } .zone-ocr[data-statut="rejete"] { opacity:.35; }
+.zone-ocr.actif { border-style:solid; border-width:2.5px; background:rgba(255,229,0,.22); border-color:var(--jaune); }
+.image-texte { display:flex; flex-wrap:wrap; gap:8px; align-items:flex-start; } .image-texte textarea { flex:1 1 200px; min-width:0; }
+.apercu-zone, .apercu-pre { max-width:100%; height:auto; border:1px solid var(--ligne); background:#fff; }
+.texte-ocr { white-space:pre-wrap; overflow-wrap:anywhere; font:13px/1.45 "JetBrains Mono", monospace; background:var(--surface2); padding:8px; max-height:260px; overflow:auto; }
+#ocr-modeles progress { width:140px; vertical-align:middle; margin-left:6px; }
+#ocr-etat-modeles[data-etat="alerte"] { color:var(--ambre); }

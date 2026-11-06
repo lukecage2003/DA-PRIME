@@ -5,7 +5,7 @@
 // base de connaissances sourcée (assertions), file de traitements, réglages des moteurs.
 import { parcourir, convertirV1, estV1, normaliserDoc, nouvelId, plansDe, synchroniserPlans } from '../../templates/_systeme/studio.js';
 
-const BASE = 'primestone-motion', VERSION = 6, MAGASINS = ['creations', 'ressources', 'versions', 'modeles', 'composants', 'presets', 'campagnes', 'profils', 'visuels', 'personnages', 'scripts', 'redaction', 'prompts', 'comics', 'pages', 'connaissances', 'taches', 'reglages'];
+const BASE = 'primestone-motion', VERSION = 7, MAGASINS = ['creations', 'ressources', 'versions', 'modeles', 'composants', 'presets', 'campagnes', 'profils', 'visuels', 'personnages', 'scripts', 'redaction', 'prompts', 'comics', 'pages', 'connaissances', 'taches', 'reglages', 'modeles-ocr', 'ocr-passes'];
 let base = null;
 const ouvrir = () => base || (base = new Promise((ok, ko) => {
   const r = indexedDB.open(BASE, VERSION);

@@ -86,6 +86,6 @@ export function detecterCases(bitmap, { sens = 'gd' } = {}) {
 // OCR : aucun moteur n'est embarqué. Point d'extension : un moteur local (ex. Tesseract.js, Apache-2.0) déposé dans atelier/vendor/
 // peut être branché ici ; tant qu'il est absent, la transcription est manuelle et l'interface le dit.
 export const MOTEURS = {
-  ocr: { disponible: false, nom: 'OCR local', note: 'Non installé : transcription manuelle des bulles et cartouches. Voir docs/SCRIPT_STUDIO.md pour ajouter un moteur local.' },
+  ocr: { disponible: true, nom: 'OCR local', note: 'OCR local (Tesseract) : panneau « Texte reconnu » ci-dessous ; la transcription manuelle reste toujours possible.' },
   vision: { disponible: false, nom: 'Compréhension des images', note: 'Aucun modèle multimodal local installé : les actions visibles sont décrites par vous (provenance « visuel »).' },
 };

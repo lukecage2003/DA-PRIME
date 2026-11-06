@@ -1,6 +1,6 @@
 {
   "name": "primestone-brand",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "private": true,
   "description": "Primestone Media · identité, système graphique et Brand Library",
   "type": "module",
@@ -24,7 +24,9 @@
     "test:motion": "node tools/test-motion.mjs",
     "test:script": "node tools/test-script.mjs",
     "test:fondation": "node tools/test-fondation.mjs",
-    "test": "node tools/test-moteur.mjs && node tools/test-atelier.mjs && node tools/test-motion.mjs && node tools/test-script.mjs && node tools/test-fondation.mjs",
+    "test:ocr": "node tools/test-ocr.mjs",
+    "ocr:mesurer": "node tools/mesurer-ocr.mjs",
+    "test": "node tools/test-moteur.mjs && node tools/test-atelier.mjs && node tools/test-motion.mjs && node tools/test-script.mjs && node tools/test-fondation.mjs && node tools/test-ocr.mjs",
     "atelier:reseau": "node tools/serve.mjs 4173 --reseau",
     "build:pages": "node tools/build-pages.mjs"
   },

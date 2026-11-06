@@ -83,7 +83,10 @@ for (const r of bad) console.log(`  alerte ${r.fid}/${r.vid} : ${r.alertes.map((
     '../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL.png', '../brand/04_elements/png/PS_EL_sceau-P_noir_NON-OFFICIEL@2x.png'];
   const { createHash } = await import('node:crypto');
   const h = createHash('sha256'); for (const f of liste.filter((x) => !x.endsWith('/'))) h.update(readFileSync(join(ROOT, 'atelier', f)));
-  writeFileSync(join(ROOT, 'atelier/precache.json'), JSON.stringify({ version: `${flat.version}-${h.digest('hex').slice(0, 10)}`, fichiers: liste }, null, 1) + '\n');
+  // Moteur OCR (Tesseract.js, 5,9 Mo) : publié mais NON préchargé ; mis en cache quand l'utilisateur installe un modèle
+  const aLaDemande = readdirSync(join(ROOT, 'atelier/vendor/tesseract')).filter((f) => /\.(js|wasm)$/.test(f)).sort().map((f) => `vendor/tesseract/${f}`);
+  for (const f of aLaDemande) h.update(readFileSync(join(ROOT, 'atelier', f)));
+  writeFileSync(join(ROOT, 'atelier/precache.json'), JSON.stringify({ version: `${flat.version}-${h.digest('hex').slice(0, 10)}`, fichiers: liste, aLaDemande }, null, 1) + '\n');
 }
 
 // 3. Exemples rendus dans Chromium : le fichier SVG lui-même, inséré dans une page avec les polices web

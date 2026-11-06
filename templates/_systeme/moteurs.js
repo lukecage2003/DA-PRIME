@@ -6,7 +6,7 @@ export const MODES = { manuel: 'Manuel (toujours disponible)', navigateur: 'Dans
 // Adaptateurs déclarés. « etat » : disponible | prevu (non installé dans cette version). Aucun n'exécute de modèle en 0.11.0.
 export const ADAPTATEURS = {
   'ocr-manuel': { type: 'ocr', mode: 'manuel', nom: 'Transcription manuelle', etat: 'disponible' },
-  'ocr-tesseract': { type: 'ocr', mode: 'navigateur', nom: 'Tesseract.js (fra, eng)', etat: 'prevu', licence: 'Apache-2.0', taille: '≈ 9 Mo', note: 'Prévu en 0.11.1 ; mesuré à 76-88 % des mots sur lettrage courant.' },
+  'ocr-tesseract': { type: 'ocr', mode: 'navigateur', nom: 'Tesseract.js 7 (modèles fast fra, eng)', etat: 'disponible', licence: 'Apache-2.0', taille: 'moteur 5,9 Mo intégré + modèles 1,1 Mo (fra) et 4,1 Mo (eng) à installer', note: 'Intégré en 0.11.1 : modèles à installer dans Moteurs › OCR local ; résultats toujours « à vérifier ».' },
   'ocr-ollama': { type: 'ocr', mode: 'local', nom: 'OCR par modèle vision-langage (Ollama)', etat: 'prevu', note: 'Option pour lettrage stylisé (ex. MiniCPM-OCR).' },
   'vision-manuel': { type: 'vision', mode: 'manuel', nom: 'Description manuelle + découpe géométrique', etat: 'disponible' },
   'vision-ollama': { type: 'vision', mode: 'local', nom: 'Vision locale (Ollama : Qwen3-VL, MiniCPM-V)', etat: 'prevu', note: 'Prévu en 0.11.2.' },

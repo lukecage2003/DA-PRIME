@@ -1,5 +1,28 @@
 # Journal des versions
 
+## 0.11.1 · 2026-11-06 · Script Studio : OCR local (Tesseract.js)
+
+- **Corrections 0.11.0** :
+  - jeton du serveur local accepté uniquement dans l'en-tête `X-DA-PRIME-Jeton` (refusé dans l'adresse) ;
+  - adresse d'appairage avec le jeton après « # » (jamais transmis au serveur), retiré de la barre d'adresse dès l'ouverture ;
+  - jeton jamais écrit quand la sortie du serveur est redirigée ; champ du jeton masqué ;
+  - événement validé puis modifié : état « À vérifier » affiché sur l'événement, validation directe (bouton) ou revalidation groupée, sans décocher la case « Événements » ;
+  - filtres de Connaissances libellés (Rechercher, Numéro, Catégorie, Statut).
+- **OCR local** : Tesseract.js 7.0.0 et son cœur WebAssembly (Apache-2.0) intégrés, exécutés dans le navigateur.
+  - Modèles *fast* français et anglais (tessdata_fast 4.1.0) téléchargés seulement à la demande, vérifiés par SHA-256, ou importés depuis un fichier ; ensuite hors ligne.
+  - Worker isolé qui refuse toute requête externe.
+  - Prétraitements sur copies (×2, gris, contraste, noir et blanc).
+  - Page entière ou case par case ; langue choisie (fr, en, fr+en).
+- **Traitement** par la file existante : une page, des pages choisies ou le numéro entier ; progression, annulation, reprise ; résultats enregistrés page par page.
+- **Résultats** : blocs « à vérifier » dans la base de connaissances avec texte, zone, confiance, langue, prétraitement, numéro, page, traitement et date.
+  - Extrait d'image à côté du texte, zones sur la page.
+  - Correction (texte OCR initial conservé dans l'historique), validation et rejet un à un ou en lot.
+  - Relance, comparaison de passages et de prétraitements, page source.
+  - Jamais repris comme matière de script.
+- **Mesure** : `tools/mesurer-ocr.mjs` (exactitude des mots, WER, CER, temps, mémoire, par catégorie, prétraitement et langue) ; corpus réel (46 zones, 6 pages) : 91 à 95 % des mots sur le lettrage courant, lettrage stylisé, petit texte et effets sonores non fiables.
+- Base locale version 7 (`modeles-ocr`, `ocr-passes`) ; le moteur est publié mais pas préchargé.
+- Tests : 47 tests OCR (15 Node, 32 Chromium), dont confidentialité, hors ligne, annulation et reprise.
+
 ## 0.11.0 · 2026-11-06 · Script Studio : fondation (connaissances, validation, file, capacités, moteurs)
 
 - **Base de connaissances** (Script Studio › Connaissances) : chaque information est une assertion traçable — contenu, catégorie (dialogue extrait, narration, élément visuel observable, interprétation, hypothèse, information incertaine), numéro, page, case, méthode d'extraction, confiance, statut (brouillon, à vérifier, validée, rejetée) et historique daté. Recherche, filtres, actions groupées, ajout manuel, fiche détaillée.

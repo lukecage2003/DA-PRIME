@@ -9,9 +9,9 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, process.argv.slice(2).find((a) => !a.startsWith('--')) || '_site');
-const { fichiers } = JSON.parse(readFileSync(join(ROOT, 'atelier/precache.json'), 'utf8'));
+const { fichiers, aLaDemande = [] } = JSON.parse(readFileSync(join(ROOT, 'atelier/precache.json'), 'utf8'));
 const liste = new Set(['atelier/precache.json', 'atelier/sw.js']);
-for (const f of fichiers) { if (f.endsWith('/')) { liste.add(normalize(join('atelier', f, 'index.html'))); continue; } liste.add(normalize(join('atelier', f))); }
+for (const f of [...fichiers, ...aLaDemande]) { if (f.endsWith('/')) { liste.add(normalize(join('atelier', f, 'index.html'))); continue; } liste.add(normalize(join('atelier', f))); }
 // Page d'accueil (index.html à la racine) et les fichiers locaux qu'elle référence (visuels, feuilles de style)
 const accueil = readFileSync(join(ROOT, 'index.html'), 'utf8'); liste.add('index.html');
 for (const [, u] of accueil.matchAll(/(?:src|href)="([^"#:]+)"/g)) if (!u.endsWith('/') && !u.startsWith('.')) liste.add(normalize(u));

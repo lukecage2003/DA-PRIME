@@ -7,7 +7,8 @@ import { initComics } from './comics-ui.js';
 import { initPrompts } from './prompts-ui.js';
 import { creerFile } from './taches.js';
 import { initConnaissances } from './connaissances-ui.js';
-import { initMoteurs } from './moteurs-ui.js';
+import { initMoteurs, lireJetonAdresse } from './moteurs-ui.js';
+import { initOcr } from './ocr-ui.js';
 
 const ETAPES = { projet: 'Projet', sources: 'Sources', analyse: 'Analyse', angle: 'Angle éditorial', plan: 'Plan', script: 'Script', critique: 'Analyse critique', export: 'Export' };
 const PROFONDEURS = { decouverte: 'Découverte', intermediaire: 'Intermédiaire', expert: 'Expert' };
@@ -30,7 +31,7 @@ addEventListener('keydown', (e) => { if (!P || !(e.ctrlKey || e.metaKey) || $('#
 addEventListener('pagehide', () => { if (P) db.ecrire('scripts', JSON.parse(JSON.stringify(P))); });
 
 // ---------- Espaces ----------
-let comicsUI, promptsUI, kb, moteursUI; const file = creerFile();
+let comicsUI, promptsUI, kb, moteursUI, ocrUI; const file = creerFile(), jetonAdresse = lireJetonAdresse();   // avant toute lecture de l'adresse
 function espace(nom) {
   for (const b of document.querySelectorAll('[data-espace]')) { const a = b.dataset.espace === nom; b.setAttribute('aria-selected', a); $(`#${b.dataset.espace}`).hidden = !a; }
   if (location.hash.slice(1) !== nom) history.replaceState(null, '', `#${nom}`);
@@ -262,9 +263,11 @@ function editerProfil(p) {
 // ---------- Démarrage ----------
 await Promise.all(['400 40px Anton', '700 40px "JetBrains Mono"', '700 40px Archivo'].map((f) => document.fonts.load(f).catch(() => {})));
 await charger();
-kb = initConnaissances({ file, libelleComic: (c) => `${c.serie || 'Sans série'} #${c.numero || '?'}` });
-moteursUI = initMoteurs({ file });
-comicsUI = initComics({ rafraichirProjet: () => P && afficher(), projet: () => P, modif, kb, file });
+kb = initConnaissances({ file, libelleComic: (c) => `${c.serie || 'Sans série'} #${c.numero || '?'}`, ocr: () => ocrUI, ouvrirPage: (c, i) => comicsUI.ouvrir(c, i) });
+ocrUI = initOcr({ file, kb, ouvrirMoteurs: () => document.querySelector('[data-espace="moteurs"]').click(), ouvrirPage: (c, i) => comicsUI.ouvrir(c, i) });
+moteursUI = initMoteurs({ file, jetonAdresse: jetonAdresse.jeton, ocr: ocrUI });
+if (jetonAdresse.ancien) setTimeout(() => info('Ancienne adresse avec jeton ignorée : utiliser celle affichée par le serveur, ou saisir le jeton dans Moteurs.'), 0);
+comicsUI = initComics({ rafraichirProjet: () => P && afficher(), projet: () => P, modif, kb, file, ocr: ocrUI });
 // Traitements : diagnostic de la file (fil principal) et détection des cases d'un numéro entier (Web Worker)
 file.enregistrer('diagnostic', { nom: 'Diagnostic de la file', async executer(t, { signal, progres }) { const n = t.params.etapes || 10; for (let i = t.curseur || 0; i < n; i++) { if (signal.aborted) throw Object.assign(new Error('annulé'), { name: 'AbortError' }); await new Promise((r) => setTimeout(r, t.params.pause ?? 200)); if (t.params.echouerA === i + 1) throw new Error(`échec volontaire à l'étape ${i + 1}`); progres((i + 1) / n, `Étape ${i + 1}/${n}`, i + 1); } return { etapes: n }; } });
 file.enregistrer('cases-numero', { nom: 'Détection des cases d\'un numéro', worker: true, async apres() { await comicsUI.charger(); if (!$('#comics').hidden) comicsUI.afficher(); } });

@@ -3,7 +3,7 @@ import { db } from '../motion/stockage.js';
 import * as K from '../../templates/_systeme/connaissances.js';
 import { $, el, bouton, champ, choix, saisie, zone, info, autoTaille } from './ui.js';
 
-export function initConnaissances({ file, libelleComic }) {
+export function initConnaissances({ file, libelleComic, ocr = () => null, ouvrirPage = null }) {
   let toutes = [], choisies = new Set(), filtre = { comic: '', categorie: '', statut: '', texte: '' }, page = 1;
   const charger = async () => { toutes = await db.tous('connaissances').catch(() => []); return toutes; };
   const ecrire = async (a) => { await db.ecrire('connaissances', a); const i = toutes.findIndex((x) => x.id === a.id); if (i >= 0) toutes[i] = a; else toutes.push(a); };
@@ -32,7 +32,7 @@ export function initConnaissances({ file, libelleComic }) {
   // ---------- Vue ----------
   async function afficher(comicsListe) {
     await charger(); const z = $('#connaissances-vue'), st = K.statistiques(toutes), PAGE = 80;
-    const sel = (k, opts) => { const s = choix({ '': 'Tous', ...opts }, filtre[k]); s.dataset.filtre = k; s.addEventListener('change', () => { filtre[k] = s.value; page = 1; afficher(comicsListe); }); return s; };
+    const sel = (k, opts, tous) => { const s = choix({ '': tous, ...opts }, filtre[k]); s.dataset.filtre = k; s.id = `kb-filtre-${k}`; s.addEventListener('change', () => { filtre[k] = s.value; page = 1; afficher(comicsListe); }); return s; };
     const q = saisie(filtre.texte, { placeholder: 'Rechercher une information…', type: 'search', id: 'kb-recherche' }); q.addEventListener('change', () => { filtre.texte = q.value; page = 1; afficher(comicsListe); });
     const liste = K.filtrer(toutes, filtre).sort((a, b) => String(a.comic).localeCompare(String(b.comic)) || (a.page || 0) - (b.page || 0) || (a.case || 0) - (b.case || 0)), vis = liste.slice(0, page * PAGE);
     const lot = (statut) => bouton(`${K.STATUTS[statut]} (${choisies.size})`, async () => { let n = 0; for (const id of choisies) { const a = toutes.find((x) => x.id === id); if (!a) continue; try { K.changerStatut(a, statut, { motif: 'action groupée' }); await ecrire(a); n++; } catch (e) { info(e.message); } } choisies.clear(); info(`${n} information(s) : ${K.STATUTS[statut].toLowerCase()}.`); afficher(comicsListe); }, { disabled: !choisies.size, dataset: { lot: statut } });
@@ -40,7 +40,7 @@ export function initConnaissances({ file, libelleComic }) {
       el('div', { className: 'carte-bloc' }, el('h3', { textContent: 'Base de connaissances' }),
         el('p', { className: 'note', textContent: 'Chaque information garde son contenu, sa catégorie, son numéro, sa page, sa case, sa méthode d\'extraction, sa confiance et son statut. Seules les informations validées, factuelles ou d\'interprétation, peuvent nourrir un script ; une interprétation reste formulée comme telle. Toute information modifiée après validation redevient « à vérifier ».' }),
         el('div', { className: 'metriques' }, el('span', { textContent: `${st.total} information(s)` }), ...Object.entries(K.STATUTS).map(([k, n]) => el('span', { dataset: { etat: k === 'valide' ? 'ok' : k === 'a-verifier' ? 'alerte' : '' }, textContent: `${n} ${st.parStatut[k] || 0}` }))),
-        el('div', { className: 'filtres' }, q, sel('comic', Object.fromEntries(comicsListe.map((c) => [c.id, libelleComic(c)]))), sel('categorie', K.CATEGORIES), sel('statut', K.STATUTS)),
+        el('div', { className: 'filtres filtres-kb', role: 'search', 'aria-label': 'Filtrer les informations' }, champ('Rechercher', q), champ('Numéro', sel('comic', Object.fromEntries(comicsListe.map((c) => [c.id, libelleComic(c)])), 'Tous les numéros')), champ('Catégorie', sel('categorie', K.CATEGORIES, 'Toutes les catégories')), champ('Statut', sel('statut', K.STATUTS, 'Tous les statuts'))),
         el('div', { className: 'rangee' }, bouton('Tout sélectionner', () => { choisies = choisies.size ? new Set() : new Set(liste.map((a) => a.id)); afficher(comicsListe); }), lot('valide'), lot('a-verifier'), lot('rejete'),
           bouton('Ajouter une information', () => editer(K.normaliser({ id: `kb:${Date.now().toString(36)}`, contenu: '', categorie: 'visuel', comic: filtre.comic || comicsListe[0]?.id || null, methode: 'manuel', statut: 'brouillon' }), comicsListe), { id: 'kb-ajouter' }))),
       el('div', { className: 'liste-elements', id: 'kb-liste' }, ...vis.map((a) => { const cb = el('input', { type: 'checkbox', checked: choisies.has(a.id), 'aria-label': 'Sélectionner' }); cb.addEventListener('change', () => { cb.checked ? choisies.add(a.id) : choisies.delete(a.id); });
@@ -60,10 +60,25 @@ export function initConnaissances({ file, libelleComic }) {
     const manuel = a.methode === 'manuel';
     z.replaceChildren(el('div', { className: 'carte-bloc' }, el('h3', { textContent: 'Information' }),
       el('p', { className: 'note', textContent: manuel ? 'Information saisie à la main.' : 'Information issue d\'une analyse : la modifier ici la fait repasser « à vérifier ». Pour une transcription ou un événement, préférer la modification dans l\'espace Comics (la source reste cohérente).' }),
+      a.ocr ? blocOcr(a) : null,
       champ('Contenu', t), el('div', { className: 'grille2' }, champ('Catégorie', cat), champ('Numéro', co), champ('Page', pg), champ('Case', cs)), champ('Note', note),
       el('div', { className: 'rangee' }, bouton('Enregistrer', async () => { if (!t.value.trim()) return info('Contenu vide : rien n\'est enregistré.'); K.modifierContenu(a, t.value); Object.assign(a, { categorie: cat.value, comic: co.value || null, page: +pg.value || null, case: +cs.value || null, note: note.value, modifie: Date.now() }); if (a.statut === 'brouillon' && a.contenu.trim()) K.changerStatut(a, 'a-verifier', { motif: 'création' }); await ecrire(a); afficher(comicsListe); info('Information enregistrée.'); }, { className: 'accent', id: 'kb-enregistrer' }),
         bouton('Retour', () => afficher(comicsListe))),
-      el('h3', { textContent: 'Historique' }), el('ul', {}, ...(a.historique.length ? a.historique : [{ date: a.cree, de: '—', vers: a.statut, par: 'création', motif: '' }]).map((h) => el('li', { className: 'note', textContent: `${new Date(h.date).toLocaleString('fr-FR')} · ${K.STATUTS[h.de] || h.de} → ${K.STATUTS[h.vers] || h.vers} · ${h.par}${h.motif ? ` · ${h.motif}` : ''}` })))));
+      el('h3', { textContent: 'Historique' }), el('ul', {}, ...(a.historique.length ? a.historique : [{ date: a.cree, de: '—', vers: a.statut, par: 'création', motif: '' }]).map((h) => el('li', { className: 'note', textContent: `${new Date(h.date).toLocaleString('fr-FR')} · ${K.STATUTS[h.de] || h.de} → ${K.STATUTS[h.vers] || h.vers} · ${h.par}${h.motif ? ` · ${h.motif}` : ''}${h.ancien !== undefined && h.ancien !== null ? ` · ancien texte : « ${String(h.ancien).slice(0, 160)} »` : ''}` })))));
+  }
+  // Provenance OCR : texte initial, confiance, langue, prétraitement, zone sur la page source, relance
+  function blocOcr(a) {
+    const o = a.ocr, ap = el('div', { className: 'image-texte', id: 'kb-ocr-apercu' }), z = a.zone;
+    ocr()?.apercuZone(a.origine.pageId, z, { largeur: 420 })?.then((cv) => ap.prepend(cv)).catch(() => {});
+    const lignes = [['Texte OCR initial', o.texteBrut], ['Confiance Tesseract', `${Math.round(a.confiance * 100)} % (indicateur du moteur, pas un taux d'exactitude)`], ['Langue', o.langues], ['Prétraitement', o.pretraitement],
+      ['Découpage', `${o.segmentation} · ${o.zoneMode === 'cases' ? 'case par case' : 'page entière'}`],
+      ['Zone sur la page', z ? `x ${Math.round(z.x * 100)} %, y ${Math.round(z.y * 100)} %, ${Math.round(z.w * 100)} × ${Math.round(z.h * 100)} % (zone de texte reconnue, pas le contour d'une bulle)` : '—'],
+      ['Ordre de lecture', `${o.ordre}${o.ordreCertain ? '' : ' (approximatif)'}`], ['Moteur', `${o.moteur} · traitement ${o.tache}`], ['Date', new Date(o.date).toLocaleString('fr-FR')]];
+    const table = el('table', { className: 'tableau-caps' }, el('tbody', {}, ...lignes.map(([k, v]) => el('tr', {}, el('th', { textContent: k }), el('td', { textContent: String(v) })))));
+    const actions = el('div', { className: 'rangee' },
+      ouvrirPage ? bouton('Voir la page source', () => ouvrirPage(a.comic, (a.page || 1) - 1), { id: 'kb-voir-page' }) : null,
+      bouton("Relancer l'OCR sur cette page", async () => { await ocr()?.relancerPage(a.comic, a.origine.pageId); }, { id: 'kb-relancer-ocr' }));
+    return el('div', { className: 'carte-bloc', id: 'kb-ocr' }, el('h3', { textContent: 'Provenance OCR' }), table, ap, actions);
   }
   return {
     charger, afficher, synchroniserComic, validerGroupe, migrerSiNecessaire,
@@ -71,6 +86,14 @@ export function initConnaissances({ file, libelleComic }) {
     async controler(P) { await charger(); return K.controlerScript(P, toutes); },
     // Numéro supprimé : ses informations sont rejetées (conservées pour la traçabilité, plus jamais utilisables dans un script)
     async retirerComic(comic) { await charger(); let n = 0; for (const a of toutes.filter((x) => x.comic === comic && x.statut !== 'rejete')) { K.changerStatut(a, 'rejete', { par: 'synchronisation', motif: 'numéro supprimé' }); await ecrire(a); n++; } return n; },
+    lire: (id) => toutes.find((a) => a.id === id) || null,
+    // OCR : ajout sans jamais écraser une information existante (reprise d'un traitement interrompu : corrections conservées)
+    async ajouterLot(as) { await charger(); let n = 0; for (const a of as) if (!toutes.some((x) => x.id === a.id)) { await ecrire(a); n++; } return n; },
+    async ocrDePage(pageId) { await charger(); return toutes.filter((a) => a.origine?.genre === 'ocr' && a.origine.pageId === pageId); },
+    async corriger(id, texte) { const a = toutes.find((x) => x.id === id); if (!a) return null; K.modifierContenu(a, texte); await ecrire(a); return a; },
+    async statuer(id, statut, motif = '') { const a = toutes.find((x) => x.id === id); if (!a) return null; K.changerStatut(a, statut, { motif }); await ecrire(a); return a; },
+    // Validation individuelle (espace Comics) : tracée, refusée pour un contenu vide ou une information incertaine
+    async valider(id, motif = 'validation individuelle') { await charger(); const a = toutes.find((x) => x.id === id); if (!a) throw new Error('information introuvable (synchronisation en cours ?)'); if (a.categorie === 'incertain') throw new Error('information incertaine : à requalifier avant validation'); K.changerStatut(a, 'valide', { motif }); await ecrire(a); return a; },
     resume: (comic) => K.statistiques(toutes.filter((a) => a.comic === comic)),
   };
 }

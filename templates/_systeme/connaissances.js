@@ -2,10 +2,10 @@
 // Une ASSERTION = une information traçable : contenu, catégorie, numéro, page, case, méthode d'extraction, confiance,
 // statut de validation humaine et historique. Les moteurs futurs (OCR, vision, rédaction) n'y écriront qu'en « à vérifier ».
 
-export const CATEGORIES = { dialogue: 'Dialogue extrait', narration: 'Narration (cartouche)', visuel: 'Élément visuel observable', interpretation: 'Interprétation', hypothese: 'Hypothèse', incertain: 'Information incertaine' };
+export const CATEGORIES = { dialogue: 'Dialogue extrait', narration: 'Narration (cartouche)', visuel: 'Élément visuel observable', interpretation: 'Interprétation', hypothese: 'Hypothèse', incertain: 'Information incertaine', texte: 'Texte relevé (OCR, nature à préciser)' };
 export const STATUTS = { brouillon: 'Brouillon', 'a-verifier': 'À vérifier', valide: 'Validée', rejete: 'Rejetée' };
 // Méthodes : « manuel » (saisie humaine), « migration » (reprise des données 0.10), puis moteurs : « ocr:… », « vision:… », « ecriture:… »
-export const METHODES = { manuel: 'Saisie manuelle', migration: 'Reprise 0.10 (saisie manuelle)', geometrie: 'Détection géométrique' };
+export const METHODES = { manuel: 'Saisie manuelle', migration: 'Reprise 0.10 (saisie manuelle)', geometrie: 'Détection géométrique', 'ocr:tesseract-fast': 'OCR local (Tesseract, modèle fast)' };
 // Catégories admises comme faits dans un script final (une interprétation reste formulée comme telle)
 export const FAITS = ['dialogue', 'narration', 'visuel'];
 export const AUTORISEES_SCRIPT = [...FAITS, 'interpretation'];
@@ -20,7 +20,7 @@ export function normaliser(a) {
   return { id: String(a.id), contenu: String(a.contenu ?? ''), categorie: cat, comic: a.comic || null, page: Number.isFinite(+a.page) && +a.page > 0 ? +a.page : null, case: Number.isFinite(+a.case) && +a.case > 0 ? +a.case : null,
     zone: a.zone || null, personnage: a.personnage || '', methode: a.methode || 'manuel', moteur: a.moteur || null, confiance: Math.max(0, Math.min(1, a.confiance ?? (['manuel', 'migration'].includes(a.methode || 'manuel') ? 1 : 0.5))),
     statut: st, origine: a.origine || null, empreinte: a.empreinte || empreinteContenu(a.contenu), deriveDe: a.deriveDe || [], historique: a.historique || [], cree: a.cree || Date.now(), modifie: a.modifie || Date.now(),
-    importance: a.importance || 2, fonction: a.fonction || '', revelation: !!a.revelation, flashback: !!a.flashback, note: a.note || '' };
+    importance: a.importance || 2, fonction: a.fonction || '', revelation: !!a.revelation, flashback: !!a.flashback, note: a.note || '', ...(a.ocr ? { ocr: a.ocr } : {}) };
 }
 // Changement de statut tracé ; une validation ne vaut que pour un contenu donné (empreinte)
 export function changerStatut(a, statut, { par = 'utilisateur', motif = '' } = {}) {
@@ -32,12 +32,14 @@ export function changerStatut(a, statut, { par = 'utilisateur', motif = '' } = {
 // Modification du contenu : une information validée redevient « à vérifier » (la validation portait sur l'ancien texte)
 export function modifierContenu(a, contenu, { par = 'utilisateur' } = {}) {
   const e = empreinteContenu(contenu); if (e === a.empreinte) { a.contenu = contenu; return a; }
-  const avant = a.statut; a.contenu = contenu; a.empreinte = e; a.modifie = Date.now();
-  const trace = (vers, motif) => { a.statut = vers; a.historique = [...(a.historique || []), { date: Date.now(), de: avant, vers, par, motif, empreinte: e }]; };
+  const avant = a.statut, ancien = a.contenu; a.contenu = contenu; a.empreinte = e; a.modifie = Date.now();
+  // Chaque correction garde l'ancien texte dans l'historique (le résultat OCR initial reste aussi dans a.ocr.texteBrut)
+  const trace = (vers, motif) => { a.statut = vers; a.historique = [...(a.historique || []), { date: Date.now(), de: avant, vers, par, motif, empreinte: e, ancien }]; };
   // Un contenu vidé redevient brouillon ; un brouillon qui reçoit un contenu passe « à vérifier » (sinon il ne pourrait jamais être validé)
-  if (!String(contenu).trim()) { if (avant !== 'brouillon' && avant !== 'rejete') trace('brouillon', 'contenu vidé'); }
+  if (!String(contenu).trim()) { trace(avant === 'rejete' ? 'rejete' : 'brouillon', 'contenu vidé'); }
   else if (avant === 'valide') trace('a-verifier', 'contenu modifié après validation');
   else if (avant === 'brouillon') trace('a-verifier', 'contenu renseigné');
+  else trace(avant, 'texte corrigé');
   return a;
 }
 
@@ -75,7 +77,7 @@ export function statistiques(as) {
 // Matière pour un script : uniquement des assertions validées et de catégorie admise, références conservées
 export function pointsPourScript(as, ordreComics = []) {
   const rang = new Map(ordreComics.map((id, i) => [id, i]));
-  return as.filter((a) => a.statut === 'valide' && AUTORISEES_SCRIPT.includes(a.categorie) && a.origine?.genre !== 'transcription' && a.origine?.genre !== 'personnage')
+  return as.filter((a) => a.statut === 'valide' && AUTORISEES_SCRIPT.includes(a.categorie) && !['transcription', 'personnage', 'ocr'].includes(a.origine?.genre))
     .map((a) => ({ id: `pt:${a.id}`, cle: a.origine?.id || a.id, assertion: a.id, texte: a.contenu, importance: a.importance || 2, provenance: a.categorie === 'interpretation' ? 'interpretation' : a.categorie === 'dialogue' || a.categorie === 'narration' ? 'dialogue' : 'visuel', fonction: a.fonction, ordre: (rang.get(a.comic) ?? 99) * 1000 + (a.page || 0) * 10 + (a.case || 0), ref: { comic: a.comic, page: a.page, case: a.case } }))
     .sort((x, y) => x.ordre - y.ordre);
 }

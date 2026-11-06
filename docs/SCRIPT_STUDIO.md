@@ -10,7 +10,7 @@ Parcours d'un projet : **Projet → Sources → Analyse → Angle éditorial →
 |---|---|---|
 | 1. Traitement déterministe local | durées, budgets de mots, architecture narrative, analyse critique par règles, rythme indicatif, comparaison de versions, exports, prompts | **fonctionnel** |
 | 2. Extraction | pages des CBZ/ZIP (lecteur ZIP natif), des PDF (pdf.js), images ; empreintes SHA-256 ; doubles pages et doublons | **fonctionnel** (CBR non pris en charge) |
-| 2 bis. OCR | point d'extension prévu (`MOTEURS.ocr` dans `comics.js`) | **non installé** : transcription manuelle |
+| 2 bis. OCR | Tesseract.js 7 (WebAssembly, dans le navigateur), modèles *fast* français et anglais installés à la demande ; résultats « à vérifier » | **fonctionnel (0.11.1)** ; lettrage stylisé, effets sonores et petit texte peu fiables |
 | 3. Analyse structurelle | détection géométrique des cases (découpe XY sur les gouttières), ordre de lecture gauche→droite ou manga | **fonctionnel, fiabilité affichée** ; cases inclinées ou sans gouttière : découpe manuelle |
 | 4. Compréhension sémantique | aucune génération de prose ; suggestions d'angles et de titres par règles ; noms récurrents relevés dans les transcriptions (marqués « incertain ») | **règles uniquement**, présentées comme telles |
 | 5. Compréhension multimodale | point d'extension prévu (`MOTEURS.vision`) | **non installé** : les actions visibles sont décrites par l'utilisateur (provenance « visuel ») |
@@ -78,7 +78,7 @@ Chaque information est une **assertion** (`templates/_systeme/connaissances.js`)
 node tools/serveur-moteurs.mjs
 ```
 
-Mode réseau local (téléphones et tablettes ; jeton obligatoire, affiché au démarrage avec une adresse prête à ouvrir) :
+Mode réseau local (téléphones et tablettes ; jeton obligatoire). Le jeton n'est accepté que dans l'en-tête `X-DA-PRIME-Jeton` (jamais dans l'adresse d'une requête). L'adresse prête à ouvrir le place après « # » (`…/atelier/script/#moteurs&jeton=…`) : cette partie n'est jamais envoyée au serveur, et DA-PRIME la retire de la barre d'adresse dès l'ouverture. Le jeton n'est affiché que dans un terminal interactif (sortie redirigée vers un fichier : masqué). Pour qu'il n'apparaisse pas dans l'historique du navigateur, le saisir plutôt dans Moteurs › Jeton :
 
 ```bash
 node tools/serveur-moteurs.mjs --reseau
@@ -86,8 +86,53 @@ node tools/serveur-moteurs.mjs --reseau
 
 - Profils mobile, léger, standard, qualité (`templates/_systeme/moteurs.js`) : recommandés d'après les capacités mesurées uniquement ; une capacité inconnue donne le profil léger.
 
-### Moteurs (architecture, aucun installé)
-Trois moteurs indépendants et remplaçables : **OCR Engine**, **Comic Vision Engine**, **Local Writing Engine**. Seuls les adaptateurs manuels sont disponibles en 0.11.0 ; Tesseract.js (0.11.1), vision Ollama (0.11.2) et rédaction Ollama (0.11.3) sont déclarés « prévus ». Le test Ollama vérifie seulement qu'un serveur local répond et liste ses modèles déjà installés ; les adresses publiques sont refusées.
+### Moteurs
+Trois moteurs indépendants et remplaçables : **OCR Engine**, **Comic Vision Engine**, **Local Writing Engine**. En 0.11.1, l'OCR Engine dispose de Tesseract.js (voir ci-dessous) ; vision Ollama (0.11.2) et rédaction Ollama (0.11.3) restent « prévus », non installés. Le test Ollama vérifie seulement qu'un serveur local répond et liste ses modèles déjà installés ; les adresses publiques sont refusées.
+
+## OCR local 0.11.1 (Tesseract.js)
+
+### Utilisation
+1. **Moteurs › OCR local** : télécharger le modèle français et/ou anglais (confirmation demandée ; une seule fois), ou importer un fichier `.traineddata` déjà présent sur l'appareil. « Tester le moteur » vérifie qu'un texte de contrôle est reconnu (état « Prêt »).
+2. **Comics › un numéro › une page › Texte reconnu (OCR local)** : choisir la langue (anglais, français, ou les deux pour des textes mêlés — plus lent), le prétraitement, la zone (page entière, ou case par case si les cases sont détectées ou tracées) et le découpage (épars, automatique, un bloc).
+3. Lancer sur la page, sur des pages choisies (« 1-5, 8 ») ou sur tout le numéro : le traitement passe par la file existante (Moteurs › Traitements), une page à la fois, annulable ; chaque page terminée est enregistrée aussitôt (rien de perdu si la page est fermée ; reprise au point d'arrêt).
+4. Résultats : chaque bloc arrive **« à vérifier »** dans la base de connaissances, avec son extrait d'image à côté du texte, sa zone dessinée sur la page, la confiance Tesseract, la case, la langue, le prétraitement, le traitement et la date. Corriger le texte (le texte OCR initial est conservé), valider ou rejeter un à un ou en lot, relancer, comparer deux passages (« Comparer les prétraitements »), garder un seul passage.
+5. Les résultats OCR ne deviennent jamais de la matière de script, même validés : ils servent à relever les textes ; le script reprend les **événements validés**.
+
+Les zones affichées sont des zones de texte reconnues, **pas des contours de bulles** ; aucun personnage n'est identifié ; l'ordre de lecture est établi par les cases quand elles existent, et signalé **approximatif** sur une page entière. La confiance Tesseract n'est pas un taux d'exactitude.
+
+### Architecture et confidentialité
+- `templates/_systeme/ocr.js` (pur) : modèles et empreintes, prétraitements (×2, gris, contraste, seuil d'Otsu), conversion des blocs Tesseract en coordonnées de page, regroupement prudent des lignes d'un même texte, ordre de lecture, mesures (exactitude des mots, WER, CER).
+- `atelier/script/ocr.js` : téléchargement explicite et vérifié des modèles, stockage local (base IndexedDB, magasin `modeles-ocr`), prétraitement sur **copies temporaires** (les pages importées ne sont jamais modifiées), reconnaissance annulable, libération du worker et de la mémoire à la fin.
+- `atelier/script/ocr-worker.js` : enveloppe du worker Tesseract ; sert les modèles depuis la base locale, charge le cœur WebAssembly intégré, et **refuse toute requête vers une autre origine** (aucune image ni aucun texte ne peut sortir de l'appareil).
+- `atelier/script/ocr-ui.js` : panneau du lecteur, section Moteurs, traitement `ocr-pages` de la file existante ; passages enregistrés dans le magasin `ocr-passes` (base locale version 7).
+- Hors ligne : le moteur (5,9 Mo) est publié mais pas préchargé ; il est conservé dans un cache dédié dès l'installation d'un modèle (« Préparer le hors-ligne »), puis tout fonctionne sans réseau.
+
+### Dépendances et licences (vérifiées le 2026-11-06)
+| Ressource | Version | Licence | Où | Taille |
+|---|---|---|---|---|
+| tesseract.js (`tesseract.esm.min.js`, `worker.min.js`) | 7.0.0 | Apache-2.0 | intégré, `atelier/vendor/tesseract/` | 0,17 Mo |
+| tesseract.js-core (variantes LSTM, avec et sans SIMD : `.js` + `.wasm`) | 7.0.0 | Apache-2.0 | intégré, `atelier/vendor/tesseract/` | 5,7 Mo |
+| Modèle `eng.traineddata` *fast* | tessdata_fast 4.1.0 | Apache-2.0 | téléchargé à la demande depuis `raw.githubusercontent.com/tesseract-ocr/tessdata_fast/4.1.0/`, SHA-256 `7d4322bd…70b2` | 3,9 Mo |
+| Modèle `fra.traineddata` *fast* | tessdata_fast 4.1.0 | Apache-2.0 | idem, SHA-256 `ced03756…45ca` | 1,1 Mo |
+
+Seules les variantes LSTM du cœur sont intégrées (moteur hérité non utilisé). Les modèles *best* ne sont pas proposés : ils plantent dans Tesseract.js (audit 0.11). Aucune autre dépendance n'a été ajoutée. Détails : `atelier/vendor/tesseract/VERSION.txt`.
+
+### Mesures sur pages réelles (2026-11-06)
+Protocole indépendant de la confiance Tesseract : `node tools/mesurer-ocr.mjs <dossier-corpus>` compare l'OCR à des transcriptions de référence corrigées à la main (exactitude des mots, WER, CER, temps, mémoire) par catégorie de lettrage, prétraitement et langue. Corpus : 46 zones de texte sur 6 pages de 4 numéros réels en anglais (*Immortal Hulk* #1 et #2, *The Ultimates* (2016) #1 et #4), transcrites à la main, hors dépôt.
+
+| Mesure (anglais) | Zone délimitée (reconnaissance seule) | Page entière (détection + reconnaissance, réglages par défaut) |
+|---|---|---|
+| Lettrage courant (dialogues + narration, 193 mots) | **95,3 %** des mots (×2 + noir et blanc) | **91,2 %** des mots (×2 + gris + contraste), WER 65 % |
+| Dialogues | 93,3 % | 89,4 % |
+| Narration et cartouches | 97,8 % | 93,3 % |
+| Italique (14 mots) | 78,6 à 100 % selon le prétraitement | 57 à 71 % |
+| Lettrage stylisé (50 mots) | 42 à 60 % | 16 à 46 % |
+| Petit texte (15 mots) | 13 à 47 % | 33 à 60 % |
+| Effet sonore (1 échantillon) | 0 % | 0 % |
+| Temps | 40 à 200 ms par zone | ≈ 3 à 5 s par page de 2400 px |
+| Mémoire (navigateur) | — | 485 Mo au repos, pic 1,1 Go |
+
+Lecture : l'objectif de 85 % est atteint sur le lettrage courant, sur ce petit corpus. Sur une page entière, le WER élevé vient des **insertions** (fragments parasites tirés du dessin ou de textes voisins) : la relecture reste indispensable. Le découpage « automatique » fusionne les cases voisines (60 % seulement) : « épars » est le réglage par défaut ; le mode **case par case** est conseillé quand les cases sont bien détectées. Lettrage stylisé, effets sonores et petit texte : **non fiables**. Le français n'a été mesuré que sur des pages de synthèse (100 % sur 13 mots), faute de comic français réel dans le corpus.
 
 ## Validation sur 10 comics réels
 
@@ -104,7 +149,17 @@ node tools/valider-comics.mjs ~/comics-validation
 4. Transcrire 2 pages par numéro, analyser le numéro, valider ; vérifier dans Connaissances que chaque information porte numéro, page et case, puis construire un script de test et contrôler l'export.
 5. Lancer `node tools/serveur-moteurs.mjs` sur le PC prévu pour les moteurs et noter le profil recommandé (RAM, mémoire vidéo, disque).
 
-Ces mesures serviront de référence pour l'OCR (0.11.1) : taux de mots corrects par type de lettrage.
+6. **OCR** : pour 2 pages par numéro, créer un corpus de mesure (hors dépôt) : enregistrer les pages en PNG dans `~/corpus-ocr/pages/`, écrire `~/corpus-ocr/corpus.json` avec une zone par texte (fractions de la page), sa catégorie (`dialogue`, `narration`, `italique`, `stylise`, `onomatopee`, `petit`), sa langue et sa transcription exacte, puis :
+
+```bash
+node tools/mesurer-ocr.mjs ~/corpus-ocr
+```
+
+```bash
+node tools/mesurer-ocr.mjs ~/corpus-ocr --mode=page
+```
+
+Le premier mesure la reconnaissance seule, le second la page entière (détection comprise). Inclure des numéros **français** (non mesurés sur pages réelles à ce jour). Les rapports `rapport-ocr.md` et `rapport-ocr-page.md` sont écrits dans le dossier du corpus ; aucune catégorie n'y est masquée.
 
 ### Résultats sur 5 numéros réels (2026-11-06)
 
@@ -122,7 +177,7 @@ Contrôle visuel : grilles classiques (Hulk) bien découpées, mais certaines pa
 
 - Pas de prose générée : l'auteur écrit (ou colle le texte d'un outil externe qu'il a choisi).
 - CBR non pris en charge (convertir en CBZ).
-- OCR, vision et rédaction locales non installés (architecture prête, adaptateurs manuels seulement).
+- Vision et rédaction locales non installées. OCR : fiable sur le lettrage courant seulement ; ni bulles ni personnages détectés ; ordre de lecture approximatif sans cases ; français non mesuré sur pages réelles ; testé sur Chromium (Linux) uniquement.
 - Mémoire vidéo mesurée seulement via le serveur local et sur carte NVIDIA.
 - Détection des cases fiable sur des gouttières nettes seulement.
 - Analyse critique par règles : utile, mais ni exhaustive ni infaillible ; le rythme est une estimation.

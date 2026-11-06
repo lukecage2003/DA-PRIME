@@ -6,10 +6,18 @@ import { detecter } from './capacites.js';
 import { ETATS } from './taches.js';
 import { $, el, bouton, champ, choix, saisie, info } from './ui.js';
 
-export function initMoteurs({ file }) {
-  let reglages = null, caps = null;
-  const charger = async () => { reglages = { ...MO.REGLAGES0, ...(await db.lire('reglages', 'moteurs').catch(() => null)) }; const j = new URLSearchParams(location.search).get('jeton');
-    if (j) { reglages.jeton = j; reglages.serveur ||= location.origin; await db.ecrire('reglages', reglages); const u = new URL(location.href); u.searchParams.delete('jeton'); history.replaceState(null, '', u); }   // jeton retiré de l'adresse visible
+// Jeton transmis par l'adresse affichée par le serveur : après « # » (jamais envoyé sur le réseau), lu une fois au chargement
+// puis retiré de la barre d'adresse et de l'historique de session. Une ancienne adresse « ?jeton= » est nettoyée sans être utilisée.
+export function lireJetonAdresse() {
+  const u = new URL(location.href), h = u.hash.slice(1), m = h.match(/(?:^|&)jeton=([^&]*)/), ancien = u.searchParams.has('jeton');
+  if (!m && !ancien) return { jeton: null, ancien: false };
+  u.searchParams.delete('jeton'); u.hash = m ? (h.replace(/(?:^|&)jeton=[^&]*/, '').replace(/^&/, '') || 'moteurs') : h; history.replaceState(null, '', u);
+  return { jeton: m ? decodeURIComponent(m[1]) : null, ancien };
+}
+export function initMoteurs({ file, jetonAdresse = null, ocr = null }) {
+  let reglages = null, caps = null, jetonRecu = jetonAdresse;
+  const charger = async () => { reglages = { ...MO.REGLAGES0, ...(await db.lire('reglages', 'moteurs').catch(() => null)) };
+    if (jetonRecu) { reglages.jeton = jetonRecu; reglages.serveur ||= location.origin; jetonRecu = null; await db.ecrire('reglages', reglages); }
     if (!reglages.serveur) { try { const r = await fetch('/api/sante', { signal: AbortSignal.timeout(1500), headers: reglages.jeton ? { 'X-DA-PRIME-Jeton': reglages.jeton } : {} }); if (r.ok && (await r.json()).application === 'DA-PRIME') { reglages.serveur = location.origin; await db.ecrire('reglages', reglages); } } catch { /* pas de serveur local : mode navigateur seul */ } }
     return reglages; };
   const sauver = () => db.ecrire('reglages', reglages);
@@ -19,7 +27,7 @@ export function initMoteurs({ file }) {
     caps = await detecter({ serveur: reglages.serveur || null, jeton: reglages.jeton });
     const reco = MO.profilRecommande(caps), profil = reglages.choisi && reglages.profil ? reglages.profil : reco.profil, S = caps.serveur && !caps.serveur.injoignable ? caps.serveur : null;
     const lignes = (rows) => el('table', { className: 'tableau-caps' }, el('tbody', {}, ...rows.map(([k, val, src]) => el('tr', {}, el('th', { textContent: k }), el('td', {}, val), el('td', { className: 'note', textContent: src || '' })))));
-    const url = saisie(reglages.serveur, { placeholder: 'http://localhost:4180 ou http://192.168.1.20:4180', id: 'serveur-url' }), jet = saisie(reglages.jeton, { placeholder: 'Jeton affiché par le serveur (mode réseau)', id: 'serveur-jeton', type: 'text', autocomplete: 'off', spellcheck: false });
+    const url = saisie(reglages.serveur, { placeholder: 'http://localhost:4180 ou http://192.168.1.20:4180', id: 'serveur-url' }), jet = saisie(reglages.jeton, { placeholder: 'Jeton affiché par le serveur (mode réseau)', id: 'serveur-jeton', type: 'text', autocomplete: 'off', spellcheck: false, className: 'masque-saisie' });
     const ol = saisie(reglages.ollama, { id: 'ollama-url' }), resOl = el('p', { className: 'note', id: 'ollama-resultat' });
     const choixProfil = choix(Object.fromEntries(Object.entries(MO.PROFILS).map(([k, p]) => [k, `${p.nom}${k === reco.profil ? ' (recommandé)' : ''}`])), profil); choixProfil.id = 'profil-config';
     choixProfil.addEventListener('change', async () => { reglages.profil = choixProfil.value; reglages.choisi = true; await sauver(); afficher(); });
@@ -41,6 +49,7 @@ export function initMoteurs({ file }) {
         el('p', { textContent: `Recommandé : ${MO.PROFILS[reco.profil].nom} (${reco.raisons.join(', ')}).` }), champ('Profil appliqué', choixProfil), el('p', { className: 'note', textContent: P.description }),
         P.modeles.length ? el('ul', {}, ...P.modeles.map(([t, n, go]) => el('li', { textContent: `${MO.TYPES_MOTEURS[t]} : ${n} — ≈ ${go} Go (non téléchargé ; prévu dans une version ultérieure)` }))) : el('p', { className: 'note', textContent: 'Aucun modèle sur cet appareil.' }),
         besoin ? el('p', { className: 'note', textContent: `Espace à prévoir : ≈ ${besoin.toFixed(1)} Go${libre !== null ? ` · disque libre du serveur : ${libre} Go${libre < besoin * 1.5 ? ' — insuffisant avec marge' : ''}` : ' · espace disque inconnu sans serveur local'}.` }) : null),
+      ocr ? ocr.sectionMoteurs() : null,
       el('div', { className: 'carte-bloc', id: 'liste-moteurs' }, el('h3', { textContent: 'Moteurs' }),
         ...Object.entries(MO.TYPES_MOTEURS).map(([type, nom]) => { const s = choix(Object.fromEntries(Object.entries(MO.ADAPTATEURS).filter(([, a]) => a.type === type).map(([k, a]) => [k, `${a.nom} · ${MO.MODES[a.mode]}${a.etat === 'prevu' ? ' — non installé' : ''}`])), reglages.adaptateurs[type]); s.dataset.moteur = type;
           [...s.options].forEach((o) => { o.disabled = MO.ADAPTATEURS[o.value].etat !== 'disponible'; });
