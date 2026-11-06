@@ -19,15 +19,15 @@ export function initOcr({ file, kb, ouvrirMoteurs, ouvrirPage }) {
   async function enregistrer(t, c, p, idx, pre, r, mod) {
     const P = t.params, passe = `${t.id}:${p.id}:${pre}`, date = Date.now(), moteur = `${mod.VERSION_MOTEUR} · fast ${O.MODELES.version}`;
     const meta = { langues: P.langues, pretraitement: pre, segmentation: P.segmentation, zoneMode: P.zone, tache: t.id, passe, date, moteur };
-    const as = r.blocs.map((b) => K.normaliser({ id: `ocr:${passe}:${b.ordre}`, contenu: b.texte, categorie: b.confiance < 0.5 ? 'incertain' : 'texte', comic: c.id, page: idx, case: b.case, zone: b.zone, methode: 'ocr:tesseract-fast', moteur, confiance: b.confiance, statut: 'a-verifier',
-      origine: { genre: 'ocr', passe, pageId: p.id, tache: t.id }, ocr: { ...meta, texteBrut: b.texteBrut ?? b.texte, texteInitial: b.texte, retires: b.retires || [], lignes: b.lignes, ordre: b.ordre, ordreCertain: r.ordreCertain, mots: b.mots, motsFaibles: b.motsFaibles } }));
+    const as = r.blocs.map((b) => ({ b, sug: O.suggererNature(b.texte, { naturePage: p.nature || '' }) })).map(({ b, sug }) => K.normaliser({ id: `ocr:${passe}:${b.ordre}`, contenu: b.texte, categorie: b.confiance < 0.5 ? 'incertain' : 'texte', comic: c.id, page: idx, case: b.case, zone: b.zone, methode: 'ocr:tesseract-fast', moteur, confiance: b.confiance, statut: 'a-verifier',
+      origine: { genre: 'ocr', passe, pageId: p.id, tache: t.id }, ocr: { ...meta, texteBrut: b.texteBrut ?? b.texte, texteInitial: b.texte, retires: b.retires || [], nature: null, natureSuggeree: sug?.nature || null, natureRaison: sug?.raison || null, lignes: b.lignes, ordre: b.ordre, ordreCertain: r.ordreCertain, mots: b.mots, motsFaibles: b.motsFaibles } }));
     await db.ecrire('ocr-passes', { id: passe, ...meta, comic: c.id, pageId: p.id, page: idx, blocs: as.length, ignores: r.ignores, ordreCertain: r.ordreCertain, regions: r.regions, duree: r.duree, largeur: r.largeur, hauteur: r.hauteur, texte: r.blocs.map((b) => b.texte).join('\n'), ids: as.map((a) => a.id) });
     await kb.ajouterLot(as); return as.length;
   }
   file.enregistrer('ocr-pages', { nom: 'OCR local', async executer(t, { signal, progres }) {
     const P = t.params, c = await db.lire('comics', P.comic); if (!c) throw new Error('numéro introuvable (supprimé ?)');
     const variantes = P.comparer?.length ? P.comparer : [P.pretraitement], total = P.pages.length * variantes.length, mod = await M();
-    const moteur = await mod.creerMoteur(P.langues); let blocs = 0;
+    const moteur = await mod.creerMoteur(P.langues); let blocs = 0, sansCase = 0;
     try {
       await moteur.parametrer(P.segmentation);
       for (let k = t.curseur || 0; k < total; k++) {
@@ -35,12 +35,14 @@ export function initOcr({ file, kb, ouvrirMoteurs, ouvrirPage }) {
         const pageId = P.pages[Math.floor(k / variantes.length)], pre = variantes[k % variantes.length], p = await db.lire('pages', pageId); if (!p) continue;
         const idx = c.pages.indexOf(pageId) + 1, lib = `Page ${idx}${variantes.length > 1 ? ` · ${O.PRETRAITEMENTS[pre].nom}` : ''}`;
         progres(k / total, `${lib} : reconnaissance…`, k);
-        const r = await mod.ocrPage(moteur, p, { pretraitement: pre, zone: P.zone, sens: c.sens, signal, progres: (x) => progres((k + x) / total) });
-        const n = await enregistrer(t, c, p, idx, pre, r, mod); blocs += n;
+        // Mode « case par case » sur une page sans case : traitée en page entière, et enregistrée comme telle (provenance exacte)
+        const zone = P.zone === 'cases' && p.cases?.length ? 'cases' : 'page';
+        const r = await mod.ocrPage(moteur, p, { pretraitement: pre, zone, sens: c.sens, signal, progres: (x) => progres((k + x) / total) });
+        const n = await enregistrer({ ...t, params: { ...P, zone } }, c, p, idx, pre, r, mod); blocs += n; if (zone !== P.zone) sansCase++;
         progres((k + 1) / total, `${lib} : ${n} bloc(s) de texte${r.ignores ? `, ${r.ignores} fragment(s) sans lettre ignoré(s)` : ''}.`, k + 1);
       }
     } finally { await moteur.terminer(); }   // libère le worker et la mémoire WebAssembly
-    return { pages: P.pages.length, blocs };
+    return { pages: P.pages.length, blocs, sansCase };
   }, apres: () => panneau?.rafraichir() });
   // Mises à jour en direct de la progression dans le panneau de la page
   file.abonner((t) => { if (t.type === 'ocr-pages' || t.supprime) panneau?.progres(t); });
@@ -48,9 +50,11 @@ export function initOcr({ file, kb, ouvrirMoteurs, ouvrirPage }) {
   async function lancer(c, pageIds, { comparer = null, nom } = {}) {
     const etats = await (await M()).etatModeles(), manquants = O.languesDe(reglages.langues).filter((x) => etats[x].etat !== 'disponible');
     if (manquants.length) { info(`Modèle OCR absent (${manquants.map((x) => O.MODELES.langues[x].nom).join(', ')}) : à installer dans Moteurs › OCR local.`); return null; }
+    let avert = '';
+    if (reglages.zone === 'cases') { const sans = (await Promise.all(pageIds.map((id) => db.lire('pages', id)))).filter((x) => !x?.cases?.length).length; avert = sans ? ` ${sans} page(s) sans case détectée ou tracée : reconnue(s) en page entière (indiqué dans la provenance).` : ''; }
     const t = await file.ajouter('ocr-pages', { comic: c.id, pages: pageIds, langues: reglages.langues, pretraitement: reglages.pretraitement, zone: reglages.zone, segmentation: reglages.segmentation, ...(comparer ? { comparer } : {}) },
       { nom: nom || `OCR · ${c.serie || 'Sans série'} #${c.numero || '?'} · ${pageIds.length} page(s)` });
-    info(`OCR lancé en arrière-plan (${pageIds.length} page(s)) : progression ci-dessous et dans Moteurs ; annulable.`); return t;
+    info(`OCR lancé en arrière-plan (${pageIds.length} page(s)) : progression ci-dessous et dans Moteurs ; annulable.${avert}`); return t;
   }
 
   // ---------- Aperçu d'une zone (image source ↔ texte) ----------
@@ -78,7 +82,8 @@ export function initOcr({ file, kb, ouvrirMoteurs, ouvrirPage }) {
     M().then((m) => m.etatModeles()).then((e) => { const d = Object.values(e).filter((x) => x.etat === 'disponible').map((x) => x.nom); etatM.textContent = d.length ? `Modèles installés : ${d.join(', ')}. Moteur : Tesseract.js dans ce navigateur, aucune image envoyée.` : 'Aucun modèle OCR installé : installer le français et/ou l\'anglais dans Moteurs › OCR local (une seule fois, puis hors ligne).'; etatM.dataset.etat = d.length ? 'ok' : 'alerte'; })
       .catch((e) => { etatM.textContent = `OCR indisponible : ${e.message}. La transcription manuelle reste disponible.`; etatM.dataset.etat = 'alerte'; });
     const zonesSur = (as) => { cadre.querySelectorAll('.zone-ocr').forEach((x) => x.remove()); if (!montrerZones) return; for (const a of as) { if (!a.zone) continue; const d = el('div', { className: 'zone-ocr', dataset: { ocr: a.id, statut: a.statut }, title: `${a.ocr?.ordre ?? ''}. ${a.contenu}`, style: `left:${a.zone.x * 100}%;top:${a.zone.y * 100}%;width:${a.zone.w * 100}%;height:${a.zone.h * 100}%` }, el('span', { textContent: String(a.ocr?.ordre ?? '') }));
-      d.addEventListener('pointerdown', (e) => { e.stopPropagation(); const l = z.querySelector(`[data-bloc="${CSS.escape(a.id)}"]`); l?.scrollIntoView({ block: 'nearest' }); l?.querySelector('textarea')?.focus(); }); cadre.append(d); } };
+      // Un clic sur une zone mène au texte ; le glisser reste libre pour tracer une case par-dessus (pas d'interception)
+      d.addEventListener('click', () => { const l = z.querySelector(`[data-bloc="${CSS.escape(a.id)}"]`); l?.scrollIntoView({ block: 'nearest' }); l?.querySelector('textarea')?.focus(); }); cadre.append(d); } };
     async function rafraichir() {
       if (!z.isConnected) return; const passes = (await db.tous('ocr-passes').catch(() => [])).filter((x) => x.pageId === p.id).sort((a, b) => b.date - a.date);
       if (!passes.length) { resultats.replaceChildren(el('p', { className: 'vide', textContent: 'Aucun résultat OCR pour cette page.' })); zonesSur([]); return; }
@@ -95,6 +100,9 @@ export function initOcr({ file, kb, ouvrirMoteurs, ouvrirPage }) {
           el('div', { className: 'pile' }, el('div', { className: 'rangee' }, cb, el('b', { textContent: `${a.ocr.ordre}.` }), el('span', { className: 'badge-prov', dataset: { prov: a.categorie === 'incertain' ? 'incertain' : 'dialogue' }, textContent: K.CATEGORIES[a.categorie] }),
             el('span', { className: 'compteur', textContent: `confiance Tesseract ${pc(a.confiance)}${a.case ? ` · case ${a.case}` : ''}${a.ocr.motsFaibles ? ` · ${a.ocr.motsFaibles} mot(s) douteux` : ''}` }), el('b', { className: 'statut-kb', dataset: { statut: a.statut }, textContent: K.STATUTS[a.statut] })),
             el('div', { className: 'image-texte' }, await apercuZone(p.id, a.zone, { largeur: 260 }), t),
+            (() => { const n = choix(O.NATURES_TEXTE, a.ocr.nature || a.ocr.natureSuggeree || 'inconnue'); n.dataset.natureOcr = a.id; n.setAttribute('aria-label', `Nature du texte du bloc ${a.ocr.ordre}`);
+              n.addEventListener('change', async () => { await kb.preciserNature(a.id, n.value); info(`Nature précisée : ${O.NATURES_TEXTE[n.value]}.`); rafraichir(); });
+              return el('div', { className: 'rangee' }, champ('Nature du texte', n), !a.ocr.nature && a.ocr.natureSuggeree ? el('span', { className: 'note', textContent: `suggérée (${a.ocr.natureRaison}) — à confirmer` }) : !a.ocr.nature ? el('span', { className: 'note', textContent: 'bulle, cartouche, lieu, crédits, couverture, décor… : à préciser' }) : null); })(),
             a.contenu !== (a.ocr.texteInitial ?? a.ocr.texteBrut) ? el('span', { className: 'note', textContent: `Texte OCR initial : « ${a.ocr.texteInitial ?? a.ocr.texteBrut} »` }) : null,
             a.ocr.retires?.length ? el('span', { className: 'note', textContent: `Fragments retirés comme probables traits du dessin : ${a.ocr.retires.map((x) => `« ${x} »`).join(' ')} (texte brut : « ${a.ocr.texteBrut} »)` }) : null),
           el('div', { className: 'pile' }, a.statut !== 'valide' ? bouton('Valider', async () => { try { await kb.statuer(a.id, 'valide', 'validation individuelle (OCR)'); } catch (e) { info(e.message); } rafraichir(); }, { className: 'accent petit', dataset: { validerOcr: a.id } }) : null,
@@ -122,7 +130,7 @@ export function initOcr({ file, kb, ouvrirMoteurs, ouvrirPage }) {
     }
     function progres(t) {
       if (!prog.isConnected) return; if (t.supprime || t.params?.comic !== c.id) return;
-      if (['termine', 'annule', 'erreur'].includes(t.etat)) { prog.replaceChildren(el('p', { className: 'note', dataset: { etatOcr: t.etat }, textContent: t.etat === 'termine' ? `OCR terminé : ${t.resultat?.blocs ?? 0} bloc(s) sur ${t.resultat?.pages ?? 0} page(s).` : t.etat === 'annule' ? 'OCR annulé : les pages déjà traitées sont conservées.' : `Erreur OCR : ${t.erreur}` })); return; }
+      if (['termine', 'annule', 'erreur'].includes(t.etat)) { prog.replaceChildren(el('p', { className: 'note', dataset: { etatOcr: t.etat }, textContent: t.etat === 'termine' ? `OCR terminé : ${t.resultat?.blocs ?? 0} bloc(s) sur ${t.resultat?.pages ?? 0} page(s)${t.resultat?.sansCase ? ` (${t.resultat.sansCase} page(s) sans case traitée(s) en page entière)` : ''}.` : t.etat === 'annule' ? 'OCR annulé : les pages déjà traitées sont conservées.' : `Erreur OCR : ${t.erreur}` })); return; }
       prog.replaceChildren(el('div', { className: 'rangee' }, el('div', { className: 'jauge', role: 'progressbar', 'aria-valuenow': String(Math.round((t.progres || 0) * 100)), 'aria-valuemin': '0', 'aria-valuemax': '100' }, el('i', { style: `width:${Math.round((t.progres || 0) * 100)}%` })),
         bouton('Annuler', () => file.annuler(t.id), { className: 'petit', id: 'ocr-annuler' })), el('span', { className: 'note', textContent: `${t.nom} · ${Math.round((t.progres || 0) * 100)} % ${t.message ? `· ${t.message}` : ''}` }));
     }
@@ -134,8 +142,9 @@ export function initOcr({ file, kb, ouvrirMoteurs, ouvrirPage }) {
       el('p', { className: 'note', textContent: 'Les traitements passent par la file (Moteurs › Traitements) : une page à la fois, résultats enregistrés page par page (rien de perdu si la page est fermée). Tout résultat arrive « à vérifier » et n\'entre jamais dans un script sans validation.' }),
       prog, resultats, ouvrirMoteurs ? bouton('Installer ou gérer les modèles…', ouvrirMoteurs, { className: 'petit' }) : null);
     panneau = { rafraichir, progres };
+    // Le panneau n'est inséré dans la page qu'après ce retour : l'affichage des résultats existants attend l'insertion
+    setTimeout(rafraichir, 0);
     file.lister().then((ts) => { const t = ts.find((x) => x.type === 'ocr-pages' && x.params?.comic === c.id && ['attente', 'en-cours'].includes(x.etat)); if (t) progres(t); });
-    rafraichir();
     return z;
   }
 

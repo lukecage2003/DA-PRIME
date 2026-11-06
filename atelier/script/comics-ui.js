@@ -10,6 +10,7 @@ const TYPES_TEXTE = { dialogue: 'Bulle de dialogue', pensee: 'Pensée', cartouch
 const STATUTS = { lu: 'Lu', incertain: 'Incertain', illisible: 'Illisible' };
 const nid = (p) => `${p}${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
+import { NATURES_PAGE } from '../../templates/_systeme/ocr.js';
 export function initComics({ rafraichirProjet, kb, file, ocr }) {
   let comics = [], courant = null, pageIdx = 0, pageCache = new Map(), caseSel = null;
   const numeros = () => comics.filter((c) => c.genre === 'numero').sort((a, b) => sans(`${a.serie} ${String(a.numero).padStart(5, '0')}`).localeCompare(sans(`${b.serie} ${String(b.numero).padStart(5, '0')}`)));
@@ -79,7 +80,9 @@ export function initComics({ rafraichirProjet, kb, file, ocr }) {
     const dessinerCases = () => { cadre.querySelectorAll('.case').forEach((x) => x.remove()); p.cases.forEach((k, i) => { const d = el('div', { className: 'case', dataset: { sel: caseSel === i ? '1' : '0', case: i + 1 }, style: `left:${k.x * 100}%;top:${k.y * 100}%;width:${k.w * 100}%;height:${k.h * 100}%` }, el('span', { textContent: String(i + 1) })); d.addEventListener('pointerdown', (e) => { e.stopPropagation(); caseSel = i; dessinerCases(); }); cadre.append(d); }); };
     // Découpe manuelle : glisser sur l'image pour tracer une case
     let dep = null, trace = null; const pos = (e) => { const b = img.getBoundingClientRect(); return [(e.clientX - b.left) / b.width, (e.clientY - b.top) / b.height]; };
-    cadre.addEventListener('pointerdown', (e) => { dep = pos(e); trace = el('div', { className: 'trace' }); cadre.append(trace); cadre.setPointerCapture(e.pointerId); });
+    // Pas de glisser-déposer natif de l'image (il annulait le tracé d'une case : pointercancel)
+    img.draggable = false; cadre.addEventListener('dragstart', (e) => e.preventDefault());
+    cadre.addEventListener('pointerdown', (e) => { e.preventDefault(); dep = pos(e); trace = el('div', { className: 'trace' }); cadre.append(trace); cadre.setPointerCapture(e.pointerId); });
     cadre.addEventListener('pointermove', (e) => { if (!dep) return; const [x, y] = pos(e); Object.assign(trace.style, { left: `${Math.min(x, dep[0]) * 100}%`, top: `${Math.min(y, dep[1]) * 100}%`, width: `${Math.abs(x - dep[0]) * 100}%`, height: `${Math.abs(y - dep[1]) * 100}%` }); });
     cadre.addEventListener('pointerup', async (e) => { if (!dep) return; const [x, y] = pos(e), r = { x: Math.max(0, Math.min(x, dep[0])), y: Math.max(0, Math.min(y, dep[1])), w: Math.abs(x - dep[0]), h: Math.abs(y - dep[1]) }; dep = null; trace.remove();
       if (r.w > 0.03 && r.h > 0.03) { p.cases.push({ ...r, manuel: true }); await sauverPage(p); caseSel = p.cases.length - 1; lecteur(c); } });
@@ -94,7 +97,10 @@ export function initComics({ rafraichirProjet, kb, file, ocr }) {
       bouton('← Page précédente', () => { if (pageIdx > 0) { pageIdx--; caseSel = null; afficher(); } }), bouton('Page suivante →', () => { if (pageIdx < c.pages.length - 1) { pageIdx++; caseSel = null; afficher(); } }),
       bouton('Déplacer à gauche', async () => { if (!pageIdx) return; [c.pages[pageIdx - 1], c.pages[pageIdx]] = [c.pages[pageIdx], c.pages[pageIdx - 1]]; pageIdx--; await sauverComic(c); afficher(); }), bouton('Déplacer à droite', async () => { if (pageIdx >= c.pages.length - 1) return; [c.pages[pageIdx + 1], c.pages[pageIdx]] = [c.pages[pageIdx], c.pages[pageIdx + 1]]; pageIdx++; await sauverComic(c); afficher(); }),
       bouton(p.exclue ? 'Réintégrer la page' : 'Exclure la page', async () => { p.exclue = !p.exclue; await sauverPage(p); afficher(); }),
-      el('label', { className: 'bascule' }, (() => { const x = el('input', { type: 'checkbox', checked: !!p.double }); x.addEventListener('change', async () => { p.double = x.checked; await sauverPage(p); }); return x; })(), 'Double page'))),
+      el('label', { className: 'bascule' }, (() => { const x = el('input', { type: 'checkbox', checked: !!p.double }); x.addEventListener('change', async () => { p.double = x.checked; await sauverPage(p); }); return x; })(), 'Double page'),
+      // Nature de la page (couverture, crédits, histoire…) : indiquée par l'utilisateur ; la page 1 est seulement signalée « couverture probable »
+      (() => { const n = choix(NATURES_PAGE, p.nature || ''); n.id = 'nature-page'; n.setAttribute('aria-label', 'Nature de la page'); n.addEventListener('change', async () => { p.nature = n.value; await sauverPage(p); info(`Page ${pageIdx + 1} : ${NATURES_PAGE[n.value]}.`); });
+        return el('label', { className: 'champ' }, el('span', { textContent: !p.nature && pageIdx === 0 ? 'Nature de la page (page 1 : couverture probable)' : 'Nature de la page' }), n); })())),
       el('div', { className: 'pile' }, el('div', { className: 'carte-bloc' }, el('h3', { textContent: `Page ${pageIdx + 1} · cases` }),
         el('div', { className: 'rangee' }, bouton('Détecter les cases', async () => { const bm = await createImageBitmap(p.blob), r = detecterCases(bm, { sens: c.sens || 'gd' }); bm.close?.(); p.cases = r.cases; p.detection = { fiabilite: r.fiabilite, note: r.note }; await sauverPage(p); lecteur(c); info(`${r.cases.length} case(s) détectée(s) · fiabilité ${r.fiabilite}.`); }, { className: 'accent', id: 'detecter-cases' }),
           file ? bouton('Tout le numéro (arrière-plan)', async () => { await file.ajouter('cases-numero', { comic: c.id }, { nom: `Cases · ${libelle(c)}` }); info('Détection des cases du numéro lancée en arrière-plan (suivi dans l\'espace Moteurs ; annulable).'); }, { id: 'cases-arriere-plan' }) : null,

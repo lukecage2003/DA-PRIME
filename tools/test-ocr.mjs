@@ -48,6 +48,10 @@ console.log('OCR : prétraitement, blocs, ordre de lecture, mesures (Node)');
   K.modifierContenu(a, 'HULK SMASH!'); K.changerStatut(a, 'valide');
   ok(a.ocr.texteBrut === 'HULK SMASH' && a.historique[0].ancien === 'HULK SMASH' && a.historique[0].motif === 'texte corrigé' && a.zone.w === 0.3 && K.METHODES[a.methode], 'correction manuelle : texte OCR initial conservé (provenance et historique), zone et méthode gardées');
   ok(K.pointsPourScript([a], ['c']).length === 0, 'un résultat OCR, même validé, n\'alimente jamais directement un script (matière = événements validés)');
+  ok(O.suggererNature('KENNETH ROCAFORT & EDGAR DELGADO COVER ARTISTS')?.nature === 'credits' && O.suggererNature('DR. ADAM BRASHEAR, AGE 87. CODENAME: "BLUE MARVEL."')?.nature === 'presentation' && O.suggererNature('NOW! ABOARD THE ABEONA')?.nature === 'localisation'
+    && O.suggererNature('HE SAW IT ON THE WAY IN') === null && O.suggererNature('THE IMMORTAL HULK', { naturePage: 'couverture' })?.nature === 'couverture', 'nature du texte : crédits, présentation, lieu suggérés par mots-clés sûrs ; une bulle ordinaire n\'est jamais devinée ; page de couverture prise en compte');
+  ok(O.categorieRapport({ categorie: 'stylise', nature: 'credits' }) === 'stylise' && O.categorieRapport({ categorie: 'ordinaire', nature: 'credits' }) === 'editorial' && O.categorieRapport({ categorie: 'narration' }) === 'narration' && O.estLettrageCourant({ categorie: 'ordinaire', nature: 'localisation' }) === false,
+    'mesures : nature et style séparés ; crédits, couverture et lieux exclus du lettrage courant ; ancien étiquetage relu');
   ok(MO.ADAPTATEURS['ocr-tesseract'].etat === 'disponible' && Object.entries(MO.ADAPTATEURS).filter(([, x]) => x.etat === 'disponible' && x.mode !== 'manuel').map(([k]) => k).join() === 'ocr-tesseract', 'seul l\'OCR Tesseract s\'ajoute aux modes manuels ; vision et rédaction restent non installées');
 }
 console.log('Serveur local : jeton par en-tête uniquement (Node)');
@@ -76,7 +80,7 @@ const { chromium, devices } = createRequire(import.meta.url)('playwright');
 const { srv: serveur } = await SM.demarrer({ port: 4208 }), B = 'http://localhost:4208';
 const browser = await chromium.launch(), ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 } }), p = await ctx.newPage(), err = [], externes = [], telechargements = [];
 let dialogues = 0; p.on('dialog', (d) => { dialogues++; d.accept(); });
-p.on('pageerror', (x) => err.push(x.message)); p.on('console', (m) => m.type() === 'error' && !/Failed to load resource/.test(m.text()) && err.push(m.text()));
+p.on('pageerror', (x) => err.push(x.stack || x.message)); p.on('console', (m) => m.type() === 'error' && !/Failed to load resource/.test(m.text()) && err.push(m.text()));
 ctx.on('request', (r) => { const u = r.url(); if (u.startsWith('https://raw.githubusercontent.com/')) telechargements.push(u); else if (!u.startsWith(B) && !u.startsWith('blob:') && !u.startsWith('data:')) externes.push(u); });
 await ctx.route('https://raw.githubusercontent.com/**', (r) => r.fulfill({ status: 200, body: readFileSync(join(TESS, r.request().url().split('/').pop())) }));
 const D = (f, a) => p.evaluate(f, a), att = (ms = 200) => p.waitForTimeout(ms);
@@ -136,6 +140,9 @@ await p.locator('#ocr-blocs .bloc-ocr').first().hover(); ok(await p.locator('#ca
 const premier = await p.locator('#ocr-blocs .bloc-ocr').first().getAttribute('data-bloc'), brut = as.find((a) => a.id === premier).contenu;
 await p.locator('#ocr-blocs .bloc-ocr').first().locator('textarea').fill('WHERE IS THE GAMMA BOMB?!'); await p.locator('#ocr-blocs .bloc-ocr').first().locator('textarea').blur(); await att(600);
 await p.click(`[data-valider-ocr="${premier}"]`); await att(500);
+await p.selectOption(`[data-nature-ocr="${premier}"]`, 'dialogue'); await att(500);
+const aN = (await kbTous()).find((a) => a.id === premier);
+ok(aN.ocr.nature === 'dialogue' && aN.categorie === 'dialogue' && /nature du texte : Bulle de dialogue/.test(aN.historique.at(-1).motif), 'nature du texte confirmée par l\'utilisateur (bulle de dialogue) : catégorie ajustée, changement tracé');
 let a1 = (await kbTous()).find((a) => a.id === premier);
 ok(a1.contenu === 'WHERE IS THE GAMMA BOMB?!' && a1.ocr.texteInitial === brut && a1.historique.some((h) => h.ancien === brut) && a1.statut === 'valide', 'correction manuelle puis validation : texte OCR initial conservé (provenance + historique)');
 await p.click('#ocr-resultats button:has-text("Tout sélectionner")'); await att(400); await p.locator(`[data-bloc="${premier}"] input[type=checkbox]`).uncheck(); await att(400); await p.click('[data-lot-ocr="rejete"]'); await att(600);
@@ -145,12 +152,31 @@ await p.selectOption('#ocr-pre2', 'original'); await p.click('#ocr-comparer'); a
 await p.waitForSelector('#ocr-comparaison', { timeout: 30000 });
 const cmp = await p.textContent('#ocr-comparaison');
 ok(/exactitude des mots \d+ %/.test(cmp) && await p.locator('#ocr-comparaison canvas.apercu-pre').count() === 2, 'comparaison de deux prétraitements : images prétraitées côte à côte, exactitude mesurée contre le texte validé');
+// Zone délimitée tracée à la main PAR-DESSUS les zones OCR affichées (elles ne doivent pas bloquer le tracé)
+await p.click('#lecteur button:has-text("Effacer les cases")'); await att(500);
+await p.waitForFunction(() => { const i = document.querySelector('#cadre-page img'); return i?.complete && i.naturalHeight > 0 && document.querySelectorAll('#cadre-page .zone-ocr').length > 0; }, null, { timeout: 15000 });
+ok(await p.locator('#ocr-blocs .bloc-ocr').count() > 0, 'page ré-affichée (cases effacées) : résultats OCR existants affichés d\'emblée');
+// le tracé COMMENCE sur une zone OCR (texte « WHERE IS THE »), qui interceptait la souris avant correction
+{ const bb = await p.locator('#cadre-page img').boundingBox(), zr = await p.locator('#cadre-page .zone-ocr').first().boundingBox(); ok(zr.x < bb.x + bb.width * 0.45 && zr.y < bb.y + bb.height * 0.45, 'première zone OCR dans la case en haut à gauche'); await p.mouse.move(zr.x + 3, zr.y + 3); await p.mouse.down(); await p.mouse.move(bb.x + bb.width * 0.02, bb.y + bb.height * 0.02, { steps: 4 }); await p.mouse.down(); await p.mouse.move(bb.x + bb.width * 0.49, bb.y + bb.height * 0.49, { steps: 8 }); await p.mouse.up(); await att(600); }
+const nc = await D(async (id) => (await window.__script.db.lire('pages', id)).cases.length, C.pages[0]); 
+await p.selectOption('#ocr-zone', 'cases'); await p.selectOption('#ocr-segmentation', 'bloc'); const np0 = await D(async () => (await window.__script.db.tous('ocr-passes')).length); await p.click('#ocr-page');
+await attendreQue(async (n) => (await window.__script.db.tous('ocr-passes')).length > n, np0); await att(500);
+const pz = await D(async (id) => (await window.__script.db.tous('ocr-passes')).filter((x) => x.pageId === id).sort((a, b) => b.date - a.date)[0], C.pages[0]), az = (await kbTous()).filter((a) => a.ocr?.passe === pz.id);
+ok(nc === 1 && pz.zoneMode === 'cases' && az.length && az.every((a) => a.case === 1 && a.zone.x + a.zone.w <= 0.5 && a.zone.y + a.zone.h <= 0.5) && /WHERE IS THE GAMMA BOMB/.test(az.map((a) => a.contenu).join(' ')), `zone délimitée tracée à la main par-dessus les zones OCR : reconnaissance limitée à la zone (${az.map((a) => a.contenu).join(' | ')})`);
+await p.selectOption('#ocr-segmentation', 'epars');
 // Français, case par case
 await p.click('.vignette-page[data-page="2"]'); await p.waitForSelector('#ocr-panneau'); await p.click('#detecter-cases'); await att(600);
 await p.selectOption('#ocr-langues', 'fra'); await p.selectOption('#ocr-zone', 'cases'); await p.selectOption('#ocr-segmentation', 'bloc'); await p.click('#ocr-page'); await p.waitForSelector('#ocr-blocs .bloc-ocr', { timeout: 60000 });
 as = (await kbTous()).filter((a) => a.origine?.genre === 'ocr' && a.page === 2).sort((x, y) => x.ocr.ordre - y.ocr.ordre); const m2 = O.mesurer(REF[2], as.map((a) => a.contenu).join(' '));
 ok(as.every((a) => a.case >= 1 && a.ocr.zoneMode === 'cases' && a.ocr.langues === 'fra') && as.map((a) => a.case).join() === [...as.map((a) => a.case)].sort().join() && m2.exactitude >= 0.85 && /BOMBE \?/.test(as.map((a) => a.contenu).join(' ')), `français, case par case : ordre des cases conservé, accents · exactitude ${Math.round(m2.exactitude * 100)} % (${as.map((a) => a.contenu).join(' | ')})`);
 ok(await D(async () => (await window.__script.db.lire('reglages', 'ocr')).langues === 'fra'), 'réglages OCR mémorisés');
+// Mode « case par case » sur une page sans case : traitée en page entière ET enregistrée comme telle
+await p.click('.vignette-page[data-page="3"]'); await p.waitForFunction(() => /Page 3 · cases/.test(document.querySelector('#lecteur')?.textContent || ''));
+await p.click('#lecteur button:has-text("Effacer les cases")'); await att(400); await p.selectOption('#ocr-zone', 'cases'); const np1 = await D(async () => (await window.__script.db.tous('ocr-passes')).length);
+await p.selectOption('#ocr-langues', 'eng'); await D(() => { document.querySelector('#etat').textContent = ''; }); await p.click('#ocr-page'); await p.waitForFunction(() => /OCR lancé/.test(document.querySelector('#etat')?.textContent || ''), null, { timeout: 10000 }); const msgSans = await p.textContent('#etat'); await attendreQue(async (n) => (await window.__script.db.tous('ocr-passes')).length > n, np1);
+const ps3 = await D(async (id) => (await window.__script.db.tous('ocr-passes')).filter((x) => x.pageId === id).sort((a, b) => b.date - a.date)[0], C.pages[2]);
+ok(ps3.zoneMode === 'page' && /sans case/.test(msgSans), `page sans case en mode « case par case » : signalé à l'utilisateur, provenance exacte (« ${ps3.zoneMode} ») · message : ${msgSans}`);
+await p.click('.vignette-page[data-page="2"]'); await p.waitForFunction(() => /Page 2 · cases/.test(document.querySelector('#lecteur')?.textContent || '')); await p.selectOption('#ocr-langues', 'fra');
 
 // D. Numéro complet en arrière-plan : annulation, interruption (page fermée), reprise sans doublon ni perte
 await p.selectOption('#ocr-langues', 'eng'); await p.selectOption('#ocr-zone', 'page'); await p.selectOption('#ocr-segmentation', 'epars');
@@ -196,8 +222,13 @@ await p.goto(`${B}/atelier/script/#comics`); await pret(); await D(() => navigat
 await attendreQue(() => !!navigator.serviceWorker.controller, null, 20000);
 await ctx.setOffline(true); const n0 = externes.length;
 await p.reload(); await pret(); await p.click(`[data-comic="${C.id}"]`); await p.click('.vignette-page[data-page="3"]'); await p.waitForSelector('#ocr-panneau');
+await p.waitForFunction(() => /Page 3 · cases/.test(document.querySelector('#lecteur')?.textContent || ''), null, { timeout: 15000 }); await p.selectOption('#nature-page', 'couverture'); await att(400);
+const nPasses = await D(async () => (await window.__script.db.tous('ocr-passes')).length);
 await p.selectOption('#ocr-langues', 'eng'); await p.selectOption('#ocr-zone', 'page'); await p.click('#ocr-page');
+await attendreQue(async (n) => (await window.__script.db.tous('ocr-passes')).length > n, nPasses, 60000); await att(500);
 await attendreQue(async (c) => (await window.__script.db.tous('connaissances')).some((a) => a.ocr && a.page === 3 && /STORM/.test(a.contenu)), C.id, 60000);
+const p3 = (await kbTous()).filter((a) => a.ocr && a.page === 3), dern = Math.max(...p3.map((a) => a.ocr.date));
+ok(p3.filter((a) => a.ocr.date === dern).every((a) => a.ocr.natureSuggeree === 'couverture') && (await D(async (id) => (await window.__script.db.lire('pages', id)).nature, C.pages[2])) === 'couverture', `page marquée « couverture » : nature enregistrée, textes de la page suggérés « couverture » (à confirmer) · ${JSON.stringify(p3.filter((a) => a.ocr.date === dern).map((a) => [a.contenu, a.ocr.natureSuggeree]))} · page ${await D(async (id) => (await window.__script.db.lire('pages', id)).nature, C.pages[2])}`);
 ok(externes.length === n0, 'hors ligne (réseau coupé) : OCR d\'une page JPG avec le moteur et les modèles conservés sur l\'appareil');
 await ctx.setOffline(false);
 

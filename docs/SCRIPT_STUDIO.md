@@ -117,39 +117,25 @@ Les zones affichées sont des zones de texte reconnues, **pas des contours de bu
 
 Seules les variantes LSTM du cœur sont intégrées (moteur hérité non utilisé). Les modèles *best* ne sont pas proposés : ils plantent dans Tesseract.js (audit 0.11). Aucune autre dépendance n'a été ajoutée. Détails : `atelier/vendor/tesseract/VERSION.txt`.
 
-### Mesures sur pages réelles (2026-11-06)
-Protocole indépendant de la confiance Tesseract : `node tools/mesurer-ocr.mjs <dossier-corpus>` compare l'OCR à des transcriptions de référence corrigées à la main (exactitude des mots, WER, CER, temps, mémoire) par catégorie de lettrage, prétraitement et langue, en trois modes : zone délimitée (reconnaissance seule), page entière (détection comprise, usage par défaut) et case par case (cases détectées automatiquement).
+### Nature de la page et du texte
+- **Page** : couverture, crédits ou titre, histoire, résumé (« Previously… »), présentation des personnages (« Cast »), texte, publicité. Le choix se fait dans le lecteur ; la page 1 est seulement signalée « couverture probable ».
+- **Texte** (chaque bloc OCR) : bulle de dialogue ou de pensée, cartouche de narration, lieu ou moment, présentation d'un personnage, effet sonore, texte du décor, couverture, crédits, titre.
+- **Suggestions** : faites seulement par mots-clés sûrs (« EDITOR », « COVER ARTISTS », « CODENAME », « AGE 87 », « NOW! », « PREVIOUSLY… ») ou d'après la nature de la page, et toujours à confirmer.
+- Une nature confirmée ajuste la catégorie dans la base de connaissances (bulle → dialogue, cartouche → narration, crédits → texte éditorial), avec une trace dans l'historique.
 
-Deux corpus réels en anglais, transcrits à la main, hors dépôt :
-- **réglage** : 46 zones sur 6 pages (*Immortal Hulk* #1 et #2, *The Ultimates* (2016) #1 et #4), utilisées pour mettre au point le traitement ;
-- **contrôle** : 40 zones sur 4 autres pages (*Immortal Hulk* #2 et #3, *The Ultimates* #4), dont un lettrage très différent (*Immortal Hulk* #3, p. 6 et 14). Seul le seuil de coupure entre bulles voisines (1,8 fois l'espace médian) a été choisi en regardant aussi ce corpus.
+### Mesures sur pages réelles (anglais)
+Rapport complet : `docs/OCR_0.11.1_VALIDATION.md`. En résumé, sur le lettrage courant (bulles et narration ordinaires), en page entière avec les réglages par défaut :
 
-| Lettrage courant (dialogues + narration) | Réglage (193 mots) | Contrôle (269 mots) | Ensemble (462 mots) |
-|---|---|---|---|
-| Zone délimitée, ×2 + noir et blanc | 95,3 % | 91,8 % | **93,3 %** (WER 10 %, CER 6 %) |
-| **Page entière, réglages par défaut** (×2 + gris + contraste, découpage épars) | 93,3 % | 85,5 % | **88,7 %** (WER 18 %, CER 11 %) |
-| Case par case, mêmes réglages | 91,7 % | 81,4 % | **85,7 %** (WER 22 %, CER 15 %) |
+| Corpus | Exactitude des mots |
+|---|---|
+| Réglage | 88,7 % |
+| Contrôle A, jamais vu pendant le réglage | 73,3 % |
+| Contrôle B, nouvelles séries | 87,3 % |
+| **Contrôles A + B** | **82,4 %** |
 
-Par catégorie, page entière, réglages par défaut, les deux corpus réunis (aucune catégorie masquée) :
+L'objectif de 85 % n'est donc pas atteint sur l'ensemble des pages de contrôle. Les principaux défauts sont les cartouches en texte clair sur fond coloré, de petites bulles manquées et les lettrages particuliers. Lettrage stylisé, couvertures, effets sonores et textes du décor ne sont pas fiables. Le français n'est validé que techniquement.
 
-| Catégorie | Mots | Exactitude des mots | WER | CER |
-|---|---|---|---|---|
-| Dialogues ordinaires | 215 | 91,2 % | 14 % | 7 % |
-| Narration et cartouches | 247 | 86,6 % | 21 % | 14 % |
-| Italique | 15 | 60 % | 60 % | 40 % |
-| Lettrage stylisé | 52 | 17 % | 125 % | 80 % |
-| Texte de petite taille | 19 | 63 % | 58 % | 44 % |
-| Effets sonores | 2 | 0 % | 150 % | 100 % |
-
-Temps : ≈ 60 à 200 ms par zone délimitée ; ≈ 3 à 5 s par page entière de 2400 px. Mémoire du navigateur : ≈ 480 Mo au repos, pic ≈ 700 Mo (zones) à 1,1 Go (page entière).
-
-Lecture :
-- L'objectif de 85 % des mots sur le lettrage courant est atteint dans les trois modes sur l'ensemble, mais **pas** sur le corpus de contrôle seul en case par case (81,4 %). Sur des pages jamais vues, la page entière tombe à 85,5 %, juste à la limite : il faut s'attendre à ce niveau sur des comics nouveaux, et le corpus reste petit.
-- Le traitement des blocs explique l'essentiel des gains en page entière. Les blocs sont reconstruits à partir des mots, avec une coupure entre bulles voisines relative à l'espacement de la ligne. Les morceaux d'un même texte sont réunis par colonne, et les mots en gras isolés par Tesseract retrouvent leur place. Les fragments tirés du dessin sont retirés du texte proposé, mais conservés dans le texte brut. Sur le corpus de réglage, le WER est passé de 65 % à 13 %.
-- Le mode **case par case** n'est pas meilleur : les cartouches à cheval sur plusieurs cases, ou placés hors des cases, sont coupés (narration 82 %). Il sert surtout à imposer l'ordre de lecture des cases. La **page entière** reste le réglage par défaut.
-- Le découpage « automatique » de Tesseract fusionne les cases voisines (60 % au premier essai) ; « épars » est donc le réglage par défaut.
-- Italique, lettrage stylisé, petit texte et effets sonores : **non fiables**. Certains lettrages (*Immortal Hulk* #3, p. 14) produisent aussi des confusions de lettres (D lu P, R lu K) et des cartouches encadrés ignorés.
-- Le français n'a été mesuré que sur des pages de synthèse (100 % sur 13 mots), faute de comic français réel dans les corpus.
+Vision locale (0.11.2, non implémentée) : `docs/VISION_0.11.2_AUDIT.md`.
 
 ## Validation sur 10 comics réels
 

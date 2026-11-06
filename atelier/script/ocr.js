@@ -69,18 +69,21 @@ export async function creerMoteur(combinaison, { surProgres } = {}) {
     langPath: O.PREFIXE_MODELES, cacheMethod: 'none', gzip: false, logger: (m) => { if (m.status === 'recognizing text') rappel?.(m.progress); },
     errorHandler: () => {},
   });
-  let fini = false;
+  let fini = false, enCours = null;
   return {
     langues: langues.join('+'), simd: SIMD,
     surProgres: (f) => { rappel = f; },
-    parametrer: (segmentation) => w.setParameters({ tessedit_pageseg_mode: O.SEGMENTATIONS[segmentation]?.psm || '3', preserve_interword_spaces: '1', user_defined_dpi: '300' }),
+    parametrer: (segmentation) => w.setParameters({ tessedit_pageseg_mode: O.SEGMENTATIONS[segmentation]?.psm || '3', preserve_interword_spaces: '1', user_defined_dpi: '300', debug_file: '/dev/null' }),
     // Reconnaissance annulable : une annulation arrête le worker (la promesse Tesseract ne se résoudrait jamais)
     async reconnaitre(image, signal) {
       if (signal?.aborted) throw Object.assign(new Error('annulé'), { name: 'AbortError' });
-      let ab; const annule = new Promise((_, ko) => { ab = () => { this.terminer(); ko(Object.assign(new Error('annulé'), { name: 'AbortError' })); }; signal?.addEventListener('abort', ab, { once: true }); });
-      try { return (await Promise.race([w.recognize(image, {}, { text: true, blocks: true }), annule])).data; } finally { signal?.removeEventListener('abort', ab); }
+      // L'annulation répond tout de suite ; le worker n'est arrêté qu'une fois la reconnaissance en cours terminée
+      // (l'arrêter pendant un travail provoquait une erreur interne de Tesseract.js : postMessage sur un worker détruit)
+      const job = w.recognize(image, {}, { text: true, blocks: true }); enCours = job.catch(() => {});
+      let ab; const annule = new Promise((_, ko) => { ab = () => { ko(Object.assign(new Error('annulé'), { name: 'AbortError' })); this.terminer(); }; signal?.addEventListener('abort', ab, { once: true }); });
+      try { return (await Promise.race([job, annule])).data; } finally { signal?.removeEventListener('abort', ab); }
     },
-    async terminer() { if (fini) return; fini = true; try { await w.terminate(); } catch { /* déjà arrêté */ } },
+    async terminer() { if (fini) return; fini = true; await enCours; try { await w.terminate(); } catch { /* déjà arrêté */ } },
   };
 }
 

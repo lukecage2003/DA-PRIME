@@ -1,6 +1,7 @@
 // Script Studio › Connaissances : base sourcée (assertions), validation humaine tracée, synchronisation avec les analyses 0.10.
 import { db } from '../motion/stockage.js';
 import * as K from '../../templates/_systeme/connaissances.js';
+import * as O from '../../templates/_systeme/ocr.js';
 import { $, el, bouton, champ, choix, saisie, zone, info, autoTaille } from './ui.js';
 
 export function initConnaissances({ file, libelleComic, ocr = () => null, ouvrirPage = null }) {
@@ -70,7 +71,7 @@ export function initConnaissances({ file, libelleComic, ocr = () => null, ouvrir
   function blocOcr(a) {
     const o = a.ocr, ap = el('div', { className: 'image-texte', id: 'kb-ocr-apercu' }), z = a.zone;
     ocr()?.apercuZone(a.origine.pageId, z, { largeur: 420 })?.then((cv) => ap.prepend(cv)).catch(() => {});
-    const lignes = [['Texte OCR initial', o.texteInitial ?? o.texteBrut], ['Texte brut de Tesseract', `${o.texteBrut}${o.retires?.length ? ` (fragments retirés : ${o.retires.join(' ')})` : ''}`], ['Confiance Tesseract', `${Math.round(a.confiance * 100)} % (indicateur du moteur, pas un taux d'exactitude)`], ['Langue', o.langues], ['Prétraitement', o.pretraitement],
+    const lignes = [['Texte OCR initial', o.texteInitial ?? o.texteBrut], ['Texte brut de Tesseract', `${o.texteBrut}${o.retires?.length ? ` (fragments retirés : ${o.retires.join(' ')})` : ''}`], ['Confiance Tesseract', `${Math.round(a.confiance * 100)} % (indicateur du moteur, pas un taux d'exactitude)`], ['Nature du texte', o.nature ? O.NATURES_TEXTE[o.nature] : o.natureSuggeree ? `${O.NATURES_TEXTE[o.natureSuggeree]} (suggérée : ${o.natureRaison}, à confirmer)` : 'à préciser'], ['Langue', o.langues], ['Prétraitement', o.pretraitement],
       ['Découpage', `${o.segmentation} · ${o.zoneMode === 'cases' ? 'case par case' : 'page entière'}`],
       ['Zone sur la page', z ? `x ${Math.round(z.x * 100)} %, y ${Math.round(z.y * 100)} %, ${Math.round(z.w * 100)} × ${Math.round(z.h * 100)} % (zone de texte reconnue, pas le contour d'une bulle)` : '—'],
       ['Ordre de lecture', `${o.ordre}${o.ordreCertain ? '' : ' (approximatif)'}`], ['Moteur', `${o.moteur} · traitement ${o.tache}`], ['Date', new Date(o.date).toLocaleString('fr-FR')]];
@@ -91,6 +92,10 @@ export function initConnaissances({ file, libelleComic, ocr = () => null, ouvrir
     async ajouterLot(as) { await charger(); let n = 0; for (const a of as) if (!toutes.some((x) => x.id === a.id)) { await ecrire(a); n++; } return n; },
     async ocrDePage(pageId) { await charger(); return toutes.filter((a) => a.origine?.genre === 'ocr' && a.origine.pageId === pageId); },
     async corriger(id, texte) { const a = toutes.find((x) => x.id === id); if (!a) return null; K.modifierContenu(a, texte); await ecrire(a); return a; },
+    // Nature d'un texte OCR confirmée par l'utilisateur : catégorie ajustée (bulle → dialogue, cartouche → narration…), trace dans l'historique
+    async preciserNature(id, nature) { const a = toutes.find((x) => x.id === id); if (!a?.ocr) return null; const avant = a.ocr.nature;
+      a.ocr = { ...a.ocr, nature }; if (['texte', 'dialogue', 'narration', 'visuel'].includes(a.categorie)) a.categorie = O.NATURE_VERS_CATEGORIE[nature] || 'texte';
+      a.historique = [...a.historique, { date: Date.now(), de: a.statut, vers: a.statut, par: 'utilisateur', motif: `nature du texte : ${O.NATURES_TEXTE[nature]}${avant ? ` (avant : ${O.NATURES_TEXTE[avant]})` : ''}` }]; a.modifie = Date.now(); await ecrire(a); return a; },
     async statuer(id, statut, motif = '') { const a = toutes.find((x) => x.id === id); if (!a) return null; K.changerStatut(a, statut, { motif }); await ecrire(a); return a; },
     // Validation individuelle (espace Comics) : tracée, refusée pour un contenu vide ou une information incertaine
     async valider(id, motif = 'validation individuelle') { await charger(); const a = toutes.find((x) => x.id === id); if (!a) throw new Error('information introuvable (synchronisation en cours ?)'); if (a.categorie === 'incertain') throw new Error('information incertaine : à requalifier avant validation'); K.changerStatut(a, 'valide', { motif }); await ecrire(a); return a; },

@@ -86,6 +86,7 @@ const cbz = await D(async () => { const { zip } = await import('../motion/zip.js
 const fCbz = { name: 'Test Saga 01.cbz', mimeType: 'application/zip', buffer: Buffer.from(cbz, 'base64') }, fPdf = { name: 'Test Saga 02.pdf', mimeType: 'application/pdf', buffer: pdfTest(2) };
 await p.setInputFiles('#import-comics', [fCbz]); await attendreEtat(/importé/);
 let m = await etat(); ok(/4 pages/.test(m) && /1 double/.test(m) && /1 page\(s\) en double exclue/.test(m), `import CBZ : ${m}`);
+await p.waitForFunction(() => document.querySelectorAll('.vignette-page').length === 4, null, { timeout: 10000 }).catch(() => {});
 ok(await p.locator('.vignette-page').count() === 4 && await p.locator('.vignette-page[data-exclue="1"]').count() === 1, 'pages prévisualisées, doublon exclu automatiquement');
 await p.setInputFiles('#import-comics', [fCbz]); await attendreEtat(/déjà dans la bibliothèque/); ok(true, 'réimport du même CBZ : doublon détecté, non dupliqué');
 await p.setInputFiles('#import-comics', [{ name: 'X.cbr', mimeType: 'application/x-rar', buffer: Buffer.from('Rar!') }]); await attendreEtat(/CBR/); ok(/convertir en CBZ/i.test(await etat()), 'CBR : limite signalée honnêtement (conversion en CBZ proposée)');

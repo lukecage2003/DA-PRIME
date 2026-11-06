@@ -155,5 +155,35 @@ export function agreger(mesures) {
   const t = mesures.reduce((s, m) => ({ N: s.N + m.mots, C: s.C + m.C, E: s.E + m.S + m.D + m.I, ce: s.ce + (m.cer ?? 0) * m.mots }), { N: 0, C: 0, E: 0, ce: 0 });
   return { echantillons: mesures.length, mots: t.N, exactitude: t.N ? t.C / t.N : null, wer: t.N ? t.E / t.N : null, cer: t.N ? t.ce / t.N : null };
 }
-export const CATEGORIES_MESURE = { dialogue: 'Dialogues ordinaires', narration: 'Narration et cartouches', italique: 'Italique', stylise: 'Lettrage stylisé', onomatopee: 'Effets sonores', petit: 'Texte de petite taille' };
-export const OBJECTIF = { exactitude: 0.85, categories: ['dialogue', 'narration'], note: 'Objectif initial sur lettrage courant (dialogues et narration) ; aucune garantie sur le lettrage stylisé.' };
+// Deux axes distincts : la NATURE du texte (sa fonction dans la page) et son STYLE de lettrage.
+// Une couverture, des crédits ou un cartouche de lieu ne sont pas des bulles : ils sont relevés, mais classés à part.
+export const NATURES_TEXTE = { inconnue: 'Nature à préciser', dialogue: 'Bulle de dialogue', pensee: 'Bulle de pensée', narration: 'Cartouche de narration', localisation: 'Lieu ou moment (cartouche)',
+  presentation: 'Présentation d\'un personnage', onomatopee: 'Effet sonore', decor: 'Texte du décor (enseigne, écran, journal…)', couverture: 'Couverture (titre, logo, mentions)', credits: 'Crédits (auteurs, équipe éditoriale)', titre: 'Titre ou intertitre (chapitre, « Previously… »)' };
+// Catégorie de la base de connaissances correspondant à une nature confirmée par l'utilisateur
+export const NATURE_VERS_CATEGORIE = { dialogue: 'dialogue', pensee: 'dialogue', narration: 'narration', localisation: 'narration', presentation: 'narration', onomatopee: 'visuel', decor: 'visuel', couverture: 'texte', credits: 'texte', titre: 'texte', inconnue: 'texte' };
+export const NATURES_PAGE = { '': 'Nature de la page à préciser', couverture: 'Couverture', credits: 'Page de crédits ou de titre', histoire: 'Page de l\'histoire', resume: 'Résumé des épisodes précédents', distribution: 'Présentation des personnages (« Cast »)', texte: 'Page de texte (courrier, préface…)', publicite: 'Publicité', autre: 'Autre' };
+// Suggestion par mots-clés sûrs uniquement (à confirmer) ; sinon aucune : la nature ne se devine pas à partir du seul texte
+const MOTS_CREDITS = /\b(WRITER|WRITTEN BY|ARTISTS?|PENCIL(?:L)?ER|INKER|COLOU?RIST|COLOU?R ARTIST|LETTERER|LETTERING|EDITORS?|EDITOR IN CHIEF|PUBLISHER|PRODUCER|CREATIVE OFFICER|COVER ARTISTS?|DESIGNER|CREATED BY|SCÉNARIO|DESSIN|COULEURS|LETTRAGE|TRADUCTION)\b/;
+export function suggererNature(texte, { naturePage = '' } = {}) {
+  const t = String(texte || '').toUpperCase();
+  if (MOTS_CREDITS.test(t)) return { nature: 'credits', raison: 'mots-clés de crédits (fonction éditoriale)' };
+  if (/\b(CODENAME|CODE NAME|NOM DE CODE)\b|\bAGE \d{1,3}\b/.test(t)) return { nature: 'presentation', raison: 'fiche de présentation (nom de code, âge)' };
+  if (/^\W*PREVIOUSLY\b|^\W*(CHAPTER|PART|CHAPITRE|PRÉCÉDEMMENT)\b/.test(t)) return { nature: 'titre', raison: 'intertitre ou résumé' };
+  if (/^\W*(NOW|MEANWHILE|LATER|EARLIER|ELSEWHERE|MOMENTS? LATER|\d+ (YEARS?|MONTHS?|DAYS?|HOURS?) (AGO|LATER)|PENDANT CE TEMPS|PLUS TARD|AILLEURS)\b/.test(t)) return { nature: 'localisation', raison: 'indication de lieu ou de moment' };
+  if (naturePage === 'couverture') return { nature: 'couverture', raison: 'page marquée « couverture »' };
+  if (naturePage === 'credits') return { nature: 'credits', raison: 'page marquée « crédits »' };
+  return null;
+}
+// Mesure : style de lettrage et nature, rapportés séparément ; une langue = un rapport (jamais de statistiques fusionnées)
+export const STYLES_MESURE = { ordinaire: 'Lettrage ordinaire', gras: 'Gras dominant', italique: 'Italique', stylise: 'Lettrage stylisé', petit: 'Texte de petite taille' };
+export const CATEGORIES_MESURE = { dialogue: 'Dialogues ordinaires', narration: 'Narration et cartouches', italique: 'Italique', gras: 'Gras', stylise: 'Lettrage stylisé', onomatopee: 'Effets sonores', petit: 'Texte de petite taille', editorial: 'Couverture, crédits, présentation, décor (lettrage ordinaire)' };
+// Ancien étiquetage (un seul axe) → deux axes
+export function axesEchantillon(e) {
+  if (e.nature) return { style: e.categorie || 'ordinaire', nature: e.nature };
+  const style = ['italique', 'stylise', 'petit', 'gras'].includes(e.categorie) ? e.categorie : 'ordinaire', nature = e.categorie === 'narration' ? 'narration' : e.categorie === 'onomatopee' ? 'onomatopee' : 'dialogue';
+  return { style: e.categorie === 'onomatopee' ? 'stylise' : style, nature };
+}
+// Catégorie de rapport (liste de la mission) : effets sonores et natures éditoriales à part, puis style, puis nature
+export function categorieRapport(e) { const { style, nature } = axesEchantillon(e); if (nature === 'onomatopee') return 'onomatopee'; if (style !== 'ordinaire') return style; return nature === 'narration' || nature === 'localisation' ? 'narration' : nature === 'dialogue' || nature === 'pensee' ? 'dialogue' : 'editorial'; }
+export const OBJECTIF = { exactitude: 0.85, note: 'Objectif initial sur le lettrage courant : bulles de dialogue et cartouches de narration en lettrage ordinaire ; aucune garantie sur le lettrage stylisé, la couverture, les crédits ou les effets sonores.' };
+export const estLettrageCourant = (e) => { const { style, nature } = axesEchantillon(e); return style === 'ordinaire' && ['dialogue', 'pensee', 'narration'].includes(nature); };

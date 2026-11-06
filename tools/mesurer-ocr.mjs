@@ -8,7 +8,10 @@
 //   --mode=cases : cases détectées automatiquement par DA-PRIME, puis OCR case par case
 // <dossier-corpus>/corpus.json :
 //   { "echantillons": [ { "image": "pages/hulk1-p05.png", "zone": { "x": 0.12, "y": 0.05, "w": 0.3, "h": 0.1 },
-//                         "categorie": "dialogue|narration|italique|stylise|onomatopee|petit", "langue": "eng", "reference": "TEXTE EXACT" } ] }
+//                         "categorie": "ordinaire|gras|italique|stylise|petit" (style de lettrage),
+//                         "nature": "dialogue|pensee|narration|localisation|presentation|onomatopee|decor|couverture|credits",
+//                         "langue": "eng", "reference": "TEXTE EXACT" } ] }
+//   Garder un corpus de RÉGLAGE et un corpus de CONTRÔLE distincts : ne jamais régler un paramètre en regardant le contrôle.
 //   zone : fractions de la page (facultative : page entière). --langues absent : la langue de chaque échantillon.
 // Modèles : .cache/tessdata (ou DA_PRIME_TESSDATA) ; à défaut, téléchargés une fois depuis tessdata_fast 4.1.0 et vérifiés.
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'node:fs';
@@ -70,7 +73,7 @@ for (const comb of LANGS.length ? combis : [null]) {
       } finally { for (const m of Object.values(moteurs)) await m.terminer(); }
       return out;
     }, { corpus, pre, comb, seg: SEG, mode: MODE });
-    lignes.push(...res); process.stdout.write(`  ${pre}${comb ? ` · ${comb}` : ''} : ${Math.round(O.agreger(res.map((x) => x.mesure)).exactitude * 100)} % des mots\n`);
+    lignes.push(...res); process.stdout.write(`  ${pre}${comb ? ` · ${comb}` : ''} : lettrage courant ${Math.round((O.agreger(res.filter(O.estLettrageCourant).map((x) => x.mesure)).exactitude ?? 0) * 100)} % des mots\n`);
   }
 }
 clearInterval(sonde); await browser.close(); srv.close();
@@ -81,16 +84,20 @@ const ligneAg = (ls) => { const a = O.agreger(ls.map((x) => x.mesure)); return `
 let md = `# Mesure de l'OCR local DA-PRIME\n\n${new Date().toISOString().slice(0, 16).replace('T', ' ')} · Tesseract.js 7.0.0, modèles fast ${O.MODELES.version} · mode « ${{ page: 'page entière (détection + reconnaissance)', cases: 'case par case (cases détectées automatiquement, puis reconnaissance)', zone: 'zone délimitée (reconnaissance seule)' }[MODE]} » · segmentation « ${SEG} » · ${corpus.length} échantillon(s), ${new Set(corpus.map((e) => e.image)).size} page(s).\n\n`;
 md += 'Exactitude des mots = mots de la référence correctement reconnus ÷ mots de la référence. WER = (substitutions + suppressions + insertions) ÷ mots de la référence. CER : même calcul en caractères. La confiance Tesseract est donnée à titre indicatif : ce n\'est pas un taux d\'exactitude.\n\n';
 md += `Mémoire (somme des processus du navigateur) : ${base !== null && pic ? `${Math.round(base)} Mo au départ, pic ${Math.round(pic)} Mo` : 'non mesurée sur ce système'}. Requêtes externes pendant la mesure : ${externes.length}.\n\n`;
-const lc = lignes.filter((l) => O.OBJECTIF.categories.includes(l.categorie)), parPre = grp((l) => l.pretraitement);
-md += `## Objectif : ≥ ${O.OBJECTIF.exactitude * 100} % des mots sur le lettrage courant (dialogues et narration)\n\n| Prétraitement | Échantillons | Mots | Exactitude | WER | CER | Temps moyen | Confiance moyenne | Objectif |\n|---|---|---|---|---|---|---|---|---|\n`;
-for (const [k, ls] of parPre) { const c = ls.filter((l) => O.OBJECTIF.categories.includes(l.categorie)), a = O.agreger(c.map((x) => x.mesure)); md += `| ${O.PRETRAITEMENTS[k].nom} | ${c.length ? ligneAg(c) : '0 | 0 | — | — | — | — | —'} | ${a.exactitude === null ? 'non mesuré' : a.exactitude >= O.OBJECTIF.exactitude ? 'atteint' : 'NON atteint'} |\n`; }
-md += `\n${O.OBJECTIF.note}\n\n## Par catégorie de lettrage et prétraitement (aucune catégorie masquée)\n\n| Catégorie | Prétraitement | Échantillons | Mots | Exactitude | WER | CER | Temps moyen | Confiance moyenne |\n|---|---|---|---|---|---|---|---|---|\n`;
-for (const [cat, nom] of Object.entries(O.CATEGORIES_MESURE)) { const ls = lignes.filter((l) => l.categorie === cat); if (!ls.length) { md += `| ${nom} | — | 0 | 0 | non mesuré (aucun échantillon) | | | | |\n`; continue; } for (const [k, x] of grp((l) => l.pretraitement)) { const y = x.filter((l) => l.categorie === cat); if (y.length) md += `| ${nom} | ${O.PRETRAITEMENTS[k].nom} | ${ligneAg(y)} |\n`; } }
-md += '\n## Par langue\n\n| Langue | Échantillons | Mots | Exactitude | WER | CER | Temps moyen | Confiance moyenne |\n|---|---|---|---|---|---|---|---|\n';
-for (const [k, ls] of grp((l) => l.langue)) md += `| ${O.COMBINAISONS[k] || k} | ${ligneAg(ls)} |\n`;
-const meilleur = [...parPre].map(([k, ls]) => [k, O.agreger(ls.filter((l) => O.OBJECTIF.categories.includes(l.categorie)).map((x) => x.mesure)).exactitude ?? -1]).sort((a, b) => b[1] - a[1])[0];
+// Une section par langue : les statistiques de langues différentes ne sont jamais fusionnées
+for (const [lang, LL] of grp((l) => l.langue)) {
+  const parPre = new Map([...grp((l) => l.pretraitement)].map(([k, ls]) => [k, ls.filter((l) => l.langue === lang)]).filter(([, ls]) => ls.length));
+  md += `## ${O.COMBINAISONS[lang] || lang} — objectif : ≥ ${O.OBJECTIF.exactitude * 100} % des mots sur le lettrage courant\n\n| Prétraitement | Échantillons | Mots | Exactitude | WER | CER | Temps moyen | Confiance moyenne | Objectif |\n|---|---|---|---|---|---|---|---|---|\n`;
+  for (const [k, ls] of parPre) { const c = ls.filter(O.estLettrageCourant), a = O.agreger(c.map((x) => x.mesure)); md += `| ${O.PRETRAITEMENTS[k].nom} | ${c.length ? ligneAg(c) : '0 | 0 | — | — | — | — | —'} | ${a.exactitude === null ? 'non mesuré' : a.exactitude >= O.OBJECTIF.exactitude ? 'atteint' : 'NON atteint'} |\n`; }
+  md += `\n${O.OBJECTIF.note}\n\n### Par catégorie de lettrage (aucune catégorie masquée)\n\n| Catégorie | Prétraitement | Échantillons | Mots | Exactitude | WER | CER | Temps moyen | Confiance moyenne |\n|---|---|---|---|---|---|---|---|---|\n`;
+  for (const [cat, nom] of Object.entries(O.CATEGORIES_MESURE)) { const ls = LL.filter((l) => O.categorieRapport(l) === cat); if (!ls.length) { md += `| ${nom} | — | 0 | 0 | non mesuré (aucun échantillon) | | | | |\n`; continue; } for (const [k] of parPre) { const y = ls.filter((l) => l.pretraitement === k); if (y.length) md += `| ${nom} | ${O.PRETRAITEMENTS[k].nom} | ${ligneAg(y)} |\n`; } }
+  md += `\n### Par nature du texte (tous prétraitements confondus séparément)\n\n| Nature | Prétraitement | Échantillons | Mots | Exactitude | WER | CER | Temps moyen | Confiance moyenne |\n|---|---|---|---|---|---|---|---|---|\n`;
+  for (const [nat, nom] of Object.entries(O.NATURES_TEXTE)) { const ls = LL.filter((l) => O.axesEchantillon(l).nature === nat); if (!ls.length) continue; for (const [k] of parPre) { const y = ls.filter((l) => l.pretraitement === k); if (y.length) md += `| ${nom} | ${O.PRETRAITEMENTS[k].nom} | ${ligneAg(y)} |\n`; } }
+  md += '\n';
+}
+const parPreTous = grp((l) => l.pretraitement), meilleur = [...parPreTous].map(([k, ls]) => [k, O.agreger(ls.filter(O.estLettrageCourant).map((x) => x.mesure)).exactitude ?? -1]).sort((a, b) => b[1] - a[1])[0];
 md += `\n## Détail (toutes les lignes, du pire au meilleur, pour le meilleur prétraitement : ${O.PRETRAITEMENTS[meilleur[0]].nom})\n\n| Image | Catégorie | Exactitude | Référence | Reconnu |\n|---|---|---|---|---|\n`;
-for (const l of lignes.filter((x) => x.pretraitement === meilleur[0]).sort((a, b) => (a.mesure.exactitude ?? 0) - (b.mesure.exactitude ?? 0))) md += `| ${l.image} | ${O.CATEGORIES_MESURE[l.categorie] || l.categorie} | ${pc(l.mesure.exactitude)} | ${l.reference.replace(/\|/g, '/')} | ${(l.texte || '(rien)').replace(/\|/g, '/')} |\n`;
+for (const l of lignes.filter((x) => x.pretraitement === meilleur[0]).sort((a, b) => (a.mesure.exactitude ?? 0) - (b.mesure.exactitude ?? 0))) md += `| ${l.image} | ${O.CATEGORIES_MESURE[O.categorieRapport(l)]} · ${O.NATURES_TEXTE[O.axesEchantillon(l).nature] || ''} | ${pc(l.mesure.exactitude)} | ${l.reference.replace(/\|/g, '/')} | ${(l.texte || '(rien)').replace(/\|/g, '/')} |\n`;
 const suf = MODE === 'zone' ? '' : `-${MODE}`; writeFileSync(join(DOS, `rapport-ocr${suf}.md`), md); writeFileSync(join(DOS, `rapport-ocr${suf}.json`), JSON.stringify({ date: Date.now(), mode: MODE, segmentation: SEG, memoire: { base, pic }, externes, lignes }, null, 1));
 console.log(`Lettrage courant, meilleur prétraitement (${O.PRETRAITEMENTS[meilleur[0]].nom}) : ${pc(meilleur[1])} des mots. Rapport : ${join(DOS, `rapport-ocr${MODE === 'zone' ? '' : `-${MODE}`}.md`)}`);
 console.log(externes.length ? `ATTENTION : ${externes.length} requête(s) externe(s).` : 'Aucune requête externe.');

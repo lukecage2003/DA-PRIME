@@ -1,5 +1,25 @@
 # Journal des versions
 
+## 0.11.1 · 2026-11-06 · compléments : validation OCR, nature des textes, audit de vision
+
+- **Nature de la page et du texte** : une couverture, des crédits, un cartouche de lieu, un titre ou un texte du décor ne sont plus confondus avec des bulles.
+  - Nature de la page choisie dans le lecteur ; nature de chaque texte OCR, avec suggestion par mots-clés sûrs à confirmer.
+  - La nature confirmée ajuste la catégorie et laisse une trace dans l'historique.
+- **Corrections démontrées sur un comic réel** :
+  - tracé manuel d'une case annulé par le glisser-déposer natif de l'image (présent depuis la 0.10) ;
+  - zones OCR qui bloquaient le tracé ;
+  - résultats OCR existants invisibles en rouvrant une page ;
+  - page sans case en mode « case par case » mal enregistrée ;
+  - erreur interne de Tesseract.js à l'annulation ;
+  - avertissements internes affichés comme des erreurs.
+- **Validation de l'OCR** (`docs/OCR_0.11.1_VALIDATION.md`) :
+  - un corpus de réglage et deux corpus de contrôle indépendants (pages jamais vues, nouvelles séries), soit 230 textes sur 21 pages ;
+  - mesures par style de lettrage, par nature du texte et par langue, sans fusion des langues ;
+  - lettrage courant en page entière : 82,4 % des mots sur les contrôles (objectif de 85 % non atteint) ;
+  - français validé techniquement seulement.
+- **Audit de vision locale 0.11.2** (`docs/VISION_0.11.2_AUDIT.md`) : modèles et licences, besoins matériels, architecture du Comic Vision Engine, protocole d'évaluation, plan, risques. Aucun moteur de vision implémenté, aucun modèle téléchargé.
+- Tests : 58 tests OCR.
+
 ## 0.11.1 · 2026-11-06 · Script Studio : OCR local (Tesseract.js)
 
 - **Corrections 0.11.0** :
