@@ -1,4 +1,4 @@
-// Primestone · serveur statique local, sans dépendance. Sert la racine du dépôt ; / redirige vers l'Atelier.
+// Primestone · serveur statique local, sans dépendance. Sert la racine du dépôt ; / affiche la page d'accueil (index.html).
 // Usage : node tools/serve.mjs [port]   ->  http://localhost:4173/atelier/
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
@@ -9,7 +9,6 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
 export function demarrer(port = 4173, host = '127.0.0.1') {
   const srv = createServer(async (req, res) => {
     let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-    if (p === '/') { res.writeHead(302, { Location: '/atelier/' }); return res.end(); }
     if (p.endsWith('/')) p += 'index.html';
     const f = normalize(join(ROOT, p));
     if (!f.startsWith(ROOT) || /[\\/]\.(git|env)/.test(f)) { res.writeHead(403); return res.end(); }

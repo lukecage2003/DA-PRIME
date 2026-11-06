@@ -15,6 +15,8 @@ import { initBibliotheque } from './bibliotheque.js';
 import { initExports, MIME_TEMPS_REEL } from './exports.js';
 import { db, persister, migrer, paquetProjet, lirePaquet, paquetBibliotheque, importerBibliotheque, enregistrerVersion, versionsDe, ressourcesUtilisees } from './stockage.js';
 import * as TR from './traitements.js';
+import { icone, poserIcones } from './icones.js';
+poserIcones();
 
 const $ = (s) => document.querySelector(s), DERNIERE = 'primestone-motion-derniere', MAX_COTE_SOURCE = 4096;
 const rendu = creerRendu(), cv = $('#apercu'), g = cv.getContext('2d');
@@ -63,11 +65,11 @@ const info = (t) => { $('#aide').textContent = t; };
 
 // ---------- Lecture ----------
 function jouer(depuis = S.t >= S.doc.duree - 0.01 ? 0 : S.t) {
-  arreter(); S.auto = false; const t0 = performance.now() - depuis * 1000; S.lecture = { id: 0 }; $('#lecture').textContent = '❚❚ Pause'; $('#lecture').setAttribute('aria-pressed', 'true'); vue.dessiner();
+  arreter(); S.auto = false; const t0 = performance.now() - depuis * 1000; S.lecture = { id: 0 }; $('#lecture').innerHTML = `${icone('pause', 16)}<span>Pause</span>`; $('#lecture').setAttribute('aria-pressed', 'true'); vue.dessiner();
   const pas = (now) => { if (!S.lecture) return; S.t = (now - t0) / 1000; if (S.t >= S.doc.duree) { if (S.doc.boucle) return jouer(0); S.t = S.doc.duree; arreter(); return dessiner(); } dessiner(); S.lecture.id = requestAnimationFrame(pas); };
   S.lecture.id = requestAnimationFrame(pas);
 }
-function arreter() { if (S.lecture) cancelAnimationFrame(S.lecture.id); S.lecture = null; $('#lecture').textContent = '▶ Lecture'; $('#lecture').setAttribute('aria-pressed', 'false'); }
+function arreter() { if (S.lecture) cancelAnimationFrame(S.lecture.id); S.lecture = null; $('#lecture').innerHTML = `${icone('lecture', 16)}<span>Lecture</span>`; $('#lecture').setAttribute('aria-pressed', 'false'); }
 $('#lecture').addEventListener('click', () => (S.lecture ? (arreter(), dessiner()) : jouer()));
 $('#rejouer').addEventListener('click', () => jouer(0));
 $('#temps').addEventListener('input', () => ctx.positionner(+$('#temps').value));

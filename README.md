@@ -78,7 +78,8 @@ Voir `docs/` pour le détail et `CHANGELOG.md` pour l'historique.
 
 ## Publication sur GitHub Pages (préparée, non activée)
 
-- `npm run build:pages` construit `_site/` (non versionné) : uniquement les fichiers chargés par l'Atelier et Motion Studio, d'après `atelier/precache.json` (application, moteur, polices web, sceau P non officiel, images PLACEHOLDER), plus une page d'accueil qui redirige vers `atelier/`. Ni originaux de marque, ni Supabase, ni outils, ni données ; le script refuse tout fichier hors de cette liste et tout motif de secret.
+- Page d'accueil : `index.html` à la racine (présentation, accès aux deux outils, exemples) ; ses visuels Motion Studio sont rendus par le moteur (`node tools/gen-accueil.mjs`, dossier `accueil/`). Illustrations de démonstration : `node tools/gen-placeholders.mjs`.
+- `npm run build:pages` construit `_site/` (non versionné) : uniquement les fichiers chargés par l'Atelier et Motion Studio, d'après `atelier/precache.json` (application, moteur, polices web, sceau P non officiel, images PLACEHOLDER), plus la page d'accueil et ses visuels. Ni originaux de marque, ni Supabase, ni outils, ni données ; le script refuse tout fichier hors de cette liste et tout motif de secret.
 - `.github/workflows/pages.yml` vérifie le dépôt (`npm run check`, `npm test`), construit `_site/` et le publie. Déclenchement **manuel uniquement** (Actions > « Publier sur GitHub Pages » > Run workflow).
 - Le site est entièrement statique, en chemins relatifs : il fonctionne à la racine d'un domaine comme sous `https://<compte>.github.io/<dépôt>/`, avec le mode hors ligne (HTTPS fourni par Pages).
 - Les créations, illustrations importées, polices et projets restent dans le navigateur de chaque visiteur (IndexedDB) ou dans les fichiers qu'il télécharge : l'application n'envoie aucune donnée et ne fait aucune requête externe.
