@@ -63,6 +63,10 @@ Aucun code GPL, AGPL ou non commercial n'a été repris : seules les idées fonc
 1. OCR : déposer Tesseract.js et ses données de langue dans `atelier/vendor/tesseract/`, puis renseigner `MOTEURS.ocr` dans `atelier/script/comics.js` (fonction `reconnaitre(blob, cases) → [{ case, texte, confiance }]`). Les résultats doivent arriver avec le statut « incertain » jusqu'à relecture.
 2. Vision : un modèle multimodal local (ONNX dans le navigateur, ou serveur local sur `localhost`) peut renseigner les notes visuelles avec la provenance « visuel » et une confiance ; jamais un service cloud.
 
+## Suite (0.11)
+
+Audit, mesures réelles et architecture des moteurs OCR, vision et rédaction locaux : `docs/SCRIPT_STUDIO_0.11_AUDIT.md`. Validation sur vos propres comics : `node tools/valider-comics.mjs <dossier>`.
+
 ## Limites
 
 - Pas de prose générée : l'auteur écrit (ou colle le texte d'un outil externe qu'il a choisi).
