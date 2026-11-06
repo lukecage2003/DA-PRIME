@@ -897,8 +897,8 @@
         {
           "path": "templates/kiosque/car-couverture/exemples/PS_CAR_car-couverture_standard_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 213254,
-          "sha256": "a4a31504506d0da2391c1420ce8ec70aa9bb8009331285520bcae8ad02d0928e",
+          "bytes": 198125,
+          "sha256": "63dd5afec61781b7b4c96c55a48433b4941ef818dfd426a72412e158a01c2bcf",
           "width": 1080,
           "height": 1350
         },
@@ -968,8 +968,8 @@
         {
           "path": "templates/kiosque/car-presentation-comic/exemples/PS_CAR_car-presentation-comic_standard_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 109757,
-          "sha256": "e8055ee5723ff3a8c20dda8defb5330d2180a6c9879837fb55e5683dee3cf140",
+          "bytes": 103702,
+          "sha256": "03f874728fd31539e276f0c5ab7e6d5404b9694fd7f63bca3d7b7b6ab3c8fab8",
           "width": 1080,
           "height": 1350
         },
@@ -1038,8 +1038,8 @@
         {
           "path": "templates/kiosque/PS_CAR_planche-360px_NON-OFFICIEL.png",
           "format": "png",
-          "bytes": 847500,
-          "sha256": "cef2a83b0995dc4b64265343d8a18a9fed28342c45335d2b7afc5ce0498ed829",
+          "bytes": 843639,
+          "sha256": "9fd6b5c9c336e417346eac1b6ca8f15cb23bcceba85f2082e63542c91065c126",
           "width": 756,
           "height": 1932
         }
@@ -1065,8 +1065,8 @@
         {
           "path": "templates/kiosque/fiche-personnage/exemples/PS_FICHE_fiche-personnage_jaune_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 211152,
-          "sha256": "5f1b2ad122c35068f298ebaa21e9cd3229c542f6dd6c207297ab3b8fc535870a",
+          "bytes": 214483,
+          "sha256": "5acdc8b9e7bfb319a4d61d9c25d37ad77459e0219737cd8fafcedd975d4e83ae",
           "width": 1080,
           "height": 1350
         },
@@ -1100,8 +1100,8 @@
         {
           "path": "templates/kiosque/fiche-personnage/exemples/PS_FICHE_fiche-personnage_noire_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 210498,
-          "sha256": "bccfc4d4b41434ce8d0ae10c3fedcaed47c85b0426d8b149fc31007524ac4b93",
+          "bytes": 213434,
+          "sha256": "d396ab304363d0f42639328d6d0d145ef5e221fabcc2bb29b8ab57851ccc03f6",
           "width": 1080,
           "height": 1350
         },
@@ -1206,8 +1206,8 @@
         {
           "path": "templates/miniatures/01-analyse-personnage/exemples/PS_MIN_01-analyse-personnage_jaune_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 61841,
-          "sha256": "5cd4a6debf86640191a02e1f3d86fcf694552a244f9ede71139a272cd31449bd",
+          "bytes": 74116,
+          "sha256": "85386fd2e3534802a43569277d5ccd6f62c38635348e7117bb7a2992ef9c33db",
           "width": 1280,
           "height": 720
         },
@@ -1242,8 +1242,8 @@
         {
           "path": "templates/miniatures/01-analyse-personnage/exemples/PS_MIN_01-analyse-personnage_miroir_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 61145,
-          "sha256": "8675ffc726013a7874e68326d3efbe323ba1cc7bb580368efbedf8c6d62b640c",
+          "bytes": 72497,
+          "sha256": "68907f913f96d766ae45466baf6ef3d5d046584684ef65264461e2ad138cff7d",
           "width": 1280,
           "height": 720
         },
@@ -1278,8 +1278,8 @@
         {
           "path": "templates/miniatures/01-analyse-personnage/exemples/PS_MIN_01-analyse-personnage_noir_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 68018,
-          "sha256": "09cf29e8de0f01301404189577190c5c2b921addec782c71c726771da1b9da39",
+          "bytes": 77575,
+          "sha256": "e56ee224a7f089cb218bf721bf14199901a88d11b51b8dbb8771a37f1cbbc322",
           "width": 1280,
           "height": 720
         },
@@ -1314,8 +1314,8 @@
         {
           "path": "templates/miniatures/02-analyse-comic/exemples/PS_MIN_02-analyse-comic_duo_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 94161,
-          "sha256": "75269b5268ed7088b53509aaf1f78ba21e6f95b045a6d21586b60ec703dd0c2e",
+          "bytes": 104670,
+          "sha256": "56db4981962ff7c2cacb9cd701b9898713dd9ee5b132921a7ae8693f2e4b15d2",
           "width": 1280,
           "height": 720
         },
@@ -1350,8 +1350,8 @@
         {
           "path": "templates/miniatures/02-analyse-comic/exemples/PS_MIN_02-analyse-comic_inclinee_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 104959,
-          "sha256": "79d83a110fbf17caa044414c595e4ea2b4834682019019d19ff3431ea8cfb5e1",
+          "bytes": 115461,
+          "sha256": "96803eef4983b59c7ce58a72403b85d1b283e6f7ba086ca0ba1d8071c9945248",
           "width": 1280,
           "height": 720
         },
@@ -1386,8 +1386,8 @@
         {
           "path": "templates/miniatures/02-analyse-comic/exemples/PS_MIN_02-analyse-comic_jaune_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 105088,
-          "sha256": "5e488090cd19b839a7e210293736c86197063e291014dda1f63069ddb62ddc7a",
+          "bytes": 115502,
+          "sha256": "353616ef9e9e75aefa675d4bf53986a544e962cb579e49c4ea0c11ee77b66d41",
           "width": 1280,
           "height": 720
         },
@@ -1422,8 +1422,8 @@
         {
           "path": "templates/miniatures/03-actualites/exemples/PS_MIN_03-actualites_bandeau-jaune_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 49884,
-          "sha256": "e187962f3795b6a88f0eccbc28e0e6174779d7bca2aa142cedb29dd6a84c1519",
+          "bytes": 53525,
+          "sha256": "1af4279eb47eb49f7b36e177ff5b9921a06efbe714bc9a8db9cdc423b9fae1dd",
           "width": 1280,
           "height": 720
         },
@@ -1458,8 +1458,8 @@
         {
           "path": "templates/miniatures/03-actualites/exemples/PS_MIN_03-actualites_bandeau-noir_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 45495,
-          "sha256": "30762c17d471b2b4129a2b0995716af5c921f95172f4a3157ac5dc5657145a0b",
+          "bytes": 50770,
+          "sha256": "eb066288e61ac8535c6c239f0f99e61acbe9491c1c55add94a634a39fe8140c8",
           "width": 1280,
           "height": 720
         },
@@ -1493,8 +1493,8 @@
         {
           "path": "templates/miniatures/04-theories/exemples/PS_MIN_04-theories_gauche_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 84590,
-          "sha256": "19cec84d5182d56fa295df950582d7c0466bf86103bef69b9662d0827150c880",
+          "bytes": 64569,
+          "sha256": "3d8687cc1c65c3b04311f107daf29244c6ea780758872736c0bccd332557124f",
           "width": 1280,
           "height": 720
         },
@@ -1528,8 +1528,8 @@
         {
           "path": "templates/miniatures/04-theories/exemples/PS_MIN_04-theories_question_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 95130,
-          "sha256": "bf35a677cc28510f4bea06904221eeace7815a87272ed41c2cb34ed2d759704d",
+          "bytes": 73903,
+          "sha256": "4958a4ac97cd0737837e1d14294943d6c44b7a36d2b17d71152edac6cff772f1",
           "width": 1280,
           "height": 720
         },
@@ -1563,8 +1563,8 @@
         {
           "path": "templates/miniatures/05-guides/exemples/PS_MIN_05-guides_deux_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 80288,
-          "sha256": "7a112a3e867d62f78814784fd238152c8306c325458acff5b70499c80df0a7dd",
+          "bytes": 87619,
+          "sha256": "0af78b98c21e3ed1a103c0ccdf45a312fa889b5ba07d31b1b0ec6acab47f8920",
           "width": 1280,
           "height": 720
         },
@@ -1598,8 +1598,8 @@
         {
           "path": "templates/miniatures/05-guides/exemples/PS_MIN_05-guides_noir_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 74391,
-          "sha256": "39f4b471ca85f38f558eafdda4876968b14f2a91c561520004b50981aa504bd9",
+          "bytes": 80767,
+          "sha256": "8e22f83ab603819c42e40699b22bbec9b03cf4b96710288eb691df98e63fb343",
           "width": 1280,
           "height": 720
         },
@@ -1633,8 +1633,8 @@
         {
           "path": "templates/miniatures/05-guides/exemples/PS_MIN_05-guides_trois_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 73846,
-          "sha256": "a5b1b53c710b8f08566bffdd4ac65e579e5010a5712aa4d13f22ea99441b1bbf",
+          "bytes": 80085,
+          "sha256": "0c90af7c0f2dd135a8976969d3e485665ebfa007619b35095e7e81bba699af2a",
           "width": 1280,
           "height": 720
         },
@@ -1669,8 +1669,8 @@
         {
           "path": "templates/miniatures/06-evenements/exemples/PS_MIN_06-evenements_titre-bas_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 89648,
-          "sha256": "d7b293d14cbfa4b47fb11911c410476f036127ec96399914c939caacc6cfd090",
+          "bytes": 96558,
+          "sha256": "b88b71a7f5bbcbb05bbb43cb8861420b6242f992a34f20e3367ccaf597015422",
           "width": 1280,
           "height": 720
         },
@@ -1705,8 +1705,8 @@
         {
           "path": "templates/miniatures/06-evenements/exemples/PS_MIN_06-evenements_titre-haut_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 78769,
-          "sha256": "8f117cf35bb5df2cf817b41b6f8ac5a2a9ac1ecee4f49ddcefdbaf616620e1b6",
+          "bytes": 89469,
+          "sha256": "33d94636fe4b11447905831487ef46d4ff7286feaf7c1118d492ad6e3815481e",
           "width": 1280,
           "height": 720
         },
@@ -1740,8 +1740,8 @@
         {
           "path": "templates/miniatures/07-histoire/exemples/PS_MIN_07-histoire_bichromie_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 74577,
-          "sha256": "9b22888c37da1f236fee3d64e0cd36a92fcb3f99cf3ba2e914fd8a59b66bcfd5",
+          "bytes": 68649,
+          "sha256": "b138c2f7b4802153840a7179e1c90a79d1c08552a5c5c7a3e4bc3772dfa26191",
           "width": 1280,
           "height": 720
         },
@@ -1775,8 +1775,8 @@
         {
           "path": "templates/miniatures/07-histoire/exemples/PS_MIN_07-histoire_couleur_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 74469,
-          "sha256": "9cf0be3f7077e393f0c41e02f1321a7d37c0b91295f6edda352010dffa40bc97",
+          "bytes": 85964,
+          "sha256": "88a0a99e9266c1c753c70063b0bb4c91e1e2aa636d58c6af2384e42c4135e412",
           "width": 1280,
           "height": 720
         },
@@ -1810,8 +1810,8 @@
         {
           "path": "templates/miniatures/08-cosmique/exemples/PS_MIN_08-cosmique_decor_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 110209,
-          "sha256": "377face251ba8c4d26031a67253f3799efd955152d845ff3108ebadb0ce7aa43",
+          "bytes": 90014,
+          "sha256": "cb655f80946a1031a937fb907c3cee99ba496ab82a3d53ca11fcb243033ad05f",
           "width": 1280,
           "height": 720
         },
@@ -1845,8 +1845,8 @@
         {
           "path": "templates/miniatures/08-cosmique/exemples/PS_MIN_08-cosmique_surimpression_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 127014,
-          "sha256": "206419a5d1bdf4d01830ec1d0403ae6698fdf4d183770252885109876fbc7c8f",
+          "bytes": 105149,
+          "sha256": "f9689d7fdcf94284b5490c3016a6833307f79370c2dda9f24ec8ede5d46120a9",
           "width": 1280,
           "height": 720
         },
@@ -1880,8 +1880,8 @@
         {
           "path": "templates/miniatures/PS_MIN_planche-168px_NON-OFFICIEL.png",
           "format": "png",
-          "bytes": 283541,
-          "sha256": "c90aa45e388e6e98a6081b9416ee3a1cb61e81e3b2c93c9cee6b759de7ac9eed",
+          "bytes": 308727,
+          "sha256": "c72c35c029124b1556de5ce9768a715fd5a4b61db7acc23c0d0d712c2f9c4e1c",
           "width": 912,
           "height": 512
         }

@@ -23,7 +23,9 @@ export function initScene(ctx) {
   // Les effets plein cadre ne masquent pas les éléments situés dessous : ils ne sont choisis qu'en dernier recours
   function sous(p, profond = false, liste = S.doc.elements, effets = false) {
     if (effets === false) { const r = sous(p, profond, liste, null); if (r) return r; return sous(p, profond, liste, true); }
-    for (const e of [...liste].reverse()) { if (e.visible === false || e.verrou || (effets === null && e.type === 'effet')) continue;
+    // Un effet plein cadre (trame, grain, lumière…) ne se sélectionne pas en touchant la scène : onglet Calques
+    const plein = (e) => e.type === 'effet' && e.w >= W() * 0.95 && e.h >= H() * 0.95;
+    for (const e of [...liste].reverse()) { if (e.visible === false || e.verrou || (effets === null && e.type === 'effet') || plein(e)) continue;
       if (e.enfants && (profond || S.sel.some((id) => e.enfants.some((c) => c.id === id)))) { const c = sous(p, profond, e.enfants, effets); if (c) return c; }
       if (dedans(e.id, p)) return e; }
     return null;
