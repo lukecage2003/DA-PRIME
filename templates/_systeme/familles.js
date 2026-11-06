@@ -166,4 +166,59 @@ export default {
       };
     } }])),
   },
+  '09-affiche-cinema': {
+    nom: 'Affiche cinéma',
+    description: 'Plein cadre cinématographique, bandes de format scope, titre espacé et accroche.',
+    champs: champsBase('Le Dernier Gardien', 'Critique', [{ id: 'accroche', type: 'texte', label: 'Accroche', defaut: 'Chaque légende a une fin.' }, img('decor', 'Image plein cadre', 'noir')]),
+    variantes: Object.fromEntries([['nuit', 'Nuit argentée', C.w, C.silver], ['ambre', 'Ambre', '#F2C66D', '#F2C66D']].map(([id, nom, titreC, filet]) => [id, { nom, rendre(d, ctx) {
+      const z = zone(ctx, 'decor', { ...plein, label: 'Image plein cadre', requis: true });
+      const ac = texte(ctx, d, 'accroche', 'Accroche', { police: 'serif', l: 760, h: 60, maxLignes: 1, tMax: 52, tMin: 30, casse: 'none' }, (f) => ({ x: W / 2, y: 392 + f.cap, couleur: titreC, ancre: 'middle' }));
+      const t = texte(ctx, d, 'titre', 'Titre', { ...TITRE, tMax: 150, tMin: 100, l: 900, h: 200, maxLignes: 2, interlettre: 6 }, (f) => ({ x: W / 2, y: 460 + f.cap, couleur: titreC, ancre: 'middle', interlettre: 6 }), { titre: true, requis: true });
+      return {
+        fond: fondPlein(C.k0),
+        illustration: image('decor', d.decor, z, { filtre: 'assombri' }) + `<rect width="${W}" height="${H}" fill="url(#voile-bas)"/>`,
+        graphisme: `<rect width="${W}" height="36" fill="${C.k0}"/><rect y="${H - 36}" width="${W}" height="36" fill="${C.k0}"/><rect x="${W / 2 - 60}" y="372" width="120" height="3" fill="${filet}"/>`,
+        textes: ac + t,
+        marque: marque(d, filet, C.k, titreC, C.k, C.w),
+      };
+    } }])),
+  },
+  '10-duel': {
+    nom: 'Duel',
+    description: 'Deux combattants face à face, coupe diagonale, badge central.',
+    champs: champsBase('Duel', 'Versus', [{ id: 'nomA', type: 'texte', label: 'Premier combattant', defaut: 'Vortex' }, { id: 'nomB', type: 'texte', label: 'Second combattant', defaut: 'Némésis' }, img('imageA', 'Image du premier', 'pop'), img('imageB', 'Image du second', 'cosmos')]),
+    variantes: Object.fromEntries([['jaune', 'Coupe jaune', C.y, C.k], ['rouge', 'Coupe rouge', C.red, C.w]].map(([id, nom, coupe, badgeT]) => [id, { nom, rendre(d, ctx) {
+      const o = H * Math.tan((14 * Math.PI) / 180), mx = W / 2;
+      const zA = zone(ctx, 'imageA', { x: 0, y: 0, w: mx + o, h: H, mode: 'couvrir', label: 'Image du premier', requis: true }), zB = zone(ctx, 'imageB', { x: mx - o, y: 0, w: W - mx + o, h: H, mode: 'couvrir', label: 'Image du second', requis: true });
+      const ptsA = `0,0 ${mx + o},0 ${mx - o},${H} 0,${H}`, ptsB = `${mx + o},0 ${W},0 ${W},${H} ${mx - o},${H}`;
+      const nom = (k, l, x, y, anc) => texte(ctx, d, k, l, { police: 'display', l: 460, h: 90, maxLignes: 1, tMax: 84, tMin: 48 }, (f) => ({ x, y: y + f.cap, couleur: C.w, ancre: anc, contour: { couleur: C.k, largeur: 10 } }));
+      const t = texte(ctx, d, 'titre', 'Titre', { ...TITRE, tMax: 132, tMin: 100, l: 520, h: 140, maxLignes: 1 }, (f) => ({ x: mx, y: 290 + f.cap, couleur: badgeT, ancre: 'middle' }), { titre: true, requis: true });
+      const bw = Math.min(600, Math.max(320, largeur(String(d.titre || '').toLocaleUpperCase('fr-FR'), 'display', 132) + 90));
+      return {
+        fond: fondPlein(C.k),
+        illustration: `<clipPath id="duel-a"><polygon points="${ptsA}"/></clipPath><clipPath id="duel-b"><polygon points="${ptsB}"/></clipPath><g clip-path="url(#duel-a)">${image('imageA', d.imageA, zA)}</g><g clip-path="url(#duel-b)">${image('imageB', d.imageB, zB, { filtre: 'assombri' })}</g>`,
+        graphisme: `<polygon points="${mx + o - 10},0 ${mx + o + 10},0 ${mx - o + 10},${H} ${mx - o - 10},${H}" fill="${coupe}"/><g transform="rotate(-6 ${mx} 360)"><rect x="${mx - bw / 2}" y="272" width="${bw}" height="176" fill="${coupe}" stroke="${C.k}" stroke-width="10"/></g>`,
+        textes: t + nom('nomA', 'Premier combattant', G.m + 10, 380, 'start') + nom('nomB', 'Second combattant', W - G.m - 10, 120, 'end'),
+        marque: marque(d, coupe, badgeT, coupe, badgeT, C.w),
+      };
+    } }])),
+  },
+  '11-une-editoriale': {
+    nom: 'Une éditoriale',
+    description: 'Mise en page de magazine : filets, accroche en italique, image encadrée.',
+    champs: champsBase('Le grand retour', 'Le dossier', [{ id: 'accroche', type: 'texte', label: 'Accroche', defaut: 'Trente ans de légende, en un seul numéro' }, { id: 'numero', type: 'texte', label: 'Numéro', defaut: 'N° 12' }, img('visuel', 'Visuel', 'cosmos')]),
+    variantes: Object.fromEntries([['papier', 'Papier', C.paper, C.k, C.red], ['encre', 'Encre', C.k, C.paper, C.y]].map(([id, nom, fond, encre, accent]) => [id, { nom, rendre(d, ctx) {
+      const z = zone(ctx, 'visuel', { x: 700, y: 92, w: 500, h: 520, mode: 'couvrir', label: 'Visuel', requis: true });
+      const ac = texte(ctx, d, 'accroche', 'Accroche', { police: 'serif', l: 560, h: 110, maxLignes: 2, tMax: 48, tMin: 30, casse: 'none', interligne: 1.05 }, (f) => ({ x: G.m, y: 170 + f.cap, couleur: encre, interligne: 1.05 }));
+      const t = texte(ctx, d, 'titre', 'Titre', { ...TITRE, tMax: 124, tMin: 100, l: 600, h: 220, maxLignes: 2 }, (f) => ({ x: G.m, y: 318 + f.cap, couleur: encre }), { titre: true, requis: true });
+      const num = String(d.numero || '').toLocaleUpperCase('fr-FR');
+      return {
+        fond: fondPlein(fond),
+        illustration: `<rect x="${z.x + 14}" y="${z.y + 14}" width="${z.w}" height="${z.h}" fill="${accent}"/>` + image('visuel', d.visuel, z) + `<rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" fill="none" stroke="${encre}" stroke-width="6"/>`,
+        graphisme: `<rect x="${G.m}" y="150" width="580" height="4" fill="${encre}"/><rect x="${G.m}" y="292" width="140" height="10" fill="${accent}"/>` + (num ? `<text x="${z.x + z.w - 18}" y="${z.y + z.h - 22}" text-anchor="end" font-family="${M.mono.family}" font-weight="700" font-size="26" letter-spacing="3" fill="${C.w}" stroke="${C.k}" stroke-width="5" paint-order="stroke">${esc(num)}</text>` : ''),
+        textes: ac + t,
+        marque: marque(d, encre, fond, encre, fond, encre),
+      };
+    } }])),
+  },
 };

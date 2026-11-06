@@ -392,6 +392,159 @@
           "fichier": "08-cosmique/PS_MIN_08-cosmique_surimpression_NON-OFFICIEL.svg"
         }
       ]
+    },
+    {
+      "id": "09-affiche-cinema",
+      "nom": "Affiche cinéma",
+      "description": "Plein cadre cinématographique, bandes de format scope, titre espacé et accroche.",
+      "champs": [
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Titre",
+          "conseil": "3 mots maximum"
+        },
+        {
+          "id": "accroche",
+          "type": "texte",
+          "label": "Accroche"
+        },
+        {
+          "id": "decor",
+          "type": "image",
+          "label": "Image plein cadre"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste",
+          "conseil": "Ex. : Art : Nom de l’artiste · Éditeur"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "nuit",
+          "nom": "Nuit argentée",
+          "fichier": "09-affiche-cinema/PS_MIN_09-affiche-cinema_nuit_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "ambre",
+          "nom": "Ambre",
+          "fichier": "09-affiche-cinema/PS_MIN_09-affiche-cinema_ambre_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "10-duel",
+      "nom": "Duel",
+      "description": "Deux combattants face à face, coupe diagonale, badge central.",
+      "champs": [
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Titre",
+          "conseil": "3 mots maximum"
+        },
+        {
+          "id": "nomA",
+          "type": "texte",
+          "label": "Premier combattant"
+        },
+        {
+          "id": "nomB",
+          "type": "texte",
+          "label": "Second combattant"
+        },
+        {
+          "id": "imageA",
+          "type": "image",
+          "label": "Image du premier"
+        },
+        {
+          "id": "imageB",
+          "type": "image",
+          "label": "Image du second"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste",
+          "conseil": "Ex. : Art : Nom de l’artiste · Éditeur"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "jaune",
+          "nom": "Coupe jaune",
+          "fichier": "10-duel/PS_MIN_10-duel_jaune_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "rouge",
+          "nom": "Coupe rouge",
+          "fichier": "10-duel/PS_MIN_10-duel_rouge_NON-OFFICIEL.svg"
+        }
+      ]
+    },
+    {
+      "id": "11-une-editoriale",
+      "nom": "Une éditoriale",
+      "description": "Mise en page de magazine : filets, accroche en italique, image encadrée.",
+      "champs": [
+        {
+          "id": "titre",
+          "type": "texte",
+          "label": "Titre",
+          "conseil": "3 mots maximum"
+        },
+        {
+          "id": "accroche",
+          "type": "texte",
+          "label": "Accroche"
+        },
+        {
+          "id": "numero",
+          "type": "texte",
+          "label": "Numéro"
+        },
+        {
+          "id": "visuel",
+          "type": "image",
+          "label": "Visuel"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste",
+          "conseil": "Ex. : Art : Nom de l’artiste · Éditeur"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "papier",
+          "nom": "Papier",
+          "fichier": "11-une-editoriale/PS_MIN_11-une-editoriale_papier_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "encre",
+          "nom": "Encre",
+          "fichier": "11-une-editoriale/PS_MIN_11-une-editoriale_encre_NON-OFFICIEL.svg"
+        }
+      ]
     }
   ]
 }

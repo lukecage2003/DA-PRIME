@@ -1861,6 +1861,172 @@
       ]
     },
     {
+      "id": "min-09-affiche-cinema-ambre-non-officiel",
+      "title": "09 affiche cinema ambre",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.6.0",
+      "tags": [
+        "min",
+        "affiche",
+        "cinema",
+        "ambre",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/09-affiche-cinema/PS_MIN_09-affiche-cinema_ambre_NON-OFFICIEL.svg",
+      "files": [
+        {
+          "path": "templates/miniatures/09-affiche-cinema/PS_MIN_09-affiche-cinema_ambre_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11607,
+          "sha256": "05220162800cf8156fb8c0ccc2dc4e0c72336c6ddf5aaee87e3e0fc3534a8df9",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-09-affiche-cinema-nuit-non-officiel",
+      "title": "09 affiche cinema nuit",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.6.0",
+      "tags": [
+        "min",
+        "affiche",
+        "cinema",
+        "nuit",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/09-affiche-cinema/PS_MIN_09-affiche-cinema_nuit_NON-OFFICIEL.svg",
+      "files": [
+        {
+          "path": "templates/miniatures/09-affiche-cinema/PS_MIN_09-affiche-cinema_nuit_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11615,
+          "sha256": "8aff9b1713dbfc1edbce5900f0286bdb5993e116ed371150c2ecfab7b601aa20",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-10-duel-jaune-non-officiel",
+      "title": "10 duel jaune",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.6.0",
+      "tags": [
+        "min",
+        "duel",
+        "jaune",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/10-duel/PS_MIN_10-duel_jaune_NON-OFFICIEL.svg",
+      "files": [
+        {
+          "path": "templates/miniatures/10-duel/PS_MIN_10-duel_jaune_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 12647,
+          "sha256": "3e5a655de0dced70d57cb73c6c97316c76a1ede157444e680973ecc80161626f",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-10-duel-rouge-non-officiel",
+      "title": "10 duel rouge",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.6.0",
+      "tags": [
+        "min",
+        "duel",
+        "rouge",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/10-duel/PS_MIN_10-duel_rouge_NON-OFFICIEL.svg",
+      "files": [
+        {
+          "path": "templates/miniatures/10-duel/PS_MIN_10-duel_rouge_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 12647,
+          "sha256": "a7aca98cb35e37e3e375d04317ce3e7fdf11bddb46f7506d926baf331d7c7616",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-11-une-editoriale-encre-non-officiel",
+      "title": "11 une editoriale encre",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.6.0",
+      "tags": [
+        "min",
+        "une",
+        "editoriale",
+        "encre",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/11-une-editoriale/PS_MIN_11-une-editoriale_encre_NON-OFFICIEL.svg",
+      "files": [
+        {
+          "path": "templates/miniatures/11-une-editoriale/PS_MIN_11-une-editoriale_encre_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11916,
+          "sha256": "f2cc3e413085f782b2650b75fc68b15c2ed61962fb822cfc2abf06e1baaafe7b",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
+      "id": "min-11-une-editoriale-papier-non-officiel",
+      "title": "11 une editoriale papier",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.6.0",
+      "tags": [
+        "min",
+        "une",
+        "editoriale",
+        "papier",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/11-une-editoriale/PS_MIN_11-une-editoriale_papier_NON-OFFICIEL.svg",
+      "files": [
+        {
+          "path": "templates/miniatures/11-une-editoriale/PS_MIN_11-une-editoriale_papier_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 11918,
+          "sha256": "7c65c56ad4d4d5d75da0817a73c75f714dc08f45230bbff07d6288bfee1b0c8b",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
       "id": "min-planche-168px-non-officiel",
       "title": "Planche 168px",
       "category": "gabarits",
