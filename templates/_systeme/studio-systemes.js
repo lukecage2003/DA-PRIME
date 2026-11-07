@@ -1,4 +1,5 @@
 // Primestone · Motion Studio · systèmes graphiques, palettes, styles typographiques et formats.
+// Palette « Primestone » (noir et jaune de marque) en tête de chaque système : c'est la palette par défaut des nouvelles créations.
 // Les couleurs des éléments peuvent être des jetons (« @accent ») : changer de système ou de palette recolore toute la création.
 import { C } from './motion-base.js';
 
@@ -12,17 +13,19 @@ export const SYSTEMES = {
   editorial: {
     nom: 'Éditorial premium', principe: 'Hiérarchie, grille, sobriété : une idée par page, beaucoup d\'air.',
     palettes: {
-      papier: { nom: 'Papier', fond: C.paper, papier: C.warm3, encre: C.k, texte: C.k, accent: C.y, accent2: C.red },
-      encre: { nom: 'Encre', fond: C.k, papier: '#1E1E1C', encre: C.k0, texte: C.paper, accent: C.y, accent2: C.red },
-      jaune: { nom: 'Jaune', fond: C.y, papier: C.paper, encre: C.k, texte: C.k, accent: C.k, accent2: C.red },
+      primestone: { nom: 'Primestone', fond: C.k, papier: '#1C1A10', encre: C.y, texte: C.y, accent: C.y, accent2: C.w, surAccent: C.k },
+      papier: { nom: 'Papier', fond: C.paper, papier: C.warm3, encre: C.k, texte: C.k, accent: C.y, accent2: C.red, surAccent: C.k },
+      encre: { nom: 'Encre', fond: C.k, papier: '#1E1E1C', encre: C.k0, texte: C.paper, accent: C.y, accent2: C.red, surAccent: C.k0 },
+      jaune: { nom: 'Jaune', fond: C.y, papier: C.paper, encre: C.k, texte: C.k, accent: C.k, accent2: C.red, surAccent: C.y },
     },
-    textes: { titre: st({ police: 'display', taille: 150 }), surtitre: st({ police: 'mono', taille: 30, interlettre: 4, fond: '@accent', fill: '@encre' }), accroche: st({ police: 'serif', casse: 'none', taille: 56 }),
+    textes: { titre: st({ police: 'display', taille: 150 }), surtitre: st({ police: 'mono', taille: 30, interlettre: 4, fond: '@accent', fill: '@surAccent' }), accroche: st({ police: 'serif', casse: 'none', taille: 56 }),
       corps: st({ police: 'text', casse: 'none', taille: 30, interligne: 1.3 }), legende: st({ police: 'mono', taille: 20, interlettre: 2 }), onomatopee: st({ police: 'display', taille: 200, contour: 8 }) },
     animation: { entree: 'glisse', ease: 'douce', decalage: 0.12, duree: 0.7 }, effets: ['papier', 'trame'], grille: 12,
   },
   comics: {
     nom: 'Comics classique', principe: 'Trames, encrage, couleurs franches, impact et diagonales.',
     palettes: {
+      primestone: { nom: 'Primestone', fond: C.y, papier: C.y, encre: C.k, texte: C.y, accent: C.k, accent2: C.k },
       jaune: { nom: 'Jaune et rouge', fond: C.y, papier: C.w, encre: C.k, texte: C.w, accent: C.red, accent2: '#1F5FD1' },
       bleu: { nom: 'Bleu et rouge', fond: '#1F5FD1', papier: C.w, encre: C.k, texte: C.w, accent: C.y, accent2: C.red },
       nb: { nom: 'Noir et blanc', fond: C.w, papier: '#F1F0EA', encre: C.k, texte: C.k, accent: C.k, accent2: '#8A8A8A' },
@@ -35,6 +38,7 @@ export const SYSTEMES = {
   cinema: {
     nom: 'Cinématographique', principe: 'Profondeur, lumière, atmosphère ; lettrage espacé et lent.',
     palettes: {
+      primestone: { nom: 'Primestone', fond: C.k0, papier: '#2B2600', encre: C.k0, texte: C.y, accent: C.y, accent2: C.w },
       nuit: { nom: 'Nuit', fond: C.night, papier: C.nightBlue, encre: C.k0, texte: C.w, accent: C.y, accent2: C.silver },
       rouge: { nom: 'Noir et rouge', fond: C.k0, papier: '#3A0A06', encre: C.k0, texte: C.w, accent: C.red, accent2: C.w },
       ambre: { nom: 'Ambre', fond: '#120C06', papier: '#4A2E12', encre: C.k0, texte: '#F6E7CF', accent: '#F2A93B', accent2: '#7A5230' },
@@ -46,6 +50,7 @@ export const SYSTEMES = {
   cosmique: {
     nom: 'Cosmique', principe: 'Espace, énergie, échelle ; couleurs saturées sur fond profond.',
     palettes: {
+      primestone: { nom: 'Primestone', fond: C.k0, papier: '#2B2600', encre: C.k0, texte: C.y, accent: C.y, accent2: C.w },
       nebuleuse: { nom: 'Nébuleuse', fond: '#06051A', papier: '#33206B', encre: C.k0, texte: C.w, accent: C.y, accent2: '#9C7BFF' },
       aurore: { nom: 'Aurore', fond: '#020B14', papier: '#0D3B4A', encre: C.k0, texte: C.w, accent: '#4DF0C9', accent2: '#FF4FA3' },
       solaire: { nom: 'Solaire', fond: '#140404', papier: '#5A1408', encre: C.k0, texte: C.w, accent: '#FFB21A', accent2: C.red },
@@ -57,6 +62,7 @@ export const SYSTEMES = {
   minimal: {
     nom: 'Minimaliste', principe: 'Peu d\'éléments, contraste fort, une seule couleur d\'accent.',
     palettes: {
+      primestone: { nom: 'Primestone', fond: C.k, papier: '#1C1C1C', encre: C.k0, texte: C.y, accent: C.y, accent2: C.w },
       blanc: { nom: 'Blanc', fond: C.w, papier: '#F2F2F2', encre: C.k, texte: C.k, accent: C.red, accent2: '#BDBDBD' },
       noir: { nom: 'Noir', fond: C.k, papier: '#1C1C1C', encre: C.k0, texte: C.w, accent: C.y, accent2: '#5C5C5C' },
     },
@@ -67,6 +73,7 @@ export const SYSTEMES = {
   experimental: {
     nom: 'Expérimental', principe: 'Collage, géométrie, typographie déformée, ruptures d\'échelle.',
     palettes: {
+      primestone: { nom: 'Primestone', fond: C.y, papier: C.y, encre: C.k, texte: C.k, accent: C.k, accent2: C.k },
       collage: { nom: 'Collage', fond: '#EFE9DC', papier: '#D8CDB6', encre: C.k, texte: C.k, accent: C.red, accent2: '#2340B0' },
       acide: { nom: 'Acide', fond: '#0E0E0E', papier: '#2A2A2A', encre: C.k0, texte: '#E8FF3A', accent: '#FF3EA5', accent2: '#3AF0FF' },
     },

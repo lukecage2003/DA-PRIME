@@ -295,7 +295,7 @@ export default {
     nom: 'Une éditoriale',
     description: 'Mise en page de magazine : filets, accroche en italique, image encadrée.',
     champs: champsBase('Le grand retour', 'Le dossier', [{ id: 'accroche', type: 'texte', label: 'Accroche', defaut: 'Trente ans de légende, en un seul numéro' }, { id: 'numero', type: 'texte', label: 'Numéro', defaut: 'N° 12' }, img('visuel', 'Visuel', 'cosmos')]),
-    variantes: Object.fromEntries([['papier', 'Papier', C.paper, C.k, C.red], ['encre', 'Encre', C.k, C.paper, C.y]].map(([id, nom, fond, encre, accent]) => [id, { nom, rendre(d, ctx) {
+    variantes: Object.fromEntries([['primestone', 'Primestone', C.k, C.y, C.y], ['papier', 'Papier', C.paper, C.k, C.red], ['encre', 'Encre', C.k, C.paper, C.y]].map(([id, nom, fond, encre, accent]) => [id, { nom, rendre(d, ctx) {
       const z = zone(ctx, 'visuel', { x: 700, y: 92, w: 500, h: 520, mode: 'couvrir', label: 'Visuel', requis: true });
       const ac = texte(ctx, d, 'accroche', 'Accroche', { police: 'serif', l: 560, h: 110, maxLignes: 2, tMax: 48, tMin: 30, casse: 'none', interligne: 1.05 }, (f) => ({ x: G.m, y: 170 + f.cap, couleur: encre, interligne: 1.05 }));
       const t = texte(ctx, d, 'titre', 'Titre', { ...TITRE, tMax: 124, tMin: 100, l: 600, h: 220, maxLignes: 2 }, (f) => ({ x: G.m, y: 318 + f.cap, couleur: encre }), { titre: true, requis: true });

@@ -2075,6 +2075,42 @@
       ]
     },
     {
+      "id": "min-11-une-editoriale-primestone-non-officiel",
+      "title": "11 une editoriale primestone",
+      "category": "gabarits",
+      "kind": "gabarit-miniature",
+      "status": "non-officiel",
+      "version": "0.11.1",
+      "tags": [
+        "min",
+        "une",
+        "editoriale",
+        "primestone",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG des miniatures YouTube (1280 × 720), modifiables dans l'Atelier, Inkscape ou Figma. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/miniatures/11-une-editoriale/exemples/PS_MIN_11-une-editoriale_primestone_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/miniatures/11-une-editoriale/exemples/PS_MIN_11-une-editoriale_primestone_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 91839,
+          "sha256": "2397508d0c62a672c6799c0532f2872e3374b24978e654a0ddad9563d13350e1",
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "path": "templates/miniatures/11-une-editoriale/PS_MIN_11-une-editoriale_primestone_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 12851,
+          "sha256": "995d4abf5ec307fb90a31895c1f38694147e748e25ea54d97ffcaf1fc59e0e94",
+          "width": 1280,
+          "height": 720
+        }
+      ]
+    },
+    {
       "id": "min-planche-168px-non-officiel",
       "title": "Planche 168px",
       "category": "gabarits",
@@ -2094,10 +2130,10 @@
         {
           "path": "templates/miniatures/PS_MIN_planche-168px_NON-OFFICIEL.png",
           "format": "png",
-          "bytes": 733474,
-          "sha256": "ef8f374f4d1a93d80ddd3c6bb0a51acf8155eedfce8c43515c6322632511acd9",
+          "bytes": 764847,
+          "sha256": "b4f8e88571493b40a929e7f49c6c77229c06b942dd7f82657e0b2debeff9df18",
           "width": 912,
-          "height": 637
+          "height": 762
         }
       ]
     },

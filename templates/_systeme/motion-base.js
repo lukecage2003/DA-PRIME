@@ -30,6 +30,7 @@ const E0 = { trame: 0, encrage: 0, vitesse: 0, lueur: 0, particules: 0, cosmique
 
 // Directions visuelles : chacune a sa palette, son fond, sa typographie d'appui et ses effets par défaut.
 export const DIRECTIONS = {
+  primestone: { nom: 'Primestone', genre: 'Marque', fond: C.k0, fond2: '#2B2600', encre: C.k0, accent: C.y, accent2: C.w, texte: C.y, surAccent: C.k, style: 'noir', effets: { ...E0, trame: 35, encrage: 80, vitesse: 40, lueur: 30, grain: 20 } },
   une: { nom: 'La Une', genre: 'Éditorial', fond: C.paper, fond2: C.warm3, encre: C.k, accent: C.y, accent2: C.red, texte: C.k, surAccent: C.k, style: 'papier', effets: { ...E0, trame: 30, encrage: 70, grain: 25 } },
   pop: { nom: 'Pop', genre: 'Éditorial', fond: C.y, fond2: C.w, encre: C.k, accent: C.red, accent2: C.w, texte: C.k, surAccent: C.w, style: 'pop', effets: { ...E0, trame: 70, encrage: 90, vitesse: 55, grain: 10 } },
   pulp: { nom: 'Pulp', genre: 'Éditorial', fond: C.warm1, fond2: C.warm2, encre: '#2B1A10', accent: C.red, accent2: C.k, texte: '#2B1A10', surAccent: C.warm1, style: 'papier', effets: { ...E0, trame: 45, encrage: 70, vitesse: 20, grain: 65 } },

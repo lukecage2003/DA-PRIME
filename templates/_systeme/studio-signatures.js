@@ -11,7 +11,7 @@ const en = (type, delai, duree = 0.8, courbe = 'douce', o = {}) => ({ entree: { 
 const sansStyle = { contour: { c: '@encre', w: 0 }, extrusion: { c: '@accent', profondeur: 0, angle: 45 }, lueur: { c: '@accent', b: 0 }, ombre: { c: '@encre', dx: 0, dy: 0, flou: 0, op: 0.85 }, deformation: { type: 'aucune', force: 0.4 }, degrade: null, fond: 'none' };
 
 export const SIGNATURES = {
-  'affiche-cinema': { nom: 'Affiche de cinéma', description: 'Plein cadre nocturne, lumière volumétrique, titre espacé et bloc de crédits.', format: '4:5', systeme: 'cinema', palette: 'nuit',
+  'affiche-cinema': { nom: 'Affiche de cinéma', description: 'Plein cadre nocturne, lumière volumétrique, titre espacé et bloc de crédits.', format: '4:5', systeme: 'cinema', palette: 'primestone',
     creer(d) { const { w: W, h: H } = d.format; d.duree = 8; d.camera = { type: 'poussee', intensite: 0.5 };
       return [I(d, 'noir', { nom: 'Ville nocturne', x: 0, y: 0, w: W, h: H, prof: 0.2 }, { zoom: 1.12, dx: -0.12, dy: 0.04 }, en('fondu', 0, 1.6, 'entree-sortie')),
         E(d, 'lumiere', { mode: 'projecteur', couleur: '#DDE6FF', intensite: 0.45, densite: 0.35, cx: 0.72, cy: -0.05, angle: 18 }, { nom: 'Faisceau', op: 0.8 }),
@@ -23,7 +23,7 @@ export const SIGNATURES = {
         T(d, 'legende', 'Un film de Alix Martin · avec Lou Diaz, Kai Ito, Vega Rhodes · musique originale de Sol Arden · d\'après le comic « Les Veilleurs »', { x: W * 0.12, y: H - 230, w: W * 0.76, h: 64, op: 0.7 }, { ...sansStyle, police: 'textBold', taille: 20, interlettre: 1, interligne: 1.3, align: 'middle', fill: '#C9CCD6' }, en('fondu', 2.8, 1.2)),
         T(d, 'surtitre', 'Prochainement', { x: W * 0.2, y: H - 140, w: W * 0.6, h: 44 }, { ...sansStyle, police: 'mono', taille: 28, interlettre: 10, align: 'middle', fill: '@accent' }, en('fondu', 3.4, 1, 'entree-sortie'))];
     } },
-  'une-magazine': { nom: 'Une de magazine', description: 'Grille éditoriale, titraille, personnage détouré sur disque d\'accent.', format: '4:5', systeme: 'editorial', palette: 'papier',
+  'une-magazine': { nom: 'Une de magazine', description: 'Grille éditoriale, titraille, personnage détouré sur disque d\'accent.', format: '4:5', systeme: 'editorial', palette: 'primestone',
     creer(d) { const { w: W, h: H } = d.format, m = 64; d.duree = 6;
       return [E(d, 'papier', { intensite: 0.45 }, { nom: 'Papier' }),
         T(d, 'titre', 'Kiosque', { nom: 'Titre du magazine', x: m, y: 36, w: W - 2 * m, h: 230 }, { ...sansStyle, taille: 240, align: 'middle', fill: '@encre', interlettre: -2 }, en('revelation', 0, 0.8, 'entree-sortie', { dir: 'bas' })),
@@ -39,7 +39,7 @@ export const SIGNATURES = {
         T(d, 'titre', 'Inédit', { nom: 'Pastille · texte', x: W - 270, y: 465, w: 160, h: 70, rot: 12 }, { ...sansStyle, taille: 54, align: 'middle', fill: '#FFFFFF' }, en('tampon', 1.9, 0.45, 'rebond')),
         T(d, 'legende', 'Illustration de démonstration', { x: m, y: H - 64, w: 420, h: 30, op: 0.6 }, { ...sansStyle, taille: 16, fill: '@encre' }, en('fondu', 2, 0.6))];
     } },
-  'manifeste': { nom: 'Manifeste typographique', description: 'Collage expérimental : ruptures d\'échelle, déformations, géométrie.', format: '1:1', systeme: 'experimental', palette: 'collage',
+  'manifeste': { nom: 'Manifeste typographique', description: 'Collage expérimental : ruptures d\'échelle, déformations, géométrie.', format: '1:1', systeme: 'experimental', palette: 'primestone',
     creer(d) { const { w: W, h: H } = d.format; d.duree = 6;
       return [E(d, 'papier', { intensite: 0.55 }, { nom: 'Papier' }), E(d, 'motif', { mode: 'rayures', couleur: '@encre', intensite: 0.08, angle: 45, echelle: 1.6 }, { nom: 'Rayures', op: 0.5 }),
         F(d, 'ellipse', { nom: 'Soleil', x: W * 0.52, y: H * 0.05, w: 470, h: 470 }, { fill: '@accent', stroke: 'none', lw: 0 }, { entree: { type: 'zoom', delai: 0, duree: 0.8, courbe: 'rebond' }, boucle: { type: 'flottement', amplitude: 0.6, periode: 4 } }),
@@ -51,7 +51,7 @@ export const SIGNATURES = {
         F(d, 'explosion', { nom: 'Éclat', x: W * 0.74, y: H * 0.74, w: 230, h: 230 }, { fill: '@accent', stroke: '@encre', lw: 6, branches: 13 }, { entree: { type: 'rotation', delai: 1.6, duree: 0.6, courbe: 'rebond' }, boucle: { type: 'pulsation', amplitude: 1, periode: 1.6 } }),
         T(d, 'legende', 'N°01', { x: W * 0.765, y: H * 0.835, w: 160, h: 50 }, { ...sansStyle, police: 'display', taille: 46, align: 'middle', fill: '@encre' }, en('fondu', 1.8, 0.4))];
     } },
-  'annonce-plans': { nom: 'Annonce en trois plans', description: 'Teaser, révélation puis date : trois états enchaînés par des transitions.', format: '16:9', systeme: 'comics', palette: 'jaune',
+  'annonce-plans': { nom: 'Annonce en trois plans', description: 'Teaser, révélation puis date : trois états enchaînés par des transitions.', format: '16:9', systeme: 'comics', palette: 'primestone',
     creer(d) { const { w: W, h: H } = d.format;
       d.duree = 2.6; d.fond = { type: 'couleur', c1: '@encre' };
       d.elements = [F(d, 'rect', { nom: 'Fond noir', x: 0, y: 0, w: W, h: H, verrou: true }, { fill: '#0B0B0D', stroke: 'none', lw: 0 }),

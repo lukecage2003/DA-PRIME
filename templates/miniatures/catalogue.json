@@ -535,6 +535,11 @@
       ],
       "variantes": [
         {
+          "id": "primestone",
+          "nom": "Primestone",
+          "fichier": "11-une-editoriale/PS_MIN_11-une-editoriale_primestone_NON-OFFICIEL.svg"
+        },
+        {
           "id": "papier",
           "nom": "Papier",
           "fichier": "11-une-editoriale/PS_MIN_11-une-editoriale_papier_NON-OFFICIEL.svg"

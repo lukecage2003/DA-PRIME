@@ -30,7 +30,7 @@ const vertical = (k) => k.port || k.carre;
 
 export default {
   'annonce': {
-    nom: 'Annonce de série', description: 'Nouvelle série ou équipe créative', directions: ['une', 'pop', 'nuit', 'pulp'], preset: 'revelation',
+    nom: 'Annonce de série', description: 'Nouvelle série ou équipe créative', directions: ['primestone', 'une', 'pop', 'nuit', 'pulp'], preset: 'revelation',
     champs: [{ id: 'surtitre', label: 'Surtitre', defaut: 'Nouvelle série' }, { id: 'titre', label: 'Titre', defaut: 'Les Veilleurs' }, { id: 'soustitre', label: 'Accroche', defaut: 'Une saga cosmique en douze numéros' },
       { id: 'equipe', label: 'Équipe créative', type: 'texte-long', defaut: 'Scénario · Alix Martin\nDessin · Lou Diaz\nCouleurs · Kai Ito', conseil: 'une ligne par personne' }, { id: 'date', label: 'Date', defaut: 'Mars 2027' }, CREDIT],
     images: [{ id: 'visuel', label: 'Visuel', placeholder: 'cosmos', mode: 'couvrir' }],
@@ -47,7 +47,7 @@ export default {
     },
   },
   'couverture': {
-    nom: 'Révélation de couverture', description: 'Présenter une couverture inédite', directions: ['nuit', 'une', 'cosmos', 'noir'], preset: 'zoom',
+    nom: 'Révélation de couverture', description: 'Présenter une couverture inédite', directions: ['primestone', 'nuit', 'une', 'cosmos', 'noir'], preset: 'zoom',
     champs: [{ id: 'surtitre', label: 'Surtitre', defaut: 'Couverture dévoilée' }, { id: 'titre', label: 'Titre de la série', defaut: 'Les Veilleurs' }, { id: 'numero', label: 'Numéro', defaut: 'n°1' },
       { id: 'mention', label: 'Mention', defaut: 'Couverture variante' }, { id: 'artiste', label: 'Artiste', defaut: 'Couverture · Nom de l\'artiste' }, { id: 'date', label: 'Date', defaut: 'En librairie le 12 mars' }, CREDIT],
     images: [{ id: 'couverture', label: 'Couverture', placeholder: 'pop', mode: 'couvrir' }],
@@ -66,7 +66,7 @@ export default {
     },
   },
   'personnage': {
-    nom: 'Révélation de personnage', description: 'Héros, héroïne ou vilain', directions: ['noir', 'pop', 'nuit', 'cosmos'], preset: 'revelation',
+    nom: 'Révélation de personnage', description: 'Héros, héroïne ou vilain', directions: ['primestone', 'noir', 'pop', 'nuit', 'cosmos'], preset: 'revelation',
     champs: [{ id: 'surtitre', label: 'Surtitre', defaut: 'Le vilain' }, { id: 'nom', label: 'Nom', defaut: 'Némésis' }, { id: 'accroche', label: 'Accroche', defaut: 'Elle a déjà gagné.' }, { id: 'premiere', label: 'Première apparition', defaut: 'Première apparition · n°4' }, CREDIT],
     images: [{ id: 'personnage', label: 'Personnage (détouré de préférence)', placeholder: 'encre', mode: 'contenir', requis: true }],
     foyer: (k) => (vertical(k) ? [k.W / 2, k.H * 0.36] : [k.W * 0.7, k.H * 0.5]),
@@ -88,7 +88,7 @@ export default {
     },
   },
   'equipe': {
-    nom: 'Révélation d\'équipe', description: 'Roster, équipe ou distribution', directions: ['pop', 'une', 'nuit', 'noir'], preset: 'volets',
+    nom: 'Révélation d\'équipe', description: 'Roster, équipe ou distribution', directions: ['primestone', 'pop', 'une', 'nuit', 'noir'], preset: 'volets',
     champs: [{ id: 'surtitre', label: 'Surtitre', defaut: 'L\'équipe est formée' }, { id: 'titre', label: 'Titre', defaut: 'L\'Escouade' },
       { id: 'membres', label: 'Membres', type: 'texte-long', defaut: 'Vega — la stratège\nBrasier — le colosse\nOmbre — l\'infiltrée\nÉclat — le prodige', conseil: '2 à 5 lignes · Nom — rôle' }, CREDIT],
     images: [1, 2, 3, 4, 5].map((i) => ({ id: `membre${i}`, label: `Membre ${i}`, placeholder: ['pop', 'noir', 'cosmos', 'pop', 'noir'][i - 1], mode: 'couvrir' })),
@@ -115,7 +115,7 @@ export default {
     },
   },
   'evenement': {
-    nom: 'Crossover et événement', description: 'Deux camps, un événement', directions: ['cosmos', 'pop', 'noir', 'nuit'], preset: 'zoom',
+    nom: 'Crossover et événement', description: 'Deux camps, un événement', directions: ['primestone', 'cosmos', 'pop', 'noir', 'nuit'], preset: 'zoom',
     champs: [{ id: 'surtitre', label: 'Surtitre', defaut: 'Événement' }, { id: 'camp1', label: 'Premier camp', defaut: 'Les Veilleurs' }, { id: 'liaison', label: 'Liaison', defaut: 'contre' },
       { id: 'camp2', label: 'Second camp', defaut: 'La Ligue rouge' }, { id: 'titre', label: 'Nom de l\'événement', defaut: 'Collision' }, { id: 'date', label: 'Date', defaut: 'Été 2027' }, CREDIT],
     images: [{ id: 'gauche', label: 'Premier camp', placeholder: 'cosmos', mode: 'couvrir' }, { id: 'droite', label: 'Second camp', placeholder: 'noir', mode: 'couvrir' }],
@@ -147,7 +147,7 @@ export default {
     },
   },
   'dossier': {
-    nom: 'Dossier de personnage', description: 'Fiche, pouvoirs et statistiques', directions: ['une', 'pulp', 'nuit', 'noir'], preset: 'deplacement',
+    nom: 'Dossier de personnage', description: 'Fiche, pouvoirs et statistiques', directions: ['primestone', 'une', 'pulp', 'nuit', 'noir'], preset: 'deplacement',
     champs: [{ id: 'surtitre', label: 'Surtitre', defaut: 'Dossier' }, { id: 'nom', label: 'Nom', defaut: 'Némésis' }, { id: 'alias', label: 'Alias', defaut: 'Ancienne gardienne déchue' },
       { id: 'fiche', label: 'Fiche', type: 'texte-long', defaut: 'Première apparition : n°4 (2019)\nCréateurs : A. Martin, L. Diaz\nAffiliation : La Ligue rouge', conseil: 'une information par ligne' },
       { id: 'stats', label: 'Statistiques', type: 'texte-long', defaut: 'Force : 8\nIntelligence : 9\nVitesse : 6\nRésistance : 7', conseil: 'Nom : valeur sur 10' }, CREDIT],
@@ -176,7 +176,7 @@ export default {
     },
   },
   'cosmique': {
-    nom: 'Hiérarchie cosmique', description: 'Carte d\'univers, niveaux de puissance', directions: ['cosmos', 'nuit', 'une', 'pop'], preset: 'particules',
+    nom: 'Hiérarchie cosmique', description: 'Carte d\'univers, niveaux de puissance', directions: ['primestone', 'cosmos', 'nuit', 'une', 'pop'], preset: 'particules',
     champs: [{ id: 'titre', label: 'Titre', defaut: 'L\'ordre cosmique' }, { id: 'soustitre', label: 'Sous-titre', defaut: 'Hiérarchie des puissances de l\'univers' },
       { id: 'niveaux', label: 'Niveaux', type: 'texte-long', defaut: 'Les Éternels — au-delà du temps\nLes Architectes — ils façonnent les mondes\nLes Gardiens — ils veillent sur les galaxies\nLes Hérauts — ils portent la parole\nLes Mortels — et pourtant…', conseil: '3 à 7 lignes, du plus puissant au plus humble · Nom — description' },
       { id: 'disposition', label: 'Disposition', type: 'choix', options: ['Pyramide', 'Orbites'], defaut: 'Pyramide' }, CREDIT],
@@ -218,7 +218,7 @@ export default {
     },
   },
   'chronologie': {
-    nom: 'Chronologie', description: 'Ordre de lecture, dates clés', directions: ['une', 'pulp', 'nuit', 'pop'], preset: 'apparition',
+    nom: 'Chronologie', description: 'Ordre de lecture, dates clés', directions: ['primestone', 'une', 'pulp', 'nuit', 'pop'], preset: 'apparition',
     champs: [{ id: 'titre', label: 'Titre', defaut: 'Ordre de lecture' }, { id: 'soustitre', label: 'Sous-titre', defaut: 'Par où commencer la saga' },
       { id: 'etapes', label: 'Étapes', type: 'texte-long', defaut: '2019 | Origines | n°1 à 6\n2020 | La Chute | n°7 à 12\n2021 | Collision | événement en 8 parties\n2023 | Renaissance | nouvelle série\n2025 | Le Dernier Gardien | conclusion', conseil: '3 à 7 lignes · Date | Titre | note' }, CREDIT],
     images: [{ id: 'visuel', label: 'Fond illustré', placeholder: 'noir', mode: 'couvrir' }],
