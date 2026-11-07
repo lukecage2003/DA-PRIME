@@ -1,5 +1,15 @@
 # Journal des versions
 
+## 0.11.2 · 2026-11-07 · banc Comic Vision (outils, hors atelier)
+
+- **Banc de mesure local** (`tools/banc-vision/`, mode d'emploi dans son README) : préparation des entrées (OCR réel et cases), squelettes d'annotation, exécution contre un `llama-server` local (approches A, B et C, reprise automatique), notation.
+  - Schéma de sortie v2 à listes plafonnées ; synthèse C limitée à la continuité, à la synthèse et aux incertitudes.
+  - Alertes automatiques : citation hors OCR ou reproduite, identité non justifiée, bulle inexistante ou hors de sa case, élément interdit (valeurs seulement, mots entiers).
+  - Mesure des bulles déclarées sur un vrai texte de bulle ; historique des lancements (`executions.jsonl`).
+- **Aucun moteur de vision n'est intégré à l'atelier.** Rien n'est publié : `tools/` n'est pas copié par `build-pages`. Pages, OCR, annotations, résultats et poids (`*.gguf`) restent hors du dépôt (`.gitignore`).
+- **Premières mesures** (`docs/VISION_0.11.2_BANC.md`) : Qwen3-VL-8B, Q4_K_M et Q8_0, sur un conteneur CPU sans GPU. Elles sont notées par rapport à des annotations **non validées** et restent indicatives.
+- Tests : `npm run test:banc-vision` (page synthétique et faux serveur, 15 contrôles), ajouté à `npm test`.
+
 ## 0.11.1 · 2026-11-06 · compléments : validation OCR, nature des textes, audit de vision
 
 - **Nature de la page et du texte** : une couverture, des crédits, un cartouche de lieu, un titre ou un texte du décor ne sont plus confondus avec des bulles.

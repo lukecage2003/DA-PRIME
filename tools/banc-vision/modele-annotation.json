@@ -1,0 +1,18 @@
+{
+ "page": "NOM-DE-LA-PAGE.png",
+ "corpus": "reglage",
+ "categories_test": ["cases", "personnages", "expressions", "actions", "objets", "relations", "locuteurs", "interactions", "continuite", "page_globale", "incertitude", "invention"],
+ "nature_page": "histoire",
+ "cases": [ { "id": "C1", "ordre": 1, "zone": { "x": 0.05, "y": 0.04, "w": 0.9, "h": 0.3 }, "plan": "large", "angle": "normal", "lieu": "" } ],
+ "personnages": [ { "id": "PA", "case": "C1", "zone": { "x": 0.1, "y": 0.1, "w": 0.2, "h": 0.2 }, "identite": null, "identite_deductible_de_la_page": false, "expression": "", "posture": "", "description": "" } ],
+ "objets": [ { "case": "C1", "nom": "", "important": true, "tenu_par": null } ],
+ "actions": [ { "case": "C1", "agent": "PA", "verbe": "", "cible": null, "synonymes": [] } ],
+ "relations": [],
+ "bulles": [ { "ocr": "O1", "nature": "dialogue", "locuteur": "PA", "locuteur_certain": true } ],
+ "continuite": [],
+ "faits_page": [ { "texte": "", "classe": "visible" } ],
+ "a_ne_pas_inventer": [],
+ "ambigu": [],
+ "valide_par": null,
+ "date_validation": null
+}

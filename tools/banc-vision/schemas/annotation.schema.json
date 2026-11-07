@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "da-prime/comic-vision/annotation/v1",
+  "title": "Annotation humaine de référence (vérité terrain) — une page",
+  "description": "Établie ou VALIDÉE par l'utilisateur. Une proposition automatique n'a jamais valeur de référence tant que le champ « valide_par » n'est pas renseigné. Même vocabulaire que la sortie du moteur, coordonnées en fractions de la PAGE.",
+  "type": "object",
+  "required": ["page", "corpus", "nature_page", "cases", "personnages", "actions", "bulles", "a_ne_pas_inventer", "valide_par"],
+  "properties": {
+    "page": { "type": "string", "description": "Nom du fichier PNG (hors dépôt)" },
+    "corpus": { "type": "string", "enum": ["reglage", "controle"] },
+    "categories_test": { "type": "array", "items": { "type": "string", "enum": ["grille", "cases_inclinees", "double_page", "pleine_page", "gros_plan", "multi_personnages", "texte_dans_image", "onomatopees", "narration_complexe", "non_narrative", "casse_mixte", "style_manga"] } },
+    "nature_page": { "type": "string" },
+    "cases": { "type": "array", "items": { "type": "object", "required": ["id", "ordre", "zone"], "properties": { "id": { "type": "string" }, "ordre": { "type": "integer" }, "zone": { "type": "object" }, "plan": { "type": "string" }, "angle": { "type": "string" }, "lieu": { "type": "string" } } } },
+    "personnages": { "type": "array", "items": { "type": "object", "required": ["id", "case", "zone"], "properties": { "id": { "type": "string", "description": "Étiquette stable dans la page (PA, PB…)" }, "case": { "type": "string" }, "zone": { "type": "object" }, "identite": { "type": ["string", "null"], "description": "Seulement si établie (texte de la page ou connaissance certaine de l'annotateur)" }, "identite_deductible_de_la_page": { "type": "boolean", "description": "true si un texte de la page permet de la connaître ; sinon le moteur NE DOIT PAS la proposer" }, "expression": { "type": "string" }, "posture": { "type": "string" }, "description": { "type": "string" } } } },
+    "objets": { "type": "array", "items": { "type": "object", "required": ["case", "nom"], "properties": { "case": { "type": "string" }, "nom": { "type": "string" }, "important": { "type": "boolean" }, "tenu_par": { "type": ["string", "null"] } } } },
+    "actions": { "type": "array", "items": { "type": "object", "required": ["case", "agent", "verbe"], "properties": { "case": { "type": "string" }, "agent": { "type": "string" }, "verbe": { "type": "string" }, "cible": { "type": ["string", "null"] }, "synonymes": { "type": "array", "items": { "type": "string" } } } } },
+    "relations": { "type": "array", "items": { "type": "object", "required": ["case", "sujet", "relation", "objet"] } },
+    "bulles": { "type": "array", "items": { "type": "object", "required": ["ocr", "nature", "locuteur"], "properties": { "ocr": { "type": "string", "description": "Identifiant du bloc OCR fourni au modèle (O1, O2…)" }, "nature": { "type": "string" }, "locuteur": { "type": ["string", "null"] }, "locuteur_certain": { "type": "boolean" } } } },
+    "continuite": { "type": "array", "items": { "type": "object", "required": ["de", "vers", "type"] } },
+    "faits_page": { "type": "array", "description": "Résumé de la page en faits élémentaires vérifiables", "items": { "type": "object", "required": ["texte", "classe"], "properties": { "texte": { "type": "string" }, "classe": { "type": "string", "enum": ["visible", "lu", "interprete", "deduit"] } } } },
+    "a_ne_pas_inventer": { "type": "array", "description": "Pièges : identités inconnues, textes illisibles, actions hors champ, objets ambigus", "items": { "type": "string" } },
+    "ambigu": { "type": "array", "description": "Points où la bonne réponse est « incertain »", "items": { "type": "string" } },
+    "valide_par": { "type": ["string", "null"], "description": "Nom ou initiales de la personne qui a validé ; null = proposition non utilisable comme référence" },
+    "date_validation": { "type": ["string", "null"] }
+  }
+}

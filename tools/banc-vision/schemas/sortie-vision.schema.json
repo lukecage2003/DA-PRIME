@@ -1,0 +1,485 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "da-prime/comic-vision/sortie/v2",
+ "title": "Sortie commune Comic Vision (tous candidats, toutes approches)",
+ "description": "Imposée au modèle par llama-server (--json-schema / response_format). Coordonnées : fractions 0-1 de l'image FOURNIE au modèle ; le code les ramène à la page. Les textes ne sont JAMAIS recopiés : seulement référencés par l'identifiant d'un bloc OCR fourni. v2 : listes plafonnées (maxItems) pour empêcher les énumérations en boucle observées au réglage.",
+ "type": "object",
+ "required": [
+  "cases",
+  "personnages",
+  "objets",
+  "actions",
+  "relations",
+  "bulles",
+  "incertitudes"
+ ],
+ "additionalProperties": false,
+ "$defs": {
+  "zone": {
+   "type": "object",
+   "required": [
+    "x",
+    "y",
+    "w",
+    "h"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "x": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 1
+    },
+    "y": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 1
+    },
+    "w": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 1
+    },
+    "h": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 1
+    }
+   }
+  },
+  "classe": {
+   "type": "string",
+   "enum": [
+    "visible",
+    "interprete",
+    "deduit",
+    "incertain"
+   ],
+   "description": "« lu » est réservé aux textes de l'OCR : la vision ne produit jamais « lu »."
+  },
+  "certitude": {
+   "type": "string",
+   "enum": [
+    "sur",
+    "probable",
+    "incertain"
+   ]
+  }
+ },
+ "properties": {
+  "nature_page": {
+   "type": "string",
+   "enum": [
+    "histoire",
+    "couverture",
+    "credits",
+    "resume",
+    "distribution",
+    "texte",
+    "publicite",
+    "autre",
+    "inconnue"
+   ]
+  },
+  "cases": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "ordre",
+     "zone"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "id": {
+      "type": "string",
+      "pattern": "^C[0-9]+$"
+     },
+     "ordre": {
+      "type": "integer",
+      "minimum": 1
+     },
+     "zone": {
+      "$ref": "#/$defs/zone"
+     },
+     "plan": {
+      "type": "string",
+      "enum": [
+       "tres_large",
+       "large",
+       "moyen",
+       "rapproche",
+       "gros_plan",
+       "tres_gros_plan",
+       "insert",
+       "inconnu"
+      ]
+     },
+     "angle": {
+      "type": "string",
+      "enum": [
+       "normal",
+       "plongee",
+       "contre_plongee",
+       "vue_aerienne",
+       "inconnu"
+      ]
+     },
+     "lieu": {
+      "type": "string",
+      "maxLength": 160
+     },
+     "certitude": {
+      "$ref": "#/$defs/certitude"
+     }
+    }
+   },
+   "maxItems": 12
+  },
+  "personnages": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "case",
+     "zone",
+     "classe"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "id": {
+      "type": "string",
+      "pattern": "^P[A-Z][0-9]*$",
+      "description": "Étiquette stable dans la page : PA, PB… ; JAMAIS un nom propre."
+     },
+     "case": {
+      "type": "string",
+      "pattern": "^C[0-9]+$"
+     },
+     "zone": {
+      "$ref": "#/$defs/zone"
+     },
+     "description": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Apparence visible (costume, couleurs, traits) sans nom."
+     },
+     "expression": {
+      "type": "string",
+      "maxLength": 80
+     },
+     "posture": {
+      "type": "string",
+      "maxLength": 80
+     },
+     "identite_proposee": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "maxLength": 80,
+      "description": "Seulement si un bloc OCR fourni la justifie ; sinon null."
+     },
+     "justification_identite": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "pattern": "^(O[0-9]+)(,O[0-9]+)*$"
+     },
+     "classe": {
+      "$ref": "#/$defs/classe"
+     },
+     "certitude": {
+      "$ref": "#/$defs/certitude"
+     }
+    }
+   },
+   "maxItems": 15
+  },
+  "objets": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "case",
+     "nom",
+     "classe"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "case": {
+      "type": "string",
+      "pattern": "^C[0-9]+$"
+     },
+     "nom": {
+      "type": "string",
+      "maxLength": 60
+     },
+     "zone": {
+      "$ref": "#/$defs/zone"
+     },
+     "tenu_par": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "pattern": "^P[A-Z][0-9]*$"
+     },
+     "classe": {
+      "$ref": "#/$defs/classe"
+     },
+     "certitude": {
+      "$ref": "#/$defs/certitude"
+     }
+    }
+   },
+   "maxItems": 15
+  },
+  "actions": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "case",
+     "agent",
+     "verbe",
+     "classe"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "case": {
+      "type": "string",
+      "pattern": "^C[0-9]+$"
+     },
+     "agent": {
+      "type": "string",
+      "pattern": "^P[A-Z][0-9]*$"
+     },
+     "verbe": {
+      "type": "string",
+      "maxLength": 60
+     },
+     "cible": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "maxLength": 60
+     },
+     "classe": {
+      "$ref": "#/$defs/classe"
+     },
+     "certitude": {
+      "$ref": "#/$defs/certitude"
+     }
+    }
+   },
+   "maxItems": 20
+  },
+  "relations": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "case",
+     "sujet",
+     "relation",
+     "objet",
+     "classe"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "case": {
+      "type": "string",
+      "pattern": "^C[0-9]+$"
+     },
+     "sujet": {
+      "type": "string",
+      "maxLength": 40
+     },
+     "relation": {
+      "type": "string",
+      "enum": [
+       "a_gauche_de",
+       "a_droite_de",
+       "devant",
+       "derriere",
+       "au_dessus_de",
+       "en_dessous_de",
+       "tient",
+       "regarde",
+       "touche",
+       "frappe",
+       "menace",
+       "parle_a",
+       "proche_de",
+       "loin_de",
+       "autre"
+      ]
+     },
+     "objet": {
+      "type": "string",
+      "maxLength": 40
+     },
+     "classe": {
+      "$ref": "#/$defs/classe"
+     },
+     "certitude": {
+      "$ref": "#/$defs/certitude"
+     }
+    }
+   },
+   "maxItems": 20
+  },
+  "bulles": {
+   "type": "array",
+   "description": "Attribution des blocs OCR fournis : jamais de texte recopié.",
+   "items": {
+    "type": "object",
+    "required": [
+     "ocr",
+     "locuteur",
+     "classe"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "ocr": {
+      "type": "string",
+      "pattern": "^O[0-9]+$"
+     },
+     "nature": {
+      "type": "string",
+      "enum": [
+       "dialogue",
+       "pensee",
+       "narration",
+       "lieu_moment",
+       "presentation",
+       "onomatopee",
+       "decor",
+       "titre",
+       "credits",
+       "inconnue"
+      ]
+     },
+     "locuteur": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "pattern": "^(P[A-Z][0-9]*|hors_champ|narrateur)$"
+     },
+     "indice": {
+      "type": "string",
+      "maxLength": 120,
+      "description": "ex. « queue de bulle vers PA »"
+     },
+     "classe": {
+      "$ref": "#/$defs/classe"
+     },
+     "certitude": {
+      "$ref": "#/$defs/certitude"
+     }
+    }
+   },
+   "maxItems": 40
+  },
+  "continuite": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "de",
+     "vers",
+     "type",
+     "classe"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "de": {
+      "type": "string",
+      "pattern": "^C[0-9]+$"
+     },
+     "vers": {
+      "type": "string",
+      "pattern": "^C[0-9]+$"
+     },
+     "type": {
+      "type": "string",
+      "enum": [
+       "meme_personnage",
+       "suite_action",
+       "changement_lieu",
+       "changement_temps",
+       "moment_a_moment",
+       "action_a_action",
+       "sujet_a_sujet",
+       "scene_a_scene",
+       "aspect_a_aspect",
+       "rupture"
+      ]
+     },
+     "detail": {
+      "type": "string",
+      "maxLength": 160
+     },
+     "classe": {
+      "$ref": "#/$defs/classe"
+     },
+     "certitude": {
+      "$ref": "#/$defs/certitude"
+     }
+    }
+   },
+   "maxItems": 12
+  },
+  "synthese": {
+   "type": "object",
+   "additionalProperties": false,
+   "properties": {
+    "faits": {
+     "type": "array",
+     "maxItems": 10,
+     "items": {
+      "type": "object",
+      "required": [
+       "texte",
+       "classe",
+       "sources"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "texte": {
+        "type": "string",
+        "maxLength": 200
+       },
+       "classe": {
+        "$ref": "#/$defs/classe"
+       },
+       "sources": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "pattern": "^(C|P|O)[A-Z0-9]+$"
+        },
+        "minItems": 1
+       }
+      }
+     }
+    }
+   }
+  },
+  "incertitudes": {
+   "type": "array",
+   "description": "Ce que le modèle ne peut pas établir (obligatoire même vide).",
+   "items": {
+    "type": "string",
+    "maxLength": 160
+   },
+   "maxItems": 10
+  }
+ }
+}

@@ -1,0 +1,20 @@
+{
+  "version": "invites-v1",
+  "note": "Invites figées pour toute la campagne : une modification = nouvelle version, et les résultats ne se comparent qu'à version égale. Rédigées en anglais (langue des comics testés et des données d'entraînement majoritaires) ; les règles d'honnêteté sont identiques pour toutes les approches.",
+  "regles_communes": "You analyse a comic book page for a structured catalogue. Rules, in order of priority:\n1. Describe ONLY what is visible in the image. Never invent characters, objects, actions or events.\n2. Text is already transcribed by OCR and given to you as numbered blocks (O1, O2…). NEVER rewrite, translate or quote text: refer to blocks by id only.\n3. Never name a character unless an OCR block explicitly gives the name; then put the name in identite_proposee and the block ids in justification_identite. Otherwise use labels PA, PB, … consistently and set identite_proposee to null.\n4. Classify every item: visible (directly seen), interprete (reading of an expression, mood, intention), deduit (logical inference from several clues), incertain (you are not sure). Prefer incertain to guessing.\n5. Coordinates are fractions (0-1) of the image you receive: x, y = top-left corner, w, h = size.\n6. List in incertitudes what you cannot establish. An empty list must be a deliberate statement.\n7. Output ONLY JSON matching the schema.",
+  "A_page_entiere": {
+    "description": "Approche A : la page entière, avec contexte global, en une seule analyse.",
+    "systeme": "{{regles_communes}}",
+    "utilisateur": "Page type (if known): {{nature_page}}.\nPanels detected by geometry (may be wrong, correct them if needed): {{cases_geometrie}}.\nOCR blocks of the page (id, panel if known, box, nature if known): {{blocs_ocr}}.\nTask: list the panels in reading order with their boxes, shot type and camera angle; the characters in each panel (label, box, appearance, expression, posture); important objects; actions (agent, verb, target); spatial relations; for each OCR block its nature and probable speaker with the visual clue; continuity between consecutive panels; then up to 12 elementary facts about the page, each with its classe and its sources (panel, character or block ids)."
+  },
+  "B_case_par_case": {
+    "description": "Approche B : chaque case recadrée à pleine résolution, avec une vignette de la page entière en seconde image et l'état connu de la page.",
+    "systeme": "{{regles_communes}}",
+    "utilisateur": "Image 1: panel {{case_id}} (reading order {{case_ordre}} of {{nb_cases}}) cropped at full resolution. Image 2: the whole page, reduced, for context only (describe image 1 only).\nCharacters already labelled on this page (keep the same label if it is clearly the same person): {{personnages_connus}}.\nOCR blocks inside this panel (id, box relative to the panel): {{blocs_ocr_case}}.\nTask: for THIS panel only (use case id {{case_id}}): shot type and angle, place; characters (label, box relative to image 1, appearance, expression, posture); objects; actions; spatial relations; nature and probable speaker of each OCR block with the visual clue. Leave continuite and synthese empty."
+  },
+  "C_synthese": {
+    "description": "Approche C, étape 2 : synthèse narrative de la page à partir des sorties validées par le schéma de l'approche B (texte seulement ; vignettes en option).",
+    "systeme": "{{regles_communes}}\nYou do not see new image details in this step: reason ONLY from the structured observations given. Anything not supported by them is incertain.",
+    "utilisateur": "Structured observations of all panels of the page, in reading order: {{observations_cases}}.\nOCR blocks of the page with their attributed speakers: {{blocs_ocr}}.\nTask: copy the panels, characters (merge labels if clearly the same person across panels, otherwise keep them distinct and say so in incertitudes), then establish continuity between consecutive panels (same character, action continued, change of place or time, transition type) and up to 12 elementary facts about the page with classe and sources. Do not add objects or actions that are not in the observations."
+  }
+}

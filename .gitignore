@@ -27,3 +27,8 @@ supabase/.temp/
 # Modèles OCR utilisés par les tests (téléchargés à la demande, vérifiés par empreinte) : jamais versionnés
 .cache/
 *.traineddata
+
+# Banc Comic Vision : poids de modèles et résultats locaux, jamais versionnés
+*.gguf
+tools/banc-vision/resultats*/
+tools/banc-vision/corpus*/

@@ -26,9 +26,10 @@
     "test:fondation": "node tools/test-fondation.mjs",
     "test:ocr": "node tools/test-ocr.mjs",
     "ocr:mesurer": "node tools/mesurer-ocr.mjs",
-    "test": "node tools/test-moteur.mjs && node tools/test-atelier.mjs && node tools/test-motion.mjs && node tools/test-script.mjs && node tools/test-fondation.mjs && node tools/test-ocr.mjs",
+    "test": "node tools/test-moteur.mjs && node tools/test-atelier.mjs && node tools/test-motion.mjs && node tools/test-script.mjs && node tools/test-fondation.mjs && node tools/test-ocr.mjs && node tools/test-banc-vision.mjs",
     "atelier:reseau": "node tools/serve.mjs 4173 --reseau",
-    "build:pages": "node tools/build-pages.mjs"
+    "build:pages": "node tools/build-pages.mjs",
+    "test:banc-vision": "node tools/test-banc-vision.mjs"
   },
   "devDependencies": {
     "playwright": "1.63.0"
