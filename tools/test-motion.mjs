@@ -23,7 +23,7 @@ for (const [fid, f] of Object.entries(FAMILLES_MOTION)) for (const fmt of Object
   const e = s.alertes.filter((a) => a.niveau !== 'info'); const svg = versSVG(s);
   if (e.length || s.w !== FORMATS_MOTION[fmt].w || !svg.includes(`viewBox="0 0 ${s.w} ${s.h}"`) || !svg.includes('data-ps-statut="NON-OFFICIEL"')) bad.push(`${fid}/${fmt}/${d} ${e.map((a) => a.message).join(';')}`);
 }
-ok(Object.keys(FAMILLES_MOTION).length === 8 && !bad.length, `8 familles × 4 formats × 4 directions (${n} compositions) : dimensions, aucune alerte avec les textes par défaut, sceau marqué NON-OFFICIEL${bad.length ? ' · ' + bad.slice(0, 4).join(' | ') : ''}`);
+ok(Object.keys(FAMILLES_MOTION).length === 9 && !bad.length, `9 familles × 4 formats × 4 directions (${n} compositions) : dimensions, aucune alerte avec les textes par défaut, sceau marqué NON-OFFICIEL${bad.length ? ' · ' + bad.slice(0, 4).join(' | ') : ''}`);
 const balance = (svg) => { const o = (svg.match(/<g[\s>]/g) || []).length, c = (svg.match(/<\/g>/g) || []).length; return o === c && (svg.match(/<text/g) || []).length === (svg.match(/<\/text>/g) || []).length; };
 ok(Object.keys(FAMILLES_MOTION).every((fid) => balance(versSVG(sc(nouveauDoc(fid), null)))), 'SVG : balises équilibrées pour les 8 familles');
 const d0 = nouveauDoc('annonce');

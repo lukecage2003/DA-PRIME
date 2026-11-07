@@ -114,6 +114,47 @@ export default {
       });
     },
   },
+  'versus': {
+    nom: 'Versus', description: 'Face-à-face : échelle de puissance, condition d\'accès et verdict conditionnel', directions: ['primestone', 'noir', 'cosmos', 'pop', 'nuit'], preset: 'zoom',
+    champs: [{ id: 'surtitre', label: 'Surtitre', defaut: 'Ultimates 2 · 2017' }, { id: 'nomA', label: 'Camp A', defaut: 'Black Panther' }, { id: 'nomB', label: 'Camp B', defaut: 'Logos' },
+      { id: 'niveauA', label: 'Échelle du camp A', type: 'choix', options: ['Street level', 'Planétaire', 'Cosmique', 'Abstrait'], defaut: 'Street level' },
+      { id: 'niveauB', label: 'Échelle du camp B', type: 'choix', options: ['Street level', 'Planétaire', 'Cosmique', 'Abstrait'], defaut: 'Abstrait' },
+      { id: 'acces', label: 'Condition d\'accès', defaut: 'Accès : le pouvoir du Tiger God ouvre le Superflow', conseil: 'Ce qui permet au camp le plus bas d\'agir au niveau de l\'autre' },
+      { id: 'verdict', label: 'Verdict conditionnel', defaut: 'Il ne surpasse pas Logos : il gagne l\'accès au champ de bataille.' }, CREDIT],
+    images: [{ id: 'gauche', label: 'Camp A', placeholder: 'noir', mode: 'couvrir' }, { id: 'droite', label: 'Camp B', placeholder: 'cosmos', mode: 'couvrir' }],
+    foyer: (k) => [k.W / 2, k.H * 0.45],
+    composer(k) {
+      const { W, H, m, u, tan, dir } = k, st = titre(k), NIV = ['Street level', 'Planétaire', 'Cosmique', 'Abstrait'], V = vertical(k);
+      // Portraits en coupe diagonale (horizontale en format vertical)
+      if (V) { const o = W * tan * 1.4, mid = H * 0.42;
+        k.illustration('gauche', 'Camp A', { x: 0, y: 0, w: W, h: mid + o, mode: 'couvrir' }, { clip: [0, 0, W, 0, W, mid - o, 0, mid + o], seq: 0 });
+        k.illustration('droite', 'Camp B', { x: 0, y: mid - o, w: W, h: H * 0.62 - mid + o, mode: 'couvrir' }, { clip: [0, mid + o, W, mid - o, W, H * 0.62, 0, H * 0.62], seq: 1 });
+        voile(k, 0.5); k.bande('seam', 'Séparation', [0, mid + o - 6 * u, W, mid - o - 6 * u, W, mid - o + 6 * u, 0, mid + o + 6 * u].map(r1), dir.accent, 1);
+      } else { const o = H * tan * 1.4, mid = W / 2;
+        k.illustration('gauche', 'Camp A', { x: 0, y: 0, w: mid + o, h: H * 0.62, mode: 'couvrir' }, { clip: [0, 0, mid + o, 0, mid - o, H * 0.62, 0, H * 0.62], seq: 0 });
+        k.illustration('droite', 'Camp B', { x: mid - o, y: 0, w: W - mid + o, h: H * 0.62, mode: 'couvrir' }, { clip: [mid + o, 0, W, 0, W, H * 0.62, mid - o, H * 0.62], seq: 1 });
+        voile(k, 0.5); k.bande('seam', 'Séparation', [mid + o - 7 * u, 0, mid + o + 7 * u, 0, mid - o + 7 * u, H * 0.62, mid - o - 7 * u, H * 0.62].map(r1), dir.accent, 1);
+      }
+      k.bande('socle', 'Fond de l\'échelle', [0, H * 0.62, W, H * 0.62, W, H, 0, H], dir.fond, 1);
+      k.texte('surtitre', 'Surtitre', { police: 'mono', x: m, y: m, l: W - 2 * m, h: 34 * u, maxL: 1, tMax: Math.round(30 * u), ls: 3, align: 'middle', fill: dir.surAccent }, { seq: 2, bande: { fill: dir.accent } });
+      const yN = V ? H * 0.08 : H * 0.12, hN = V ? H * 0.12 : H * 0.24;
+      k.texte('nomA', 'Camp A', { police: 'display', x: m, y: yN, l: V ? W - 2 * m : W * 0.38, h: hN, maxL: 2, tMax: Math.round(110 * u), ...st, requis: true }, { seq: 2 });
+      k.texte('nomB', 'Camp B', { police: 'display', x: V ? m : W * 0.62 - m, y: V ? H * 0.47 : yN, l: V ? W - 2 * m : W * 0.38, h: hN, maxL: 2, tMax: Math.round(110 * u), align: 'end', ...st, requis: true }, { seq: 2 });
+      // Badge VS
+      const cx = W / 2, cy = V ? H * 0.42 : H * 0.31, r = 58 * u;
+      k.couche('vs', 'Badge VS', 'forme', 3, [{ k: 'poly', pts: [cx, cy - r, cx + r, cy, cx, cy + r, cx - r, cy].map(r1), fill: dir.accent }, { k: 'text', lignes: ['VS'], police: 'display', taille: Math.round(56 * u), pas: 0, ls: 0, align: 'middle', x: cx, y: r1(cy + 20 * u), fill: dir.surAccent }], { box: { x: cx - r, y: cy - r, w: 2 * r, h: 2 * r } });
+      // Échelle de puissance : A au-dessus (accent), B en dessous (accent 2)
+      const yE = H * (V ? 0.69 : 0.7), x0 = m, x1 = W - m, px = (v) => x0 + (Math.max(0, NIV.indexOf(v)) / 3) * (x1 - x0), e = 4 * u, t = 16 * u;
+      k.couche('echelle', 'Échelle de puissance', 'forme', 4, [{ k: 'rect', x: x0, y: yE - e, w: x1 - x0, h: 2 * e, fill: dir.accent },
+        ...NIV.map((n, i) => ({ k: 'rect', x: r1(x0 + (i / 3) * (x1 - x0) - e), y: yE - 3 * e, w: 2 * e, h: 6 * e, fill: dir.accent })),
+        ...NIV.map((n, i) => ({ k: 'text', lignes: [n.toLocaleUpperCase('fr-FR')], police: 'mono', taille: Math.round(20 * u), pas: 0, ls: 2, align: i === 0 ? 'start' : i === 3 ? 'end' : 'middle', x: r1(x0 + (i / 3) * (x1 - x0)), y: r1(yE + 44 * u), fill: dir.texte })),
+        { k: 'poly', pts: [px(k.txt('niveauA')) - t, yE - 3 * e - 2 * t, px(k.txt('niveauA')) + t, yE - 3 * e - 2 * t, px(k.txt('niveauA')), yE - 3 * e].map(r1), fill: dir.accent },
+        { k: 'poly', pts: [px(k.txt('niveauB')) - t, yE + 3 * e + 2 * t + 56 * u, px(k.txt('niveauB')) + t, yE + 3 * e + 2 * t + 56 * u, px(k.txt('niveauB')), yE + 3 * e + 56 * u].map(r1), fill: dir.accent2 }],
+        { box: { x: x0, y: yE - 3 * e - 2 * t, w: x1 - x0, h: 6 * e + 4 * t + 86 * u } });
+      k.texte('acces', 'Condition d\'accès', { police: 'mono', x: m, y: H * (V ? 0.79 : 0.81), l: W - 2 * m, h: 32 * u, maxL: 2, tMax: Math.round(26 * u), ls: 2, align: 'middle', fill: dir.texte }, { seq: 5 });
+      k.texte('verdict', 'Verdict', { police: 'serif', casse: 'none', x: m, y: H * (V ? 0.85 : 0.87), l: W - 2 * m, h: H * (V ? 0.1 : 0.09), maxL: 2, tMax: Math.round(48 * u), align: 'middle', fill: dir.texte, requis: true }, { seq: 6 });
+    },
+  },
   'evenement': {
     nom: 'Crossover et événement', description: 'Deux camps, un événement', directions: ['primestone', 'cosmos', 'pop', 'noir', 'nuit'], preset: 'zoom',
     champs: [{ id: 'surtitre', label: 'Surtitre', defaut: 'Événement' }, { id: 'camp1', label: 'Premier camp', defaut: 'Les Veilleurs' }, { id: 'liaison', label: 'Liaison', defaut: 'contre' },
