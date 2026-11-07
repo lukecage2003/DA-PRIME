@@ -18,6 +18,7 @@ export const PLATEFORMES = {
 export const TYPES = {
   storytelling: 'Storytelling', resume: 'Résumé narratif', analyse: 'Analyse approfondie', personnage: 'Analyse de personnage', evenement: 'Analyse d\'événement',
   guide: 'Guide de lecture', critique: 'Critique', documentaire: 'Documentaire', comparaison: 'Comparaison', versus: 'Versus', theorie: 'Théorie et interprétation', actualite: 'Actualité',
+  concept: 'Concept cosmique ou métaphysique',
 };
 export const FONCTIONS = {
   hook: 'Hook', promesse: 'Promesse', contexte: 'Mise en contexte', enjeux: 'Enjeux', progression: 'Progression', revelation: 'Révélation', tension: 'Montée en tension',
@@ -47,8 +48,10 @@ const SQUELETTES = {
   analyse: ['contexte', 'enjeux', 'progression', 'revelation', 'progression', 'payoff'], personnage: ['contexte', 'progression', 'enjeux', 'revelation', 'payoff'],
   evenement: ['contexte', 'enjeux', 'progression', 'tension', 'revelation', 'payoff'], guide: ['contexte', 'progression', 'progression', 'progression', 'payoff'],
   critique: ['contexte', 'progression', 'progression', 'revelation', 'payoff'], documentaire: ['contexte', 'enjeux', 'progression', 'respiration', 'progression', 'revelation', 'payoff'],
-  comparaison: ['contexte', 'enjeux', 'progression', 'progression', 'tension', 'payoff'], versus: ['contexte', 'enjeux', 'progression', 'progression', 'tension', 'payoff'],
+  comparaison: ['contexte', 'enjeux', 'progression', 'progression', 'tension', 'payoff'], versus: ['contexte', 'enjeux', 'progression', 'progression', 'revelation', 'tension', 'payoff'],
   theorie: ['contexte', 'enjeux', 'progression', 'revelation', 'tension', 'payoff'], actualite: ['contexte', 'enjeux', 'progression', 'payoff'],
+  // Concept (Kabbale de Marvel, hiérarchie cosmique, retcons) : définir, situer dans la hiérarchie, suivre les publications, corriger l'idée reçue
+  concept: ['contexte', 'progression', 'rappel', 'progression', 'revelation', 'progression', 'payoff'],
 };
 
 // ---------- Durées ----------
@@ -93,7 +96,9 @@ export const wpmDe = (projet, profil) => Math.round(((profil?.wpm || 145) * (PLA
 // Suggestions déterministes à partir de l'idée : chaque suggestion est indépendante, acceptée ou rejetée par l'auteur
 export function architecte(idee, { type } = {}) {
   const a = analyserIdee(idee), sujet = (a.personnages.join(' et ') || idee.replace(/^(fais|prépare|crée|écris)[- ]?(moi)?\s*(une?|le|la|les)?\s*/i, '').replace(/[.?!]+$/, '')).trim() || 'le sujet';
-  const t = type || ({ versus: 'versus', comparaison: 'comparaison', origine: 'personnage', portrait: 'personnage', presentation: 'personnage', evenement: 'evenement', crossover: 'evenement', chronologie: 'guide', recommandation: 'guide', selection: 'guide', critique: 'critique', actualite: 'actualite', annonce: 'actualite', theorie: 'theorie', hypothese: 'theorie', analyse: 'analyse' }[a.type] || 'analyse');
+  // Sujets cosmiques, métaphysiques ou retcons : type « concept », sauf s'il s'agit d'un affrontement
+  const CONCEPT = /kabbal|cabbal|multivers|omnivers|hi[eé]rarchie|cosmolog|m[eé]taphysi|superflow|retcon|concept|plans? d.existence|abstraits?\b|entit[eé]s? cosmiques?/i;
+  const t = type || (a.type !== 'versus' && a.type !== 'hypothese' && CONCEPT.test(idee) ? 'concept' : null) || ({ versus: 'versus', comparaison: 'comparaison', origine: 'personnage', portrait: 'personnage', presentation: 'personnage', evenement: 'evenement', crossover: 'evenement', chronologie: 'guide', recommandation: 'guide', selection: 'guide', critique: 'critique', actualite: 'actualite', annonce: 'actualite', theorie: 'theorie', hypothese: 'theorie', analyse: 'analyse' }[a.type] || 'analyse');
   const S = sujet;
   const angles = [
     ['question', `La question que tout le monde se pose sur ${S}`, `Partir d'une question précise et y répondre pas à pas.`],
@@ -101,7 +106,9 @@ export function architecte(idee, { type } = {}) {
     ['coulisses', `${S} : les coulisses`, 'Raconter la fabrication, les choix et les contraintes (sources nécessaires).'],
     ['evolution', `Comment ${S} a changé`, 'Suivre une évolution dans le temps, avec des étapes datées et sourcées.'],
     ['detail', `Le détail qui change tout dans ${S}`, 'Partir d\'un élément précis et en tirer une lecture d\'ensemble.'],
-    ...(a.personnages.length >= 2 ? [['opposition', `${a.personnages[0]} face à ${a.personnages[1]} : deux visions`, 'Opposer deux logiques plutôt que deux puissances.']] : []),
+    ...(a.personnages.length >= 2 ? [['opposition', `${a.personnages[0]} face à ${a.personnages[1]} : deux visions`, 'Opposer deux logiques plutôt que deux puissances.'],
+      ['mecanisme', `Comment ${a.personnages[0]} a-t-il battu ${a.personnages[1]} ?`, 'Expliquer le mécanisme de la victoire (accès, condition, préparation) plutôt qu\'un classement de puissance.'],
+      ['conditions', `${a.personnages[0]} contre ${a.personnages[1]} : qui gagne, et à quelles conditions ?`, 'Verdict conditionnel : échelle (street level ou cosmique), préparation, état, version du personnage, sources.']] : []),
   ].map(([k, titre, desc]) => ({ id: id('ang'), genre: 'angle', cle: k, titre, desc, statut: 'propose' }));
   const sug = (genre, texte) => ({ id: id('sug'), genre, texte, statut: 'propose' });
   return {

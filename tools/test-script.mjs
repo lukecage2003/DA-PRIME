@@ -52,9 +52,10 @@ console.log('Moteur éditorial (Node)');
   ok(Object.keys(SM.EXPORTS).every((f) => SM.exporter(p, f).length > 10), `${Object.keys(SM.EXPORTS).length} formats d'export`);
   // Prompts
   const v = PR.variables(p, { profil: SM.PROFIL0 }), tout = Object.values(PR.MODELES).flatMap((m) => [PR.remplir(m.compact, v), PR.remplir(m.detaille, v)]);
-  ok(tout.every((t) => !/\{\{/.test(t)) && Object.values(PR.MODELES).every((m) => PR.remplir(m.compact, v).length < PR.remplir(m.detaille, v).length) && Object.keys(PR.MODELES).length === 9, '9 modèles de prompts, variables résolues, version compacte plus courte que la détaillée');
+  ok(tout.every((t) => !/\{\{/.test(t)) && Object.values(PR.MODELES).every((m) => PR.remplir(m.compact, v).length < PR.remplir(m.detaille, v).length) && Object.keys(PR.MODELES).length === 11, '11 modèles de prompts, variables résolues, version compacte plus courte que la détaillée');
   ok(/n'invente aucun fait/.test(PR.remplir(PR.MODELES.creation.compact, v)) && /\[À VÉRIFIER\]/.test(PR.remplir(PR.MODELES.creation.detaille, v)), 'règles de fiabilité incluses dans les prompts de création');
   const archi = SM.architecte('Fais-moi un VS entre Black Panther et Batman.'); ok(archi.angles.length >= 5 && archi.suggestions.every((s) => s.statut === 'propose') && archi.suggestions.some((s) => s.genre === 'miniature'), `architecte éditorial : ${archi.angles.length} angles, ${archi.suggestions.length} suggestions à accepter ou rejeter`);
+  ok(SM.architecte('Explique la Kabbale de Marvel').type === 'concept' && SM.architecte('Black Panther vs Logos, combat cosmique').type === 'versus' && SM.architecte('Black Panther vs Logos').angles.some((a) => a.cle === 'mecanisme'), 'type concept pour les sujets cosmiques, versus prioritaire, angle « mécanisme » pour un affrontement');
 }
 if (process.argv.includes('--moteur')) fin();
 
