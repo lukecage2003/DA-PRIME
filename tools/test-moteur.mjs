@@ -26,6 +26,7 @@ for (const [coll, fmt] of [[FAMILLES, 'miniature'], [KIOSQUE, 'carrousel']]) for
   if (+vb[1] !== FORMATS[fmt].w || +vb[2] !== FORMATS[fmt].h || e.length || !r.svg.includes('data-ps-statut="NON-OFFICIEL"')) bad.push(`${id}/${v} ${e.map((a) => a.message).join(';')}`);
 }
 ok(!bad.length, `${n} variantes : dimensions du format, aucune alerte avec les valeurs par défaut, marquage NON-OFFICIEL présent${bad.length ? ' · ' + bad.join(' | ') : ''}`);
+ok(rendre('car-recit', 'standard', {}).svg.includes('Papier') && rendre('car-recit', 'primestone', {}).svg.includes('Primestone') && Object.keys(KIOSQUE['car-couverture']?.variantes || FAMILLES['car-couverture']?.variantes || {})[0] === 'primestone', 'Kiosque : Primestone par défaut, ancien identifiant « standard » rendu en Papier');
 // Alternance des formats sans fuite d'état entre deux rendus
 const a = rendre('01-analyse-personnage', 'jaune', imgs(FAMILLES['01-analyse-personnage'])).svg; rendre('car-avis', 'standard', {}); const b = rendre('01-analyse-personnage', 'jaune', imgs(FAMILLES['01-analyse-personnage'])).svg;
 ok(a === b && a.includes('viewBox="0 0 1280 720"'), 'rendu déterministe, aucun effet de bord entre formats');

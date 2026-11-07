@@ -878,8 +878,8 @@
       ]
     },
     {
-      "id": "car-car-couverture-standard-non-officiel",
-      "title": "Car couverture standard",
+      "id": "car-car-couverture-papier-non-officiel",
+      "title": "Car couverture papier",
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
@@ -887,15 +887,15 @@
       "tags": [
         "car",
         "couverture",
-        "standard",
+        "papier",
         "non",
         "officiel"
       ],
       "usage": "Gabarits SVG Kiosque 4:5 (1080 × 1350) : diapositives de carrousel et fiche personnage. Exemples avec images PLACEHOLDER.",
-      "preview": "templates/kiosque/car-couverture/exemples/PS_CAR_car-couverture_standard_NON-OFFICIEL.jpg",
+      "preview": "templates/kiosque/car-couverture/exemples/PS_CAR_car-couverture_papier_NON-OFFICIEL.jpg",
       "files": [
         {
-          "path": "templates/kiosque/car-couverture/exemples/PS_CAR_car-couverture_standard_NON-OFFICIEL.jpg",
+          "path": "templates/kiosque/car-couverture/exemples/PS_CAR_car-couverture_papier_NON-OFFICIEL.jpg",
           "format": "jpg",
           "bytes": 198125,
           "sha256": "63dd5afec61781b7b4c96c55a48433b4941ef818dfd426a72412e158a01c2bcf",
@@ -903,18 +903,53 @@
           "height": 1350
         },
         {
-          "path": "templates/kiosque/car-couverture/PS_CAR_car-couverture_standard_NON-OFFICIEL.svg",
+          "path": "templates/kiosque/car-couverture/PS_CAR_car-couverture_papier_NON-OFFICIEL.svg",
           "format": "svg",
-          "bytes": 58559,
-          "sha256": "a61f2fa2563425c7f09ad1cba3ee573c89a17cda8f272373a898c761e5d21bce",
+          "bytes": 58557,
+          "sha256": "0155937369516d03dbf446ae73f63cc7904a23ff0916fb6110210bbf3ec6e576",
           "width": 1080,
           "height": 1350
         }
       ]
     },
     {
-      "id": "car-car-faits-standard-non-officiel",
-      "title": "Car faits standard",
+      "id": "car-car-couverture-primestone-non-officiel",
+      "title": "Car couverture primestone",
+      "category": "gabarits",
+      "kind": "fichier",
+      "status": "non-officiel",
+      "version": "0.11.1",
+      "tags": [
+        "car",
+        "couverture",
+        "primestone",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG Kiosque 4:5 (1080 × 1350) : diapositives de carrousel et fiche personnage. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/kiosque/car-couverture/exemples/PS_CAR_car-couverture_primestone_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/kiosque/car-couverture/exemples/PS_CAR_car-couverture_primestone_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 246215,
+          "sha256": "ab93ab5f215b21418706a7b2ebb8a383db959df6f5c07b3de002d24aacb0f90f",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "path": "templates/kiosque/car-couverture/PS_CAR_car-couverture_primestone_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 58564,
+          "sha256": "705558813ffd430197fc488297e7c4d35de743460782d65e674c4bf39bb102d2",
+          "width": 1080,
+          "height": 1350
+        }
+      ]
+    },
+    {
+      "id": "car-car-faits-papier-non-officiel",
+      "title": "Car faits papier",
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
@@ -922,15 +957,15 @@
       "tags": [
         "car",
         "faits",
-        "standard",
+        "papier",
         "non",
         "officiel"
       ],
       "usage": "Gabarits SVG Kiosque 4:5 (1080 × 1350) : diapositives de carrousel et fiche personnage. Exemples avec images PLACEHOLDER.",
-      "preview": "templates/kiosque/car-faits/exemples/PS_CAR_car-faits_standard_NON-OFFICIEL.jpg",
+      "preview": "templates/kiosque/car-faits/exemples/PS_CAR_car-faits_papier_NON-OFFICIEL.jpg",
       "files": [
         {
-          "path": "templates/kiosque/car-faits/exemples/PS_CAR_car-faits_standard_NON-OFFICIEL.jpg",
+          "path": "templates/kiosque/car-faits/exemples/PS_CAR_car-faits_papier_NON-OFFICIEL.jpg",
           "format": "jpg",
           "bytes": 100599,
           "sha256": "f153fe37397b2a62d1cb66026f3e0326cab857ea0daa6b18bbfdb41d108c86aa",
@@ -938,18 +973,53 @@
           "height": 1350
         },
         {
-          "path": "templates/kiosque/car-faits/PS_CAR_car-faits_standard_NON-OFFICIEL.svg",
+          "path": "templates/kiosque/car-faits/PS_CAR_car-faits_papier_NON-OFFICIEL.svg",
           "format": "svg",
-          "bytes": 59064,
-          "sha256": "a43fdc56fb7ea0647989f388fcc97124454128e725d7398aec4975154c846496",
+          "bytes": 59062,
+          "sha256": "8f299ab81231c027e9df70b6c3b3a9a966a90d16c2c3f870571dc62e78ab23e0",
           "width": 1080,
           "height": 1350
         }
       ]
     },
     {
-      "id": "car-car-presentation-comic-standard-non-officiel",
-      "title": "Car presentation comic standard",
+      "id": "car-car-faits-primestone-non-officiel",
+      "title": "Car faits primestone",
+      "category": "gabarits",
+      "kind": "fichier",
+      "status": "non-officiel",
+      "version": "0.11.1",
+      "tags": [
+        "car",
+        "faits",
+        "primestone",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG Kiosque 4:5 (1080 × 1350) : diapositives de carrousel et fiche personnage. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/kiosque/car-faits/exemples/PS_CAR_car-faits_primestone_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/kiosque/car-faits/exemples/PS_CAR_car-faits_primestone_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 125515,
+          "sha256": "b78c73e345998ecf67edd8d77d0843690e03628ab88f8454d7d2bb9d6f8fc4fd",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "path": "templates/kiosque/car-faits/PS_CAR_car-faits_primestone_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 59070,
+          "sha256": "ba4ce1c45887fa99ea3fd5f6ccd8d202b9f104787075850f0abcf600f14b5cca",
+          "width": 1080,
+          "height": 1350
+        }
+      ]
+    },
+    {
+      "id": "car-car-presentation-comic-papier-non-officiel",
+      "title": "Car presentation comic papier",
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
@@ -958,34 +1028,70 @@
         "car",
         "presentation",
         "comic",
-        "standard",
+        "papier",
         "non",
         "officiel"
       ],
       "usage": "Gabarits SVG Kiosque 4:5 (1080 × 1350) : diapositives de carrousel et fiche personnage. Exemples avec images PLACEHOLDER.",
-      "preview": "templates/kiosque/car-presentation-comic/exemples/PS_CAR_car-presentation-comic_standard_NON-OFFICIEL.jpg",
+      "preview": "templates/kiosque/car-presentation-comic/exemples/PS_CAR_car-presentation-comic_papier_NON-OFFICIEL.jpg",
       "files": [
         {
-          "path": "templates/kiosque/car-presentation-comic/exemples/PS_CAR_car-presentation-comic_standard_NON-OFFICIEL.jpg",
+          "path": "templates/kiosque/car-presentation-comic/exemples/PS_CAR_car-presentation-comic_papier_NON-OFFICIEL.jpg",
           "format": "jpg",
-          "bytes": 103702,
-          "sha256": "03f874728fd31539e276f0c5ab7e6d5404b9694fd7f63bca3d7b7b6ab3c8fab8",
+          "bytes": 103496,
+          "sha256": "851c32f0bd54a652462a973bf9c08c127f8921c58adac0cf35b9dea4d0779d93",
           "width": 1080,
           "height": 1350
         },
         {
-          "path": "templates/kiosque/car-presentation-comic/PS_CAR_car-presentation-comic_standard_NON-OFFICIEL.svg",
+          "path": "templates/kiosque/car-presentation-comic/PS_CAR_car-presentation-comic_papier_NON-OFFICIEL.svg",
           "format": "svg",
-          "bytes": 60615,
-          "sha256": "56262b20ad06e67c013cc205d3a0f951106bad637736909d243a5da9fbf99969",
+          "bytes": 60613,
+          "sha256": "8497e07b1b525d07c5682b01267f52e89da3897537f8bbd7b4bd0f6272a0d80e",
           "width": 1080,
           "height": 1350
         }
       ]
     },
     {
-      "id": "car-car-recit-standard-non-officiel",
-      "title": "Car recit standard",
+      "id": "car-car-presentation-comic-primestone-non-officiel",
+      "title": "Car presentation comic primestone",
+      "category": "gabarits",
+      "kind": "fichier",
+      "status": "non-officiel",
+      "version": "0.11.1",
+      "tags": [
+        "car",
+        "presentation",
+        "comic",
+        "primestone",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG Kiosque 4:5 (1080 × 1350) : diapositives de carrousel et fiche personnage. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/kiosque/car-presentation-comic/exemples/PS_CAR_car-presentation-comic_primestone_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/kiosque/car-presentation-comic/exemples/PS_CAR_car-presentation-comic_primestone_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 124679,
+          "sha256": "ff728ba9e43a4a8a8684e4530c79be200e5da6d824756f64ca777d2b2b27d891",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "path": "templates/kiosque/car-presentation-comic/PS_CAR_car-presentation-comic_primestone_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 60621,
+          "sha256": "e0a424c92dd3392b67ad50d1b26ccd8f62706be8f3b59745fb02e37f73ba01a2",
+          "width": 1080,
+          "height": 1350
+        }
+      ]
+    },
+    {
+      "id": "car-car-recit-papier-non-officiel",
+      "title": "Car recit papier",
       "category": "gabarits",
       "kind": "fichier",
       "status": "non-officiel",
@@ -993,15 +1099,15 @@
       "tags": [
         "car",
         "recit",
-        "standard",
+        "papier",
         "non",
         "officiel"
       ],
       "usage": "Gabarits SVG Kiosque 4:5 (1080 × 1350) : diapositives de carrousel et fiche personnage. Exemples avec images PLACEHOLDER.",
-      "preview": "templates/kiosque/car-recit/exemples/PS_CAR_car-recit_standard_NON-OFFICIEL.jpg",
+      "preview": "templates/kiosque/car-recit/exemples/PS_CAR_car-recit_papier_NON-OFFICIEL.jpg",
       "files": [
         {
-          "path": "templates/kiosque/car-recit/exemples/PS_CAR_car-recit_standard_NON-OFFICIEL.jpg",
+          "path": "templates/kiosque/car-recit/exemples/PS_CAR_car-recit_papier_NON-OFFICIEL.jpg",
           "format": "jpg",
           "bytes": 250256,
           "sha256": "b249aabe38b4fc08cf678b0719362c39fc31f530dc442334f504fec3d0ed6ce6",
@@ -1009,10 +1115,45 @@
           "height": 1350
         },
         {
-          "path": "templates/kiosque/car-recit/PS_CAR_car-recit_standard_NON-OFFICIEL.svg",
+          "path": "templates/kiosque/car-recit/PS_CAR_car-recit_papier_NON-OFFICIEL.svg",
           "format": "svg",
-          "bytes": 59021,
-          "sha256": "b1f93ed09a59b043f768da790e46b697efa7c59b86a19a2cb33be85c880177eb",
+          "bytes": 59019,
+          "sha256": "ac5f7684a4b109954f72f2f4b0183240524d79abe2f46e5acaf67f96c1949291",
+          "width": 1080,
+          "height": 1350
+        }
+      ]
+    },
+    {
+      "id": "car-car-recit-primestone-non-officiel",
+      "title": "Car recit primestone",
+      "category": "gabarits",
+      "kind": "fichier",
+      "status": "non-officiel",
+      "version": "0.11.1",
+      "tags": [
+        "car",
+        "recit",
+        "primestone",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG Kiosque 4:5 (1080 × 1350) : diapositives de carrousel et fiche personnage. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/kiosque/car-recit/exemples/PS_CAR_car-recit_primestone_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/kiosque/car-recit/exemples/PS_CAR_car-recit_primestone_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 322882,
+          "sha256": "c6b5dcf709a628b614a08d881f39e61d367abc0f05637076febf4bd9d163379b",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "path": "templates/kiosque/car-recit/PS_CAR_car-recit_primestone_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 59026,
+          "sha256": "491216a1a2d757bc54324063979683433b1142c6eca42a0b6bfc4b394dcd288a",
           "width": 1080,
           "height": 1350
         }
@@ -1038,10 +1179,10 @@
         {
           "path": "templates/kiosque/PS_CAR_planche-360px_NON-OFFICIEL.png",
           "format": "png",
-          "bytes": 843639,
-          "sha256": "9fd6b5c9c336e417346eac1b6ca8f15cb23bcceba85f2082e63542c91065c126",
+          "bytes": 1782234,
+          "sha256": "8b9785cf139dd9c0ea9f653dc6e5ae99779aea73a40a2cc8260e9f9a534a5396",
           "width": 756,
-          "height": 1932
+          "height": 3372
         }
       ]
     },
@@ -1110,6 +1251,41 @@
           "format": "svg",
           "bytes": 62275,
           "sha256": "9aec984ce7855446327a6ffc6ea19fe598f0a720f7b352e5405b725a646b6ead",
+          "width": 1080,
+          "height": 1350
+        }
+      ]
+    },
+    {
+      "id": "fiche-fiche-personnage-primestone-non-officiel",
+      "title": "Fiche personnage primestone",
+      "category": "gabarits",
+      "kind": "fichier",
+      "status": "non-officiel",
+      "version": "0.11.1",
+      "tags": [
+        "fiche",
+        "personnage",
+        "primestone",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG Kiosque 4:5 (1080 × 1350) : diapositives de carrousel et fiche personnage. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/kiosque/fiche-personnage/exemples/PS_FICHE_fiche-personnage_primestone_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/kiosque/fiche-personnage/exemples/PS_FICHE_fiche-personnage_primestone_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 267778,
+          "sha256": "f91f17f15327727c96d20c4b0c0aa2c46cd51c78b7607226129f4575ab2f2af9",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "path": "templates/kiosque/fiche-personnage/PS_FICHE_fiche-personnage_primestone_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 62273,
+          "sha256": "315979bdcd0ddf326994b7fe956e9258b4f6952c1a76fe0bda263a7180e64e70",
           "width": 1080,
           "height": 1350
         }

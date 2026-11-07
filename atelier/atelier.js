@@ -17,7 +17,8 @@ const champsImages = () => gab(etat.fam).champs.filter((c) => c.type === 'image'
 const imagePlaceholder = (c) => { const p = PH[c.placeholder]; return { href: '../' + p.src, w: p.w, h: p.h, placeholder: true, nom: 'PLACEHOLDER ' + c.placeholder }; };
 function initFamille(fam, garder = {}) {
   etat.fam = fam; etat.coll = trouver(fam).collection.id; const f = gab(fam);
-  etat.vari = f.variantes[garder.vari] ? garder.vari : Object.keys(f.variantes)[0];
+  const vg = garder.vari === 'standard' && !f.variantes.standard && f.variantes.papier ? 'papier' : garder.vari; // ancien nom Kiosque
+  etat.vari = f.variantes[vg] ? vg : Object.keys(f.variantes)[0];
   const d = {};
   for (const c of f.champs) {
     if (c.type === 'image') d[c.id] = imagePlaceholder(c);

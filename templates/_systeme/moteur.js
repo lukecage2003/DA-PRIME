@@ -11,6 +11,8 @@ export { W, H, C, G, placer, FAMILLES, KIOSQUE, INFOGRAPHIES, FORMATS, COLLECTIO
 export function rendre(familleId, varianteId, donnees = {}, { guides: avecGuides = false } = {}) {
   const t = trouver(familleId); if (!t) throw new Error(`Gabarit inconnu : ${familleId}`);
   const fam = t.gabarit; utiliserFormat(t.collection.format);
+  // « standard » : ancien nom de la variante papier des gabarits Kiosque (avant Primestone), conservé pour les documents existants
+  if (varianteId === 'standard' && !fam.variantes.standard && fam.variantes.papier) varianteId = 'papier';
   const vari = fam.variantes[varianteId] ? varianteId : Object.keys(fam.variantes)[0];
   const d = { ...Object.fromEntries(fam.champs.filter((c) => c.defaut !== undefined).map((c) => [c.id, c.defaut])), ...donnees };
   const ctx = { alertes: [], zones: {}, textes: [] };

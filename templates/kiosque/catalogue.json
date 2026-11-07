@@ -49,9 +49,14 @@
       ],
       "variantes": [
         {
-          "id": "standard",
+          "id": "primestone",
+          "nom": "Primestone",
+          "fichier": "car-couverture/PS_CAR_car-couverture_primestone_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "papier",
           "nom": "Papier",
-          "fichier": "car-couverture/PS_CAR_car-couverture_standard_NON-OFFICIEL.svg"
+          "fichier": "car-couverture/PS_CAR_car-couverture_papier_NON-OFFICIEL.svg"
         }
       ]
     },
@@ -128,9 +133,14 @@
       ],
       "variantes": [
         {
-          "id": "standard",
+          "id": "primestone",
+          "nom": "Primestone",
+          "fichier": "car-presentation-comic/PS_CAR_car-presentation-comic_primestone_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "papier",
           "nom": "Papier",
-          "fichier": "car-presentation-comic/PS_CAR_car-presentation-comic_standard_NON-OFFICIEL.svg"
+          "fichier": "car-presentation-comic/PS_CAR_car-presentation-comic_papier_NON-OFFICIEL.svg"
         }
       ]
     },
@@ -192,9 +202,14 @@
       ],
       "variantes": [
         {
-          "id": "standard",
+          "id": "primestone",
+          "nom": "Primestone",
+          "fichier": "car-recit/PS_CAR_car-recit_primestone_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "papier",
           "nom": "Papier",
-          "fichier": "car-recit/PS_CAR_car-recit_standard_NON-OFFICIEL.svg"
+          "fichier": "car-recit/PS_CAR_car-recit_papier_NON-OFFICIEL.svg"
         }
       ]
     },
@@ -305,9 +320,14 @@
       ],
       "variantes": [
         {
-          "id": "standard",
+          "id": "primestone",
+          "nom": "Primestone",
+          "fichier": "car-faits/PS_CAR_car-faits_primestone_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "papier",
           "nom": "Papier",
-          "fichier": "car-faits/PS_CAR_car-faits_standard_NON-OFFICIEL.svg"
+          "fichier": "car-faits/PS_CAR_car-faits_papier_NON-OFFICIEL.svg"
         }
       ]
     },
@@ -437,6 +457,11 @@
         }
       ],
       "variantes": [
+        {
+          "id": "primestone",
+          "nom": "Primestone",
+          "fichier": "fiche-personnage/PS_FICHE_fiche-personnage_primestone_NON-OFFICIEL.svg"
+        },
         {
           "id": "jaune",
           "nom": "Case jaune",
