@@ -1160,6 +1160,76 @@
       ]
     },
     {
+      "id": "car-car-versus-papier-non-officiel",
+      "title": "Car versus papier",
+      "category": "gabarits",
+      "kind": "fichier",
+      "status": "non-officiel",
+      "version": "0.11.1",
+      "tags": [
+        "car",
+        "versus",
+        "papier",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG Kiosque 4:5 (1080 × 1350) : diapositives de carrousel et fiche personnage. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/kiosque/car-versus/exemples/PS_CAR_car-versus_papier_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/kiosque/car-versus/exemples/PS_CAR_car-versus_papier_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 261937,
+          "sha256": "e56193f42b10f27fe563e5f23ec7cf13703750a5100decbcfb53f56d604637a4",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "path": "templates/kiosque/car-versus/PS_CAR_car-versus_papier_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 63758,
+          "sha256": "4401e00faa4cefccdbb98a44b03eae0f86e7a4d26a32c899b8a708d3c681e758",
+          "width": 1080,
+          "height": 1350
+        }
+      ]
+    },
+    {
+      "id": "car-car-versus-primestone-non-officiel",
+      "title": "Car versus primestone",
+      "category": "gabarits",
+      "kind": "fichier",
+      "status": "non-officiel",
+      "version": "0.11.1",
+      "tags": [
+        "car",
+        "versus",
+        "primestone",
+        "non",
+        "officiel"
+      ],
+      "usage": "Gabarits SVG Kiosque 4:5 (1080 × 1350) : diapositives de carrousel et fiche personnage. Exemples avec images PLACEHOLDER.",
+      "preview": "templates/kiosque/car-versus/exemples/PS_CAR_car-versus_primestone_NON-OFFICIEL.jpg",
+      "files": [
+        {
+          "path": "templates/kiosque/car-versus/exemples/PS_CAR_car-versus_primestone_NON-OFFICIEL.jpg",
+          "format": "jpg",
+          "bytes": 325729,
+          "sha256": "3e21b98ba520ae5e052c4b45d8e98775e2b882a54e43b2705be41c78921267ed",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "path": "templates/kiosque/car-versus/PS_CAR_car-versus_primestone_NON-OFFICIEL.svg",
+          "format": "svg",
+          "bytes": 63765,
+          "sha256": "3784c3312d927bb5b6cba61318597889ef96f5f5ce29cfaa9e17d77703dc3596",
+          "width": 1080,
+          "height": 1350
+        }
+      ]
+    },
+    {
       "id": "car-planche-360px-non-officiel",
       "title": "Planche 360px",
       "category": "gabarits",
@@ -1179,10 +1249,10 @@
         {
           "path": "templates/kiosque/PS_CAR_planche-360px_NON-OFFICIEL.png",
           "format": "png",
-          "bytes": 1782234,
-          "sha256": "8b9785cf139dd9c0ea9f653dc6e5ae99779aea73a40a2cc8260e9f9a534a5396",
+          "bytes": 2295399,
+          "sha256": "63fdc8b7b399c05ea82d469fd73997c88cd80e9207fcbc0cdcbd0421cb61b750",
           "width": 756,
-          "height": 3372
+          "height": 3852
         }
       ]
     },

@@ -473,6 +473,139 @@
           "fichier": "fiche-personnage/PS_FICHE_fiche-personnage_noire_NON-OFFICIEL.svg"
         }
       ]
+    },
+    {
+      "id": "car-versus",
+      "nom": "Carrousel · versus",
+      "description": "Deux camps face à face : échelle de puissance, condition d’accès, exploits sourcés et verdict conditionnel.",
+      "champs": [
+        {
+          "id": "surtitre",
+          "type": "texte",
+          "label": "Surtitre (série · année)"
+        },
+        {
+          "id": "nomA",
+          "type": "texte",
+          "label": "Camp A"
+        },
+        {
+          "id": "nomB",
+          "type": "texte",
+          "label": "Camp B"
+        },
+        {
+          "id": "niveauA",
+          "type": "choix",
+          "label": "Échelle du camp A",
+          "conseil": "1 street level · 2 planétaire · 3 cosmique · 4 abstrait"
+        },
+        {
+          "id": "niveauB",
+          "type": "choix",
+          "label": "Échelle du camp B",
+          "conseil": "1 street level · 2 planétaire · 3 cosmique · 4 abstrait"
+        },
+        {
+          "id": "acces",
+          "type": "texte",
+          "label": "Condition d’accès",
+          "conseil": "Ce qui permet au camp le plus bas d’agir au niveau de l’autre (facultatif)"
+        },
+        {
+          "id": "exploitA1",
+          "type": "texte-long",
+          "label": "Exploit A 1"
+        },
+        {
+          "id": "sourceA1",
+          "type": "texte",
+          "label": "Source A 1",
+          "conseil": "Titre, numéro, année"
+        },
+        {
+          "id": "exploitA2",
+          "type": "texte-long",
+          "label": "Exploit A 2"
+        },
+        {
+          "id": "sourceA2",
+          "type": "texte",
+          "label": "Source A 2"
+        },
+        {
+          "id": "exploitB1",
+          "type": "texte-long",
+          "label": "Exploit B 1"
+        },
+        {
+          "id": "sourceB1",
+          "type": "texte",
+          "label": "Source B 1"
+        },
+        {
+          "id": "exploitB2",
+          "type": "texte-long",
+          "label": "Exploit B 2"
+        },
+        {
+          "id": "sourceB2",
+          "type": "texte",
+          "label": "Source B 2"
+        },
+        {
+          "id": "verdict",
+          "type": "texte-long",
+          "label": "Verdict conditionnel"
+        },
+        {
+          "id": "imageA",
+          "type": "image",
+          "label": "Camp A"
+        },
+        {
+          "id": "imageB",
+          "type": "image",
+          "label": "Camp B"
+        },
+        {
+          "id": "rubrique",
+          "type": "texte",
+          "label": "Rubrique"
+        },
+        {
+          "id": "numero",
+          "type": "texte",
+          "label": "Numéro"
+        },
+        {
+          "id": "page",
+          "type": "texte",
+          "label": "Pagination"
+        },
+        {
+          "id": "pied",
+          "type": "texte",
+          "label": "Pied de page"
+        },
+        {
+          "id": "credit",
+          "type": "texte",
+          "label": "Crédit artiste"
+        }
+      ],
+      "variantes": [
+        {
+          "id": "primestone",
+          "nom": "Primestone",
+          "fichier": "car-versus/PS_CAR_car-versus_primestone_NON-OFFICIEL.svg"
+        },
+        {
+          "id": "papier",
+          "nom": "Papier",
+          "fichier": "car-versus/PS_CAR_car-versus_papier_NON-OFFICIEL.svg"
+        }
+      ]
     }
   ]
 }

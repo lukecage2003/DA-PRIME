@@ -100,4 +100,42 @@ export default {
       };
     } }])),
   },
+  'car-versus': {
+    format: 'carrousel', prefixe: 'CAR', nom: 'Carrousel · versus', description: 'Deux camps face à face : échelle de puissance, condition d’accès, exploits sourcés et verdict conditionnel.',
+    champs: [T('surtitre', 'Surtitre (série · année)', 'Ultimates 2 · 2017'), T('nomA', 'Camp A', 'Black Panther'), T('nomB', 'Camp B', 'Logos'),
+      { id: 'niveauA', type: 'choix', label: 'Échelle du camp A', options: ['1', '2', '3', '4'], defaut: '1', conseil: '1 street level · 2 planétaire · 3 cosmique · 4 abstrait' },
+      { id: 'niveauB', type: 'choix', label: 'Échelle du camp B', options: ['1', '2', '3', '4'], defaut: '4', conseil: '1 street level · 2 planétaire · 3 cosmique · 4 abstrait' },
+      T('acces', 'Condition d’accès', 'Accès : le pouvoir du Tiger God ouvre le Superflow', 'Ce qui permet au camp le plus bas d’agir au niveau de l’autre (facultatif)'),
+      TL('exploitA1', 'Exploit A 1', 'Bat le Tiger God et prend temporairement son pouvoir.'), T('sourceA1', 'Source A 1', 'Ultimates 2 · 2017 · à vérifier', 'Titre, numéro, année'),
+      TL('exploitA2', 'Exploit A 2', 'Atteint le Superflow grâce à ce pouvoir.'), T('sourceA2', 'Source A 2', 'Ultimates 2 #100 · 2017'),
+      TL('exploitB1', 'Exploit B 1', 'Naît de la fusion de Master Order, Lord Chaos et de l’In-Betweener.'), T('sourceB1', 'Source B 1', 'Ultimates 2 #3 · 2017'),
+      TL('exploitB2', 'Exploit B 2', 'Mène la guerre cosmique au niveau du Superflow.'), T('sourceB2', 'Source B 2', 'Ultimates 2 · 2017 · à vérifier'),
+      TL('verdict', 'Verdict conditionnel', 'T’Challa ne surpasse pas Logos : il gagne l’accès au champ de bataille.'),
+      I('imageA', 'Camp A', 'noir'), I('imageB', 'Camp B', 'cosmos'), ...commun('Versus', 'N°001', '01/05', 'Exemple · sources à vérifier')],
+    variantes: duo((d, ctx, P) => {
+      const demi = (L() - 40) / 2, xB = G.m + demi + 40, NIV = ['Street level', 'Planétaire', 'Cosmique', 'Abstrait'];
+      const zA = zone(ctx, 'imageA', { x: G.m, y: 430, w: demi, h: 240, mode: 'couvrir', label: 'Camp A', requis: true });
+      const zB = zone(ctx, 'imageB', { x: xB, y: 430, w: demi, h: 240, mode: 'couvrir', label: 'Camp B', requis: true });
+      // Échelle : 4 paliers ; A au-dessus de la ligne (plein), B en dessous (contour)
+      const yE = 730, px = (n) => G.m + ((Math.min(4, Math.max(1, +n || 1)) - 1) / 3) * L();
+      const echelle = `<g id="echelle"><rect x="${G.m}" y="${yE - 2}" width="${L()}" height="4" fill="${P.encre}"/>`
+        + NIV.map((n, i) => { const x = G.m + (i / 3) * L(); return `<rect x="${x - 2}" y="${yE - 12}" width="4" height="24" fill="${P.encre}"/>` + mono(`niv${i + 1}`, n, x, yE + 64, P.encre, { taille: 18, ancre: i === 0 ? 'start' : i === 3 ? 'end' : 'middle' }); }).join('')
+        + `<path data-ps-champ="niveauA" d="M${px(d.niveauA) - 14} ${yE - 34} h28 l-14 22 z" fill="${P.encre}"/><path data-ps-champ="niveauB" d="M${px(d.niveauB) - 14} ${yE + 36} h28 l-14 -22 z" fill="none" stroke="${P.encre}" stroke-width="4"/></g>`;
+      const exploit = (cote, i, x, y) => texte(ctx, d, `exploit${cote}${i}`, `Exploit ${cote} ${i}`, { ...CORPS, ...fixe(28), l: demi, h: 84, maxLignes: 2, interligne: 1.25 }, haut(y, x, P.encre))
+        + mono(`source${cote}${i}`, d[`source${cote}${i}`], x, y + 92, P.encre, { taille: 18 });
+      const badge = `<g id="vs"><circle cx="${W / 2}" cy="${330}" r="46" fill="${P.encre}"/><text x="${W / 2}" y="${348}" text-anchor="middle" font-family="${M.display.family}" font-size="52" fill="${P.fond}">VS</text></g>`;
+      return {
+        fond: fond(P.fond) + trame(P.encre),
+        illustration: cadre(zA, P.encre, C.y) + image('imageA', d.imageA, zA) + bordure(zA, P.encre) + cadre(zB, P.encre, C.y) + image('imageB', d.imageB, zB) + bordure(zB, P.encre),
+        graphisme: echelle + badge + `<rect x="${G.m}" y="${1135}" width="${L()}" height="5" fill="${P.encre}"/>`,
+        textes: mono('surtitre', d.surtitre, G.m, 225, P.encre, { taille: 24 })
+          + texte(ctx, d, 'nomA', 'Camp A', { police: 'display', tMax: 96, tMin: 54, l: demi - 60, h: 160, maxLignes: 2, interligne: 0.9 }, haut(260, G.m, P.encre), { titre: true, requis: true })
+          + texte(ctx, d, 'nomB', 'Camp B', { police: 'display', tMax: 96, tMin: 54, l: demi - 60, h: 160, maxLignes: 2, interligne: 0.9 }, haut(260, xB + 60, P.encre), { titre: true, requis: true })
+          + mono('acces', d.acces, G.m, 845, P.encre, { taille: 20 })
+          + exploit('A', 1, G.m, 872) + exploit('B', 1, xB, 872) + exploit('A', 2, G.m, 1004) + exploit('B', 2, xB, 1004)
+          + texte(ctx, d, 'verdict', 'Verdict', { ...SERIF, tMax: 44, tMin: 32, l: L(), h: 100, maxLignes: 2 }, haut(1158, G.m, P.encre), { requis: true }),
+        marque: masthead(d, P.encre) + pied(d, P.encre),
+      };
+    }),
+  },
 };
